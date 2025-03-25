@@ -28,6 +28,17 @@ export function FormLayout({ children }: FormLayoutProps) {
                   {isMobile ? 'Form Động' : 'Hệ thống Quản lý Form Động'}
                 </h1>
               </Link>
+              
+              {!isMobile && (
+                <div className="ml-6 flex space-x-4">
+                  <Link href="/forms">
+                    <a className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Forms</a>
+                  </Link>
+                  <Link href="/workflow">
+                    <a className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Workflow</a>
+                  </Link>
+                </div>
+              )}
             </div>
             <div>
               <Link href="/forms">

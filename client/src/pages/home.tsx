@@ -15,10 +15,15 @@ export default function Home() {
           <p className="mt-6 text-xl text-gray-500">
             Tạo, quản lý và gửi các biểu mẫu tùy chỉnh một cách nhanh chóng và dễ dàng.
           </p>
-          <div className="mt-10">
+          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/forms">
               <Button size="lg" className="px-8 py-6 text-lg">
                 Xem danh sách form
+              </Button>
+            </Link>
+            <Link href="/workflow">
+              <Button size="lg" className="px-8 py-6 text-lg" variant="outline">
+                Hệ thống Workflow
               </Button>
             </Link>
           </div>
