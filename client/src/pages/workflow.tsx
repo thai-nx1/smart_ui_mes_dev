@@ -9,7 +9,38 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { WorkflowViewer, sampleWorkflowData } from '@/components/WorkflowViewer';
+import { WorkflowViewer } from '@/components/WorkflowViewer';
+
+// Định nghĩa các trạng thái của node
+type NodeStatus = 'todo' | 'doing' | 'done';
+
+// Sample data for the workflow
+const sampleWorkflowData = {
+  nodes: [
+    { id: 'start', title: 'Bắt đầu Dự án', status: 'done' as NodeStatus, x: 150, y: 100 },
+    { id: 'requirements', title: 'Phân tích Yêu cầu', status: 'done' as NodeStatus, x: 350, y: 100 },
+    { id: 'design', title: 'Thiết kế UI/UX', status: 'doing' as NodeStatus, x: 550, y: 100 },
+    { id: 'frontend', title: 'Phát triển Frontend', status: 'todo' as NodeStatus, x: 550, y: 250 },
+    { id: 'backend', title: 'Phát triển Backend', status: 'doing' as NodeStatus, x: 350, y: 250 },
+    { id: 'database', title: 'Thiết kế Database', status: 'done' as NodeStatus, x: 150, y: 250 },
+    { id: 'testing', title: 'Kiểm thử', status: 'todo' as NodeStatus, x: 350, y: 400 },
+    { id: 'deployment', title: 'Triển khai', status: 'todo' as NodeStatus, x: 550, y: 400 },
+    { id: 'feedback', title: 'Thu thập Feedback', status: 'todo' as NodeStatus, x: 750, y: 250 },
+  ],
+  connections: [
+    { id: 'conn1', sourceId: 'start', targetId: 'requirements' },
+    { id: 'conn2', sourceId: 'requirements', targetId: 'design' },
+    { id: 'conn3', sourceId: 'requirements', targetId: 'backend' },
+    { id: 'conn4', sourceId: 'requirements', targetId: 'database' },
+    { id: 'conn5', sourceId: 'design', targetId: 'frontend' },
+    { id: 'conn6', sourceId: 'database', targetId: 'backend' },
+    { id: 'conn7', sourceId: 'frontend', targetId: 'testing' },
+    { id: 'conn8', sourceId: 'backend', targetId: 'testing' },
+    { id: 'conn9', sourceId: 'testing', targetId: 'deployment' },
+    { id: 'conn10', sourceId: 'deployment', targetId: 'feedback' },
+    { id: 'conn11', sourceId: 'feedback', targetId: 'design' },
+  ]
+};
 
 export default function WorkflowPage() {
   const [activeTab, setActiveTab] = useState('overview');
