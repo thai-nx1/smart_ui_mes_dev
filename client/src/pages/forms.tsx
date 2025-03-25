@@ -43,8 +43,21 @@ export default function FormsPage() {
     queryKey: ['/api/form-fields', selectedFormId],
     queryFn: async () => {
       if (!selectedFormId) return null;
-      const response = await fetchFormFields(selectedFormId);
-      return response.data.core_core_dynamic_fields;
+      try {
+        console.log('Fetching fields for form ID:', selectedFormId);
+        const response = await fetchFormFields(selectedFormId);
+        console.log('Fields response:', response);
+        
+        if (!response.data.core_core_dynamic_fields) {
+          console.warn('No fields found in response');
+          return [];
+        }
+        
+        return response.data.core_core_dynamic_fields;
+      } catch (error) {
+        console.error('Error fetching fields:', error);
+        throw error;
+      }
     },
     enabled: !!selectedFormId
   });
