@@ -189,6 +189,7 @@ type ConnectionAction = 'proceed' | 'validate' | 'notify' | 'approve' | 'reject'
 interface WorkflowConnectionWithAction extends WorkflowConnection {
   action?: ConnectionAction;
   actionDescription?: string;
+  function?: string; // Hàm JavaScript có thể chạy cho kết nối
 }
 
 // Màu sắc cho các hành động
@@ -225,6 +226,9 @@ const WorkflowConnection: React.FC<{
   onDeleteConnection,
   isSelected 
 }) => {
+  // State cho popup menu
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  
   // Tính toán điểm bắt đầu và kết thúc cho đường nối
   const startX = sourceNode.x;
   const startY = sourceNode.y;
@@ -243,16 +247,61 @@ const WorkflowConnection: React.FC<{
   
   // Lấy màu hành động
   const actionColor = getActionColor(connection.action);
+  
+  // Xử lý khi click vào đường kết nối
+  const handleLineClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Hiển thị menu context thay vì mở editor ngay lập tức
+    setShowContextMenu(true);
+  };
+  
+  // Xử lý khi chọn menu item
+  const handleMenuItemClick = (action: string) => {
+    setShowContextMenu(false);
+    
+    switch (action) {
+      case 'edit':
+        onConnectionClick(connection.id);
+        break;
+      case 'function':
+        // Thêm một hàm mẫu cho kết nối (thêm property function)
+        const simpleFunctionTemplate = `function handleTransition(data) {
+  console.log('Chuyển từ ${sourceNode.title} đến ${targetNode.title}', data);
+  return data;
+}`;
+        
+        // Gọi api để cập nhật kết nối trên toàn bộ ứng dụng
+        const updatedConnection = { 
+          ...connection, 
+          function: simpleFunctionTemplate 
+        };
+        
+        // Thay vì chỉ tạo đối tượng mới, gửi sự kiện để cập nhật trong state chính
+        const event = new CustomEvent('workflow:update-connection', { 
+          detail: { 
+            connectionId: connection.id,
+            function: simpleFunctionTemplate 
+          } 
+        });
+        window.dispatchEvent(event);
+        
+        // Gọi đến hàm click kết nối để hiển thị panel edit
+        onConnectionClick(connection.id);
+        break;
+      case 'delete':
+        onDeleteConnection(connection.id);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <>
       <svg
-        className={`absolute top-0 left-0 w-full h-full z-0 ${isSelected ? 'pointer-events-auto' : 'pointer-events-none'}`}
+        className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none"
         style={{ overflow: 'visible' }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onConnectionClick(connection.id);
-        }}
       >
         <defs>
           <marker
@@ -275,7 +324,6 @@ const WorkflowConnection: React.FC<{
           strokeWidth={isSelected ? "3" : "2"}
           strokeDasharray={connection.action ? "none" : "5,5"}
           markerEnd={`url(#arrowhead-${connection.id})`}
-          className={isSelected ? "cursor-pointer" : ""}
         />
         
         {/* Điểm điều khiển ở giữa cho kết nối đang được chọn */}
@@ -287,13 +335,75 @@ const WorkflowConnection: React.FC<{
             fill="white"
             stroke={actionColor}
             strokeWidth="2"
-            className="cursor-pointer"
           />
         )}
       </svg>
       
+      {/* Vùng điều khiển ẩn cho đường kết nối (để bắt sự kiện click) */}
+      <div
+        className="absolute z-10 cursor-pointer"
+        style={{
+          left: `${Math.min(startX, endX) - 5}px`,
+          top: `${Math.min(startY, endY) - 5}px`,
+          width: `${Math.abs(endX - startX) + 10}px`,
+          height: `${Math.abs(endY - startY) + 10}px`,
+          transform: 'rotate(0deg)',
+          transformOrigin: 'center',
+        }}
+        onClick={handleLineClick}
+      />
+      
+      {/* Menu context cho kết nối */}
+      {showContextMenu && (
+        <div 
+          className="absolute z-50 bg-white rounded-lg shadow-lg border border-gray-200 p-1 w-48"
+          style={{ 
+            left: `${midX}px`, 
+            top: `${midY}px`,
+            transform: 'translate(-50%, -50%)'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="text-xs font-medium text-gray-500 px-2 py-1 border-b border-gray-100">
+            Tùy chọn kết nối
+          </div>
+          <button 
+            className="w-full text-left px-2 py-1.5 text-sm hover:bg-gray-50 rounded flex items-center text-blue-600"
+            onClick={() => handleMenuItemClick('edit')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Thêm hành động
+          </button>
+          <button 
+            className="w-full text-left px-2 py-1.5 text-sm hover:bg-gray-50 rounded flex items-center text-purple-600"
+            onClick={() => handleMenuItemClick('function')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            Thêm fun
+          </button>
+          <button 
+            className="w-full text-left px-2 py-1.5 text-sm hover:bg-gray-50 rounded flex items-center text-red-600"
+            onClick={() => handleMenuItemClick('delete')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            Xóa dây
+          </button>
+        </div>
+      )}
+      
       {/* Hiển thị hành động của kết nối ở giữa đường nối */}
-      {connection.action && (
+      {connection.action && !showContextMenu && (
         <div 
           className="absolute bg-white px-2 py-1 rounded-md border shadow-sm text-xs font-medium z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
           style={{ 
@@ -302,31 +412,25 @@ const WorkflowConnection: React.FC<{
             borderColor: actionColor,
             color: actionColor
           }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onConnectionClick(connection.id);
-          }}
+          onClick={handleLineClick}
         >
           {connection.action.toUpperCase()}
         </div>
       )}
       
-      {/* Hiển thị nút xóa kết nối khi đang được chọn */}
-      {isSelected && (
-        <div 
-          className="absolute bg-red-50 hover:bg-red-100 p-1 rounded-full shadow-sm text-red-500 z-30 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+      {/* Hiển thị icon cho hàm nếu có */}
+      {connection.function && !showContextMenu && (
+        <div
+          className="absolute bg-purple-50 p-1 rounded-full shadow-sm text-purple-500 z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
           style={{ 
-            left: `${midX + 20}px`, 
-            top: `${midY - 20}px` 
+            left: `${midX + (connection.action ? 40 : 0)}px`, 
+            top: `${midY}px` 
           }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDeleteConnection(connection.id);
-          }}
+          onClick={handleLineClick}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
           </svg>
         </div>
       )}
@@ -368,6 +472,29 @@ export const WorkflowViewer: React.FC<WorkflowViewerProps> = ({ nodes: initialNo
   // Lấy kết nối đang được chọn
   const selectedConnection = selectedConnectionId ? 
     connections.find(conn => conn.id === selectedConnectionId) : null;
+    
+  // Effect để lắng nghe sự kiện cập nhật kết nối từ các component con
+  useEffect(() => {
+    const handleUpdateConnection = (e: Event) => {
+      const customEvent = e as CustomEvent<{ connectionId: string; function: string }>;
+      const { connectionId, function: functionCode } = customEvent.detail;
+      
+      // Cập nhật kết nối với hàm mới
+      setConnections(prevConnections => 
+        prevConnections.map(conn => 
+          conn.id === connectionId ? { ...conn, function: functionCode } : conn
+        )
+      );
+    };
+    
+    // Đăng ký lắng nghe sự kiện
+    window.addEventListener('workflow:update-connection', handleUpdateConnection);
+    
+    // Hủy đăng ký khi component unmount
+    return () => {
+      window.removeEventListener('workflow:update-connection', handleUpdateConnection);
+    };
+  }, []);
   
   // Xử lý khi bắt đầu kéo node
   const handleDragStart = (e: React.DragEvent, nodeId: string) => {
@@ -719,7 +846,7 @@ export const WorkflowViewer: React.FC<WorkflowViewerProps> = ({ nodes: initialNo
       
       {/* Panel chỉnh sửa kết nối */}
       {selectedConnection && showConnectionEditor && (
-        <div className="absolute bottom-4 right-4 w-64 bg-white rounded-lg shadow-lg z-30 border border-gray-200">
+        <div className="absolute bottom-4 right-4 w-96 bg-white rounded-lg shadow-lg z-30 border border-gray-200 max-h-[500px] overflow-auto">
           <div className="p-3 border-b border-gray-200 flex justify-between items-center">
             <h3 className="font-medium">Chỉnh sửa kết nối</h3>
             <button 
@@ -742,58 +869,124 @@ export const WorkflowViewer: React.FC<WorkflowViewerProps> = ({ nodes: initialNo
               <p className="text-sm font-medium text-gray-700 mb-2">Đến: {nodes.find(n => n.id === selectedConnection.targetId)?.title}</p>
             </div>
             
-            <div className="mb-3">
-              <label className="text-sm font-medium text-gray-700 block mb-2">
-                Hành động:
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <Button 
-                  size="sm" 
-                  variant={selectedConnection.action === 'proceed' ? 'default' : 'outline'}
-                  className="bg-green-500 hover:bg-green-600 border-green-500"
-                  onClick={() => handleActionChange('proceed')}
-                >
-                  Tiếp tục
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant={selectedConnection.action === 'validate' ? 'default' : 'outline'}
-                  className="bg-blue-500 hover:bg-blue-600 border-blue-500"
-                  onClick={() => handleActionChange('validate')}
-                >
-                  Kiểm duyệt
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant={selectedConnection.action === 'notify' ? 'default' : 'outline'}
-                  className="bg-amber-500 hover:bg-amber-600 border-amber-500"
-                  onClick={() => handleActionChange('notify')}
-                >
-                  Thông báo
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant={selectedConnection.action === 'approve' ? 'default' : 'outline'}
-                  className="bg-emerald-500 hover:bg-emerald-600 border-emerald-500"
-                  onClick={() => handleActionChange('approve')}
-                >
-                  Phê duyệt
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant={selectedConnection.action === 'reject' ? 'default' : 'outline'}
-                  className="bg-red-500 hover:bg-red-600 border-red-500"
-                  onClick={() => handleActionChange('reject')}
-                >
-                  Từ chối
-                </Button>
-              </div>
-            </div>
+            <Tabs defaultValue="action">
+              <TabsList className="w-full grid grid-cols-2">
+                <TabsTrigger value="action">Hành động</TabsTrigger>
+                <TabsTrigger value="function">Hàm xử lý</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="action" className="mt-3">
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <Button 
+                    size="sm" 
+                    variant={selectedConnection.action === 'proceed' ? 'default' : 'outline'}
+                    className="bg-green-500 hover:bg-green-600 border-green-500"
+                    onClick={() => handleActionChange('proceed')}
+                  >
+                    Tiếp tục
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={selectedConnection.action === 'validate' ? 'default' : 'outline'}
+                    className="bg-blue-500 hover:bg-blue-600 border-blue-500"
+                    onClick={() => handleActionChange('validate')}
+                  >
+                    Kiểm duyệt
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={selectedConnection.action === 'notify' ? 'default' : 'outline'}
+                    className="bg-amber-500 hover:bg-amber-600 border-amber-500"
+                    onClick={() => handleActionChange('notify')}
+                  >
+                    Thông báo
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={selectedConnection.action === 'approve' ? 'default' : 'outline'}
+                    className="bg-emerald-500 hover:bg-emerald-600 border-emerald-500"
+                    onClick={() => handleActionChange('approve')}
+                  >
+                    Phê duyệt
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={selectedConnection.action === 'reject' ? 'default' : 'outline'}
+                    className="bg-red-500 hover:bg-red-600 border-red-500"
+                    onClick={() => handleActionChange('reject')}
+                  >
+                    Từ chối
+                  </Button>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="function" className="mt-3">
+                {selectedConnection.function ? (
+                  <div className="mb-3">
+                    <label className="text-sm font-medium text-gray-700 block mb-2">
+                      Mã hàm xử lý:
+                    </label>
+                    <div className="relative">
+                      <textarea 
+                        value={selectedConnection.function}
+                        onChange={(e) => {
+                          // Cập nhật function cho kết nối
+                          setConnections(prevConnections => 
+                            prevConnections.map(conn => 
+                              conn.id === selectedConnectionId 
+                                ? { ...conn, function: e.target.value } 
+                                : conn
+                            )
+                          );
+                        }}
+                        className="w-full h-48 p-2 text-xs font-mono bg-gray-50 border border-gray-300 rounded resize-none"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Hàm này sẽ được gọi khi quá trình di chuyển đến node tiếp theo.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mb-3 text-center">
+                    <p className="text-sm text-gray-600 mb-2">Chưa có hàm xử lý nào được thêm</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        // Thêm một hàm mẫu cho kết nối
+                        const sourceNode = nodes.find(n => n.id === selectedConnection.sourceId);
+                        const targetNode = nodes.find(n => n.id === selectedConnection.targetId);
+                        const simpleFunctionTemplate = `function handleTransition(data) {
+  console.log('Chuyển từ ${sourceNode?.title} đến ${targetNode?.title}', data);
+  return data;
+}`;
+                        
+                        // Cập nhật function cho kết nối
+                        setConnections(prevConnections => 
+                          prevConnections.map(conn => 
+                            conn.id === selectedConnectionId 
+                              ? { ...conn, function: simpleFunctionTemplate } 
+                              : conn
+                          )
+                        );
+                      }}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                      </svg>
+                      Thêm hàm xử lý
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
             
             <Button 
               size="sm" 
               variant="destructive"
-              className="w-full"
+              className="w-full mt-3"
               onClick={() => handleDeleteConnection(selectedConnection.id)}
             >
               Xóa kết nối
