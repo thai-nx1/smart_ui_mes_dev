@@ -245,6 +245,56 @@ const WorkflowConnection: React.FC<{
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
   
+  // Tính toán các điểm cho đường cong Bezier
+  const bezierOffset = 30; // Độ cong của đường
+  
+  // Tạo điểm điều khiển cho đường cong
+  const controlPoint1X = startX + dx / 3;
+  const controlPoint1Y = startY + dy / 3 - bezierOffset;
+  const controlPoint2X = startX + (2 * dx) / 3;
+  const controlPoint2Y = startY + (2 * dy) / 3 + bezierOffset;
+  
+  // Tạo điểm để đặt mũi tên giữa đường nối
+  const midPointPath = `M ${startX} ${startY} C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${endX} ${endY}`;
+  
+  // Tính toán 1/3 và 2/3 chiều dài của đường path để đặt mũi tên ở giữa
+  const point1_3Percent = 0.33; // 1/3 chiều dài đường path
+  const point2_3Percent = 0.66; // 2/3 chiều dài đường path
+  
+  // Hàm để lấy tọa độ từ path dựa vào phần trăm chiều dài
+  const getPointAtPercentOfPath = (pathElement: SVGPathElement, percent: number) => {
+    const pathLength = pathElement.getTotalLength();
+    const point = pathElement.getPointAtLength(pathLength * percent);
+    return point;
+  };
+  
+  // Reference đến SVG path để tính toán các điểm
+  const pathRef = useRef<SVGPathElement>(null);
+  
+  // State để lưu tọa độ của các điểm mũi tên ở giữa đường path
+  const [midArrowPoint, setMidArrowPoint] = useState<{ x: number, y: number, angle: number } | null>(null);
+  
+  // Effect để tính toán vị trí của mũi tên giữa đường khi path thay đổi
+  useEffect(() => {
+    // Tính toán vị trí mũi tên sau khi DOM đã render
+    if (pathRef.current) {
+      const pathElement = pathRef.current;
+      const point = getPointAtPercentOfPath(pathElement, 0.5); // Lấy điểm giữa đường path
+      
+      // Lấy góc tiếp tuyến tại điểm đó
+      const pathLength = pathElement.getTotalLength();
+      const pointBefore = pathElement.getPointAtLength(pathLength * 0.5 - 0.1);
+      const pointAfter = pathElement.getPointAtLength(pathLength * 0.5 + 0.1);
+      
+      // Tính góc tiếp tuyến
+      const dx = pointAfter.x - pointBefore.x;
+      const dy = pointAfter.y - pointBefore.y;
+      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+      
+      setMidArrowPoint({ x: point.x, y: point.y, angle });
+    }
+  }, [startX, startY, endX, endY]);
+  
   // Lấy màu hành động
   const actionColor = getActionColor(connection.action);
   
@@ -314,23 +364,58 @@ const WorkflowConnection: React.FC<{
           >
             <polygon points="0 0, 10 3.5, 0 7" fill={actionColor} />
           </marker>
+          
+          <marker
+            id={`mid-arrowhead-${connection.id}`}
+            markerWidth="8"
+            markerHeight="6"
+            refX="8"
+            refY="3"
+            orient="auto"
+          >
+            <polygon points="0 0, 8 3, 0 6" fill={actionColor} />
+          </marker>
         </defs>
-        <line
-          x1={startX}
-          y1={startY}
-          x2={endX}
-          y2={endY}
+        
+        {/* Đường cong Bezier tham chiếu - ẩn, chỉ dùng để tính toán */}
+        <path
+          ref={pathRef}
+          d={midPointPath}
+          stroke="transparent"
+          fill="none"
+          style={{ visibility: 'hidden' }}
+        />
+        
+        {/* Đường nối chính */}
+        <path
+          d={midPointPath}
           stroke={actionColor}
           strokeWidth={isSelected ? "3" : "2"}
           strokeDasharray={connection.action ? "none" : "5,5"}
+          fill="none"
           markerEnd={`url(#arrowhead-${connection.id})`}
         />
         
+        {/* Mũi tên ở giữa đường path */}
+        {midArrowPoint && (
+          <g transform={`translate(${midArrowPoint.x}, ${midArrowPoint.y}) rotate(${midArrowPoint.angle})`}>
+            <line
+              x1="-10"
+              y1="0"
+              x2="0"
+              y2="0"
+              stroke={actionColor}
+              strokeWidth={isSelected ? "3" : "2"}
+              markerEnd={`url(#mid-arrowhead-${connection.id})`}
+            />
+          </g>
+        )}
+        
         {/* Điểm điều khiển ở giữa cho kết nối đang được chọn */}
-        {isSelected && (
+        {isSelected && midArrowPoint && (
           <circle
-            cx={midX}
-            cy={midY}
+            cx={midArrowPoint.x}
+            cy={midArrowPoint.y}
             r="6"
             fill="white"
             stroke={actionColor}
@@ -403,12 +488,12 @@ const WorkflowConnection: React.FC<{
       )}
       
       {/* Hiển thị hành động của kết nối ở giữa đường nối */}
-      {connection.action && !showContextMenu && (
+      {connection.action && !showContextMenu && midArrowPoint && (
         <div 
           className="absolute bg-white px-2 py-1 rounded-md border shadow-sm text-xs font-medium z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
           style={{ 
-            left: `${midX}px`, 
-            top: `${midY}px`,
+            left: `${midArrowPoint.x}px`, 
+            top: `${midArrowPoint.y - 20}px`, // Hiển thị ở trên mũi tên
             borderColor: actionColor,
             color: actionColor
           }}
@@ -419,12 +504,12 @@ const WorkflowConnection: React.FC<{
       )}
       
       {/* Hiển thị icon cho hàm nếu có */}
-      {connection.function && !showContextMenu && (
+      {connection.function && !showContextMenu && midArrowPoint && (
         <div
           className="absolute bg-purple-50 p-1 rounded-full shadow-sm text-purple-500 z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
           style={{ 
-            left: `${midX + (connection.action ? 40 : 0)}px`, 
-            top: `${midY}px` 
+            left: `${midArrowPoint.x + 25}px`, // Hiển thị bên phải mũi tên
+            top: `${midArrowPoint.y - 10}px` 
           }}
           onClick={handleLineClick}
         >
