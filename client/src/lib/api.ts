@@ -1,12 +1,15 @@
 import { GraphQLResponse, FormsListResponse, FormDetailsResponse, FormSubmission } from './types';
 
 const GRAPHQL_ENDPOINT = 'https://delicate-herring-66.hasura.app/v1/graphql';
+console.log('Using GraphQL endpoint:', GRAPHQL_ENDPOINT);
 
 /**
  * Execute a GraphQL query
  */
 export async function executeGraphQLQuery<T>(query: string, variables?: Record<string, any>): Promise<T> {
   try {
+    console.log('Executing GraphQL query with variables:', variables);
+    
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -23,8 +26,10 @@ export async function executeGraphQLQuery<T>(query: string, variables?: Record<s
     }
 
     const result = await response.json();
+    console.log('GraphQL result:', result);
 
     if (result.errors) {
+      console.error('GraphQL errors:', result.errors);
       throw new Error(result.errors.map((e: any) => e.message).join('\n'));
     }
 

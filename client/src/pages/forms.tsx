@@ -85,6 +85,7 @@ export default function FormsPage() {
 
   // Handle form selection
   const handleSelectForm = (formId: string) => {
+    console.log("Selected form ID:", formId);
     setSelectedFormId(formId);
   };
 
@@ -162,11 +163,11 @@ export default function FormsPage() {
                         <div className="flex items-center justify-between">
                           <div>
                             <h3 className="text-sm font-medium text-gray-900">{form.name}</h3>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <div className="mt-1">
                               <Badge variant="status">
                                 {form.status}
                               </Badge>
-                            </p>
+                            </div>
                           </div>
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>
