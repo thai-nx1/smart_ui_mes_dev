@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Định nghĩa các trạng thái của node
 type NodeStatus = 'todo' | 'doing' | 'done';
+
+// Định nghĩa các hình dạng của node
+type NodeShape = 'rectangle' | 'rounded' | 'diamond' | 'ellipse' | 'hexagon';
+
+// Định nghĩa các màu sắc của node
+type NodeColor = 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'red';
 
 // Định nghĩa dữ liệu cho node
 interface WorkflowNode {
@@ -11,6 +21,8 @@ interface WorkflowNode {
   status: NodeStatus;
   x: number;
   y: number;
+  shape?: NodeShape;
+  color?: NodeColor;
 }
 
 // Định nghĩa dữ liệu cho liên kết giữa các node
