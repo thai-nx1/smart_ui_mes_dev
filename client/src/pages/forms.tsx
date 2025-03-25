@@ -44,7 +44,7 @@ export default function FormsPage() {
     queryFn: async () => {
       if (!selectedFormId) return null;
       try {
-        console.log('Fetching fields for form ID:', selectedFormId);
+        console.log('Fetching all fields for display');
         const response = await fetchFormFields(selectedFormId);
         console.log('Fields response:', response);
         
@@ -53,6 +53,8 @@ export default function FormsPage() {
           return [];
         }
         
+        // Vì API không hỗ trợ lọc theo form_id, nên chúng ta sẽ hiển thị tất cả fields
+        // Trong thực tế, bạn sẽ cần implement API phía backend để hỗ trợ lọc theo form_id
         return response.data.core_core_dynamic_fields;
       } catch (error) {
         console.error('Error fetching fields:', error);

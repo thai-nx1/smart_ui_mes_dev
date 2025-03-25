@@ -63,43 +63,23 @@ export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLRespons
  * Fetch form fields by form ID
  */
 export async function fetchFormFields(formId: string): Promise<GraphQLResponse<FormDetailsResponse>> {
-  // Fetch all fields for now, but we could filter by form_id if the API supports it
+  // Dựa vào phản hồi API, không có relation giữa fields và forms qua form_id
+  // Lấy tất cả fields và xử lý filter ở phía client
   const query = `
-    query GetFormFields($formId: uuid!) {
-      core_core_dynamic_fields(where: { form_id: { _eq: $formId } }) {
+    query GetFormFields {
+      core_core_dynamic_fields {
         id
         name
         field_type
         description
         status
         __typename
-        options
       }
     }
   `;
 
-  // If the API doesn't support filtering by form_id, we'll fall back to all fields
-  // and handle the form_id filtering on the client side
-  try {
-    return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query, { formId });
-  } catch (error) {
-    console.error("Error with form_id filter, falling back to all fields:", error);
-    // Fallback query without form_id filter
-    const fallbackQuery = `
-      query GetFormFields {
-        core_core_dynamic_fields {
-          id
-          name
-          field_type
-          description
-          status
-          __typename
-          options
-        }
-      }
-    `;
-    return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(fallbackQuery);
-  }
+  console.log("Fetching all fields for form display");
+  return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query);
 }
 
 /**
