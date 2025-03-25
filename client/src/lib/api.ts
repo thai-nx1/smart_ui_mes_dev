@@ -63,10 +63,9 @@ export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLRespons
  * Fetch form fields by form ID
  */
 export async function fetchFormFields(formId: string): Promise<GraphQLResponse<FormDetailsResponse>> {
-  // Dựa vào phản hồi API, không có relation giữa fields và forms qua form_id
-  // Lấy tất cả fields và xử lý filter ở phía client
+  // Dựa vào thông tin mới, chúng ta có thể truyền biến id vào để lấy chi tiết form
   const query = `
-    query GetFormFields {
+    query GetFormFields($id: uuid!) {
       core_core_dynamic_fields {
         id
         name
@@ -78,8 +77,8 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
     }
   `;
 
-  console.log("Fetching all fields for form display");
-  return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query);
+  console.log("Fetching fields with form ID:", formId);
+  return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query, { id: formId });
 }
 
 /**
