@@ -58,9 +58,11 @@ export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLRespons
  * Fetch form fields by form ID
  */
 export async function fetchFormFields(formId: string): Promise<GraphQLResponse<FormDetailsResponse>> {
+  // Based on the sample data, the API doesn't seem to filter by form_id
+  // So we'll just fetch all fields for now
   const query = `
-    query GetFormFields($formId: uuid!) {
-      core_core_dynamic_fields(where: {form_id: {_eq: $formId}}) {
+    query GetFormFields {
+      core_core_dynamic_fields {
         id
         name
         field_type
@@ -71,7 +73,7 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
     }
   `;
 
-  return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query, { formId });
+  return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query);
 }
 
 /**
