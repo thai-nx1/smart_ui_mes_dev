@@ -1,11 +1,14 @@
 import React from 'react';
 import { Link } from 'wouter';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface FormLayoutProps {
   children: React.ReactNode;
 }
 
 export function FormLayout({ children }: FormLayoutProps) {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-white shadow-sm">
@@ -21,7 +24,9 @@ export function FormLayout({ children }: FormLayoutProps) {
                 </svg>
               </div>
               <Link href="/">
-                <h1 className="ml-3 text-xl font-semibold text-gray-800 cursor-pointer">Hệ thống Quản lý Form Động</h1>
+                <h1 className={`ml-3 ${isMobile ? 'text-base' : 'text-xl'} font-semibold text-gray-800 cursor-pointer`}>
+                  {isMobile ? 'Form Động' : 'Hệ thống Quản lý Form Động'}
+                </h1>
               </Link>
             </div>
             <div>
@@ -33,7 +38,7 @@ export function FormLayout({ children }: FormLayoutProps) {
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                  Đăng nhập
+                  {isMobile ? '' : 'Đăng nhập'}
                 </button>
               </Link>
             </div>
@@ -42,15 +47,15 @@ export function FormLayout({ children }: FormLayoutProps) {
       </header>
 
       <main className="flex-grow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-2 py-3' : 'px-4 sm:px-6 lg:px-8 py-6'}`}>
           {children}
         </div>
       </main>
 
       <footer className="bg-white border-t border-gray-200">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className={`max-w-7xl mx-auto ${isMobile ? 'py-3' : 'py-6'} px-4 sm:px-6 lg:px-8`}>
           <p className="text-sm text-gray-500 text-center">
-            © {new Date().getFullYear()} Hệ thống Quản lý Form Động. Tất cả các quyền được bảo lưu.
+            © {new Date().getFullYear()} {isMobile ? 'Form Động' : 'Hệ thống Quản lý Form Động'}
           </p>
         </div>
       </footer>
