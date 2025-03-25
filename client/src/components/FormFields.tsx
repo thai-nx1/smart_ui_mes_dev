@@ -111,8 +111,23 @@ export function FormFields({ formId, fields }: FormFieldsProps) {
       
       fields.forEach(field => {
         if (formState[field.id] !== undefined) {
+          // Chuyển đổi dữ liệu tùy theo loại trường
+          let fieldValue = formState[field.id];
+          
+          // Chuyển đổi giá trị theo loại trường
+          if (field.field_type === 'NUMBER' && fieldValue !== undefined) {
+            // Chuyển chuỗi sang số
+            fieldValue = Number(fieldValue);
+          } else if (field.field_type === 'DATE' && fieldValue) {
+            // Chuyển ngày sang timestamp (milliseconds)
+            if (typeof fieldValue === 'string' && fieldValue.includes('T')) {
+              const date = new Date(fieldValue);
+              fieldValue = date.getTime(); // Chuyển thành timestamp
+            }
+          }
+          
           enrichedFormData[field.id] = {
-            value: formState[field.id],
+            value: fieldValue,
             name: field.name,
             field_type: field.field_type
           };
