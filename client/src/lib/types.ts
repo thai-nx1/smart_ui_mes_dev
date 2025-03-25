@@ -8,7 +8,23 @@ export interface FormsListResponse {
 }
 
 export interface FormDetailsResponse {
-  core_core_dynamic_fields: Field[];
+  core_core_dynamic_forms_by_pk: {
+    id: string;
+    name: string;
+    description: string;
+    organization_id: string;
+    status: string;
+    core_dynamic_form_fields: FormField[];
+    __typename: string;
+  };
+}
+
+export interface FormField {
+  id: string;
+  dynamic_field_id: string;
+  dynamic_form_id: string;
+  core_dynamic_field: Field;
+  __typename: string;
 }
 
 export interface Form {

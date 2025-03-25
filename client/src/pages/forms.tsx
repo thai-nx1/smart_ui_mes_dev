@@ -48,13 +48,17 @@ export default function FormsPage() {
         const response = await fetchFormFields(selectedFormId);
         console.log('Fields response:', response);
         
-        if (!response.data.core_core_dynamic_fields) {
+        if (!response.data.core_core_dynamic_forms_by_pk || 
+            !response.data.core_core_dynamic_forms_by_pk.core_dynamic_form_fields) {
           console.warn('No fields found in response');
           return [];
         }
         
-        // Lấy dữ liệu từ response API
-        const fields = response.data.core_core_dynamic_fields;
+        // Trích xuất fields từ cấu trúc dữ liệu mới
+        const formFields = response.data.core_core_dynamic_forms_by_pk.core_dynamic_form_fields;
+        
+        // Chuyển đổi FormField thành Field để hiển thị
+        const fields = formFields.map(formField => formField.core_dynamic_field);
         
         // Log kết quả để debug
         console.log(`Received ${fields.length} fields for form ID ${selectedFormId}`);

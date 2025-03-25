@@ -63,21 +63,37 @@ export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLRespons
  * Fetch form fields by form ID
  */
 export async function fetchFormFields(formId: string): Promise<GraphQLResponse<FormDetailsResponse>> {
-  // Dựa vào thông tin mới, chúng ta có thể truyền biến id vào để lấy chi tiết form
+  // Sử dụng đúng format truy vấn GraphQL từ mẫu được cung cấp
   const query = `
-    query GetFormFields($id: uuid!) {
-      core_core_dynamic_fields {
+    query FormDetail($id: uuid!) {
+      core_core_dynamic_forms_by_pk(id: $id) {
         id
         name
-        field_type
         description
+        organization_id
         status
+        core_dynamic_form_fields {
+          id
+          dynamic_field_id
+          dynamic_form_id
+          core_dynamic_field {
+            id
+            name
+            description
+            field_type
+            configuration
+            organization_id
+            status
+            __typename
+          }
+          __typename
+        }
         __typename
       }
     }
   `;
 
-  console.log("Fetching fields with form ID:", formId);
+  console.log("Fetching form details with ID:", formId);
   return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query, { id: formId });
 }
 
