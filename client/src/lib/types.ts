@@ -53,9 +53,15 @@ export interface FieldOption {
   value: string;
 }
 
+export interface FieldSubmission {
+  value: FieldValue;
+  name: string;
+  field_type: FieldType;
+}
+
 export interface FormSubmission {
   formId: string;
-  data: Record<string, any>;
+  data: Record<string, FieldSubmission>;
 }
 
 // Field value types for form state

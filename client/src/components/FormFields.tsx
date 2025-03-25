@@ -105,9 +105,25 @@ export function FormFields({ formId, fields }: FormFieldsProps) {
     setIsSubmitting(true);
     
     try {
+      // Tạo đối tượng dữ liệu cho form submission
+      // Cần bao gồm thông tin tên và loại field cho mỗi field
+      const enrichedFormData: Record<string, any> = {};
+      
+      fields.forEach(field => {
+        if (formState[field.id] !== undefined) {
+          enrichedFormData[field.id] = {
+            value: formState[field.id],
+            name: field.name,
+            field_type: field.field_type
+          };
+        }
+      });
+      
+      console.log("Submitting form with enriched data:", enrichedFormData);
+      
       await submitFormData({
         formId,
-        data: formState
+        data: enrichedFormData
       });
       
       // Reset form after successful submission

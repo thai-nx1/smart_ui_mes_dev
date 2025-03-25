@@ -98,10 +98,54 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
 }
 
 /**
- * Submit form data
+ * Submit form data using GraphQL mutation
  */
-export async function submitFormData(submission: FormSubmission): Promise<Response> {
-  return apiRequest('POST', '/api/form-submissions', submission);
+export async function submitFormData(submission: FormSubmission): Promise<GraphQLResponse<any>> {
+  // Cấu trúc mutation theo mẫu được cung cấp
+  const query = `
+    mutation SubmissionForm($formId: uuid!, $userId: uuid!, $organizationId: uuid!, $submissionData: jsonb!, $workflowId: uuid!) {
+      insert_core_core_submission_forms(objects: {
+        form_id: $formId, 
+        user_id: $userId, 
+        organization_id: $organizationId, 
+        submission_data: $submissionData, 
+        workflow_id: $workflowId
+      }) {
+        affected_rows
+        returning {
+          id
+          code
+          form_id
+          organization_id
+          user_id
+          workflow_id
+          submission_data
+        }
+      }
+    }
+  `;
+
+  // Biến đổi dữ liệu cho phù hợp với định dạng mutation
+  const submissionFields = Object.entries(submission.data).map(([fieldId, fieldData]) => {
+    // fieldData giờ đây là một đối tượng có chứa value, name, và field_type
+    return {
+      id: fieldId,
+      name: fieldData.name,
+      field_type: fieldData.field_type,
+      value: fieldData.value
+    };
+  });
+
+  const variables = {
+    formId: submission.formId,
+    userId: "5c065b51-3862-4004-ae96-ca23245aa21e", // Sử dụng ID cố định từ mẫu
+    organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // Sử dụng ID cố định từ mẫu
+    submissionData: submissionFields,
+    workflowId: "add1fe74-3c9a-4b4c-a43a-b9a1d4c5c5b2" // Sử dụng ID cố định từ mẫu
+  };
+
+  console.log("Submitting form with data:", variables);
+  return executeGraphQLQuery(query, variables);
 }
 
 /**
