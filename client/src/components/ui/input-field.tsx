@@ -236,22 +236,79 @@ export function InputField({
         );
       
       case "CACHE":
+        const CACHE_KEY = `form_field_${id}`;
+        
+        // Load from localStorage when component mounts
+        useEffect(() => {
+          try {
+            const savedValue = localStorage.getItem(CACHE_KEY);
+            if (savedValue && !value) {
+              onChange(JSON.parse(savedValue));
+            }
+          } catch (error) {
+            console.error("Error loading cached value:", error);
+          }
+        }, []);
+        
+        // Save to localStorage when value changes
+        useEffect(() => {
+          if (value) {
+            try {
+              localStorage.setItem(CACHE_KEY, JSON.stringify(value));
+            } catch (error) {
+              console.error("Error saving value to cache:", error);
+            }
+          }
+        }, [value]);
+        
+        // Handle cache input
+        const handleCacheChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const newValue = e.target.value;
+          onChange({
+            value: newValue,
+            cached: true,
+            timestamp: new Date().toISOString()
+          });
+        };
+        
         return (
           <div className="grid gap-2">
-            <Alert className="bg-emerald-50">
+            <Alert className="bg-emerald-50 border border-emerald-200">
               <DatabaseIcon className="h-4 w-4 text-emerald-600" />
               <AlertDescription className="text-emerald-800">
-                Trường này sẽ lưu cache để làm việc offline
+                Trường này được lưu cache và hoạt động khi offline
               </AlertDescription>
             </Alert>
-            <Input
-              id={id}
-              value={value || ""}
-              onChange={handleChange}
-              className={cn(error && "border-red-500")}
-              placeholder="Dữ liệu sẽ được lưu cache"
-              required={required}
-            />
+            
+            <div className="relative">
+              <Input
+                id={id}
+                value={value?.value || ""}
+                onChange={handleCacheChange}
+                className={cn(
+                  error && "border-red-500",
+                  "pr-10"
+                )}
+                placeholder="Dữ liệu sẽ được lưu cache"
+                required={required}
+              />
+              {value?.cached && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500" title="Đã lưu cache"></div>
+                </div>
+              )}
+            </div>
+            
+            {value?.cached && (
+              <div className="text-xs text-emerald-600 flex items-center gap-1">
+                <CheckIcon className="h-3 w-3" />
+                Đã lưu cục bộ lúc {new Date(value.timestamp).toLocaleTimeString('vi-VN')}
+              </div>
+            )}
+            
+            <div className="text-xs text-gray-500 mt-1">
+              Dữ liệu sẽ tự động được khôi phục khi trang được tải lại, ngay cả khi không có kết nối mạng.
+            </div>
           </div>
         );
       
@@ -666,30 +723,205 @@ export function InputField({
         );
       
       case "IMPORT":
+        // State cho file input
+        const [importedText, setImportedText] = useState<string | null>(null);
+        const [importedFileName, setImportedFileName] = useState<string | null>(null);
+        const fileInputRef = useRef<HTMLInputElement | null>(null);
+        
+        // Xử lý khi chọn file
+        const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const files = e.target.files;
+          if (!files || files.length === 0) return;
+          
+          const file = files[0];
+          setImportedFileName(file.name);
+          
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              const text = event.target.result as string;
+              setImportedText(text);
+              onChange({
+                fileName: file.name,
+                content: text,
+                type: file.type,
+                timestamp: new Date().toISOString()
+              });
+            }
+          };
+          reader.readAsText(file);
+        };
+        
         return (
           <div className="grid gap-2">
             <Button 
               variant="outline"
               className="w-full py-6"
               type="button"
+              onClick={() => openModal("Nhập file", (
+                <div className="flex flex-col items-center gap-5 py-4">
+                  <div className="w-full max-w-sm border-2 border-lime-200 rounded-md flex flex-col items-center justify-center p-8 bg-lime-50">
+                    <ImportIcon className="h-16 w-16 text-lime-600 mb-4" />
+                    
+                    {importedText || (value?.content) ? (
+                      <div className="bg-white p-4 rounded-md w-full max-h-60 overflow-y-auto border border-lime-200">
+                        <p className="font-medium text-sm text-lime-800 mb-2">
+                          {importedFileName || value?.fileName}
+                        </p>
+                        <pre className="text-xs text-gray-700 whitespace-pre-wrap">
+                          {importedText || value?.content}
+                        </pre>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <p className="text-lime-700 mb-2">Chọn file để nhập</p>
+                        <p className="text-sm text-lime-600">Hỗ trợ file .txt, .csv, .json</p>
+                      </div>
+                    )}
+                    
+                    <input 
+                      type="file"
+                      className="hidden"
+                      accept=".txt,.csv,.json,.md"
+                      onChange={handleFileImport}
+                      ref={fileInputRef}
+                    />
+                  </div>
+                  
+                  <div className="flex gap-2 w-full">
+                    {importedText || value?.content ? (
+                      <>
+                        <Button
+                          onClick={() => {
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = '';
+                              fileInputRef.current.click();
+                            }
+                          }}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Nhập file khác
+                        </Button>
+                        <Button
+                          onClick={() => setIsModalOpen(false)}
+                          className="flex-1"
+                        >
+                          Xác nhận
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          if (fileInputRef.current) fileInputRef.current.click();
+                        }}
+                        className="w-full"
+                      >
+                        Chọn file
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
             >
               <ImportIcon className="h-6 w-6 mr-2 text-lime-600" />
-              Nhập dữ liệu
+              {value?.fileName ? (
+                <span>Đã nhập: {value.fileName}</span>
+              ) : (
+                "Nhấn để nhập dữ liệu"
+              )}
             </Button>
+            
+            {value?.content && (
+              <div className="p-3 bg-lime-50 rounded-md mt-2 text-sm">
+                <p className="font-medium text-lime-800">File đã nhập: {value.fileName}</p>
+                {value.content.length > 100 ? (
+                  <p className="text-xs text-gray-600 mt-1">{value.content.substring(0, 100)}...</p>
+                ) : (
+                  <p className="text-xs text-gray-600 mt-1">{value.content}</p>
+                )}
+              </div>
+            )}
           </div>
         );
       
       case "EXPORT":
+        // Chuyển đổi form hiện tại sang PDF
+        const exportToPdf = async () => {
+          try {
+            // Import html2pdf.js dynamically
+            const html2pdf = (await import('html2pdf.js')).default;
+            
+            // Lấy element cần in
+            const element = document.querySelector('.form-content') || document.body;
+            
+            // Tùy chọn cho PDF
+            const opt = {
+              margin: 10,
+              filename: `form_export_${new Date().toISOString().split('T')[0]}.pdf`,
+              image: { type: 'jpeg', quality: 0.98 },
+              html2canvas: { scale: 2 },
+              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Hiển thị thông báo
+            toast({
+              title: "Đang tạo PDF",
+              description: "Vui lòng đợi trong giây lát...",
+            });
+            
+            // Tạo và tải PDF
+            html2pdf().from(element).set(opt).save().then(() => {
+              // Cập nhật giá trị
+              onChange({
+                exported: true,
+                fileName: opt.filename,
+                timestamp: new Date().toISOString()
+              });
+              
+              // Thông báo thành công
+              toast({
+                title: "Xuất file thành công",
+                description: `Đã tạo file ${opt.filename}`,
+                variant: "default"
+              });
+            });
+          } catch (error) {
+            console.error("Lỗi khi xuất PDF:", error);
+            toast({
+              title: "Lỗi xuất file",
+              description: "Không thể tạo file PDF. Vui lòng thử lại sau.",
+              variant: "destructive"
+            });
+          }
+        };
+        
         return (
           <div className="grid gap-2">
             <Button 
               variant="outline"
               className="w-full py-6"
               type="button"
+              onClick={exportToPdf}
             >
               <Download className="h-6 w-6 mr-2 text-teal-600" />
-              Xuất dữ liệu
+              {value?.exported ? (
+                <span>Xuất lại dữ liệu</span>
+              ) : (
+                "Xuất dữ liệu sang PDF"
+              )}
             </Button>
+            
+            {value?.exported && (
+              <div className="p-3 bg-teal-50 rounded-md mt-2 text-sm">
+                <p className="font-medium text-teal-800">
+                  Đã xuất file: {value.fileName}
+                </p>
+                <p className="text-xs text-teal-600 mt-1">
+                  Thời gian: {new Date(value.timestamp).toLocaleString('vi-VN')}
+                </p>
+              </div>
+            )}
           </div>
         );
       
