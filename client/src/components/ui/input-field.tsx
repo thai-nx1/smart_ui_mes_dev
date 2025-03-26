@@ -65,6 +65,13 @@ export function InputField({
     onChange(e.target.value);
   };
 
+  // Util function for formatting time (shared by audio and screen recording)
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // Refs cho video elements
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -360,11 +367,7 @@ export function InputField({
           }
         };
 
-        const formatTime = (seconds: number) => {
-          const mins = Math.floor(seconds / 60);
-          const secs = seconds % 60;
-          return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        };
+        // Using the shared formatTime function defined at the top level
 
         return (
           <Button 
@@ -441,7 +444,9 @@ export function InputField({
           >
             <MicIcon className="h-6 w-6 mr-2 text-red-500" />
             {value ? (
-              <span>Ghi âm đã được thu ({value.duration ? formatTime(value.duration) : 'đã ghi'})</span>
+              <span>Ghi âm đã được thu ({value.duration ? 
+                `${Math.floor(value.duration / 60).toString().padStart(2, '0')}:${(value.duration % 60).toString().padStart(2, '0')}`
+                : 'đã ghi'})</span>
             ) : (
               "Nhấn để ghi âm"
             )}
@@ -489,10 +494,7 @@ export function InputField({
           try {
             // Request screen sharing
             const displayMedia = await navigator.mediaDevices.getDisplayMedia({
-              video: { 
-                cursor: "always",
-                displaySurface: "monitor",
-              },
+              video: true,
               audio: true
             });
             
@@ -601,7 +603,7 @@ export function InputField({
                 {isScreenRecording && (
                   <div className="flex items-center gap-2 text-red-500">
                     <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
-                    <div className="text-xl font-mono">{formatTime(screenRecordingTime)}</div>
+                    <div className="text-xl font-mono">{Math.floor(screenRecordingTime / 60).toString().padStart(2, '0')}:{(screenRecordingTime % 60).toString().padStart(2, '0')}</div>
                   </div>
                 )}
                 
@@ -653,7 +655,10 @@ export function InputField({
           >
             <ScreenShareIcon className="h-6 w-6 mr-2 text-orange-500" />
             {value ? (
-              <span>Ghi màn hình đã được thu {value.duration ? `(${formatTime(value.duration)})` : ''}</span>
+              <span>Ghi màn hình đã được thu {value.duration ? 
+                `(${Math.floor(value.duration / 60).toString().padStart(2, '0')}:${(value.duration % 60).toString().padStart(2, '0')})` 
+                : ''}
+              </span>
             ) : (
               "Nhấn để ghi màn hình"
             )}
