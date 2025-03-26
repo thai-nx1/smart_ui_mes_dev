@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FormLayout } from '@/components/FormLayout';
@@ -88,8 +88,25 @@ export default function FormsPage() {
     enabled: !!selectedFormId
   });
   
-  // Trích xuất fields và formFields từ kết quả truy vấn
-  const fieldsData = formData?.fields || [];
+  // Lấy các field từ localStorage (nếu có)
+  const getLocalFields = useCallback((formId: string) => {
+    if (!formId) return [];
+    const storageKey = `local_form_fields_${formId}`;
+    try {
+      const localData = localStorage.getItem(storageKey);
+      if (localData) {
+        return JSON.parse(localData);
+      }
+    } catch (error) {
+      console.error("Error retrieving local fields:", error);
+    }
+    return [];
+  }, []);
+
+  // Trích xuất fields từ kết quả truy vấn và kết hợp với fields từ localStorage
+  const apiFieldsData = formData?.fields || [];
+  const localFieldsData = selectedFormId ? getLocalFields(selectedFormId).map((item: any) => item.core_dynamic_field) : [];
+  const fieldsData = [...apiFieldsData, ...localFieldsData];
 
   // Set the first form as selected when data loads
   useEffect(() => {
@@ -250,78 +267,40 @@ export default function FormsPage() {
       // Lấy các thông tin field đã chọn từ danh sách availableFields
       const selectedFieldsData = availableFields.filter(field => selectedFields.includes(field.id));
       
-      // Phân biệt field có sẵn trong API và field mới được thêm cục bộ
-      const apiFields = selectedFieldsData.filter(field => !field.id.startsWith('xxxxxxxx'));
-      const localFields = selectedFieldsData.filter(field => field.id.startsWith('xxxxxxxx'));
+      // Bây giờ tất cả các fields đều xử lý như local fields (không gửi lên API)
+      const localFields = selectedFieldsData;
       
-      let affectedRows = 0;
+      // Lưu thông tin field vào localStorage để dùng sau này
+      const storageKey = `local_form_fields_${selectedFormId}`;
+      const existingFields = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
-      // Xử lý các field có sẵn trong API (nếu có)
-      if (apiFields.length > 0) {
-        // Tạo các đối tượng form_field để thêm vào thông qua API
-        const formFieldsToAdd = apiFields.map(field => ({
-          dynamic_form_id: selectedFormId,
-          dynamic_field_id: field.id
-        }));
-        
-        // Tạo mutation để thêm trường vào form
-        const mutation = `
-          mutation AddFieldsToForm($objects: [core_core_dynamic_form_fields_insert_input!]!) {
-            insert_core_core_dynamic_form_fields(objects: $objects) {
-              affected_rows
-              returning {
-                id
-                dynamic_field_id
-                dynamic_form_id
-              }
-            }
-          }
-        `;
-        
-        const response = await executeGraphQLQuery<any>(mutation, { objects: formFieldsToAdd });
-        
-        if (response?.data?.insert_core_core_dynamic_form_fields?.affected_rows > 0) {
-          affectedRows += response.data.insert_core_core_dynamic_form_fields.affected_rows;
-        }
-      }
+      // Tạo data để lưu trữ
+      const localFieldsToAdd = localFields.map(field => ({
+        id: createUUID(), // ID cho form_field item
+        dynamic_form_id: selectedFormId,
+        dynamic_field_id: field.id,
+        core_dynamic_field: field
+      }));
       
-      // Xử lý các field mới (local) không có trong API
-      if (localFields.length > 0) {
-        // Lưu thông tin field vào localStorage để dùng sau này
-        const storageKey = `local_form_fields_${selectedFormId}`;
-        const existingFields = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        
-        // Tạo data để lưu trữ
-        const localFieldsToAdd = localFields.map(field => ({
-          id: createUUID(), // ID cho form_field item
-          dynamic_form_id: selectedFormId,
-          dynamic_field_id: field.id,
-          core_dynamic_field: field
-        }));
-        
-        // Kết hợp với dữ liệu đã có và lưu vào localStorage
-        const updatedFields = [...existingFields, ...localFieldsToAdd];
-        localStorage.setItem(storageKey, JSON.stringify(updatedFields));
-        
-        // Cập nhật số lượng field đã thêm
-        affectedRows += localFields.length;
-      }
+      // Kết hợp với dữ liệu đã có và lưu vào localStorage
+      const updatedFields = [...existingFields, ...localFieldsToAdd];
+      localStorage.setItem(storageKey, JSON.stringify(updatedFields));
       
-      // Nếu có field nào được thêm
-      if (affectedRows > 0) {
-        toast({
-          title: 'Thành công',
-          description: `Đã thêm ${affectedRows} trường vào form.`,
-        });
-        
-        // Đóng dialog và cập nhật lại danh sách fields
-        setShowAddFieldDialog(false);
-        
-        // Refresh fields data để hiển thị các trường mới được thêm vào
-        refetchFields();
-      } else {
-        throw new Error('Không thể thêm trường vào form');
-      }
+      toast({
+        title: 'Thành công',
+        description: `Đã thêm ${localFields.length} trường vào form.`,
+      });
+      
+      // Đóng dialog và cập nhật lại danh sách fields
+      setShowAddFieldDialog(false);
+      
+      // Cập nhật dữ liệu fields hiển thị bằng cách đặt lại selectedFormId (gây re-render)
+      const currentFormId = selectedFormId;
+      setSelectedFormId('');
+      setTimeout(() => {
+        setSelectedFormId(currentFormId);
+      }, 100);
+      
     } catch (error) {
       console.error("Error adding fields to form:", error);
       toast({
