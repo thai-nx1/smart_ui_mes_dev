@@ -1004,12 +1004,11 @@ export function InputField({
               // Since we don't have the actual library, we'll simulate a successful scan
               // after a random time period to demonstrate the UI flow
               if (Math.random() < 0.2) { // 20% chance of "finding" a QR code each scan
-                // Tạo dữ liệu QR có format đúng
-                const qrDataValue = "QR_" + Date.now().toString().slice(-6);
+                // Sử dụng chuỗi cố định từ ảnh ví dụ
+                const qrDataValue = "kjhjkhjkhjkhjkhkhh";
                 const qrData = {
                   code: qrDataValue,
-                  format: "QR_CODE",
-                  value: qrDataValue, // Thêm value để đảm bảo đúng cấu trúcalue,
+                  value: qrDataValue,
                   format: "QR_CODE",
                   timestamp: new Date().toISOString()
                 };
