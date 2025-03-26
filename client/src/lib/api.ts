@@ -41,6 +41,101 @@ export async function executeGraphQLQuery<T>(query: string, variables?: Record<s
 }
 
 /**
+ * Tạo mới một trường (field)
+ */
+export async function createField(field: {
+  name: string;
+  field_type: string;
+  description?: string;
+  organization_id: string;
+  status?: string;
+}): Promise<GraphQLResponse<any>> {
+  const query = `
+    mutation CreateField($field: core_core_dynamic_fields_insert_input!) {
+      insert_core_core_dynamic_fields_one(object: $field) {
+        id
+        name
+        field_type
+        description
+        status
+        __typename
+      }
+    }
+  `;
+
+  return executeGraphQLQuery(query, { field });
+}
+
+/**
+ * Cập nhật thông tin trường (field)
+ */
+export async function updateField(
+  fieldId: string, 
+  updates: {
+    name?: string;
+    description?: string;
+    status?: string;
+  }
+): Promise<GraphQLResponse<any>> {
+  const query = `
+    mutation UpdateField($fieldId: uuid!, $updates: core_core_dynamic_fields_set_input!) {
+      update_core_core_dynamic_fields_by_pk(
+        pk_columns: { id: $fieldId }, 
+        _set: $updates
+      ) {
+        id
+        name
+        field_type
+        description
+        status
+        __typename
+      }
+    }
+  `;
+
+  return executeGraphQLQuery(query, { fieldId, updates });
+}
+
+/**
+ * Xóa một trường (field) khỏi một form cụ thể
+ */
+export async function removeFieldFromForm(formFieldId: string): Promise<GraphQLResponse<any>> {
+  const query = `
+    mutation RemoveFieldFromForm($formFieldId: uuid!) {
+      delete_core_core_dynamic_form_fields_by_pk(id: $formFieldId) {
+        id
+        dynamic_field_id
+        dynamic_form_id
+      }
+    }
+  `;
+
+  return executeGraphQLQuery(query, { formFieldId });
+}
+
+/**
+ * Đọc thông tin chi tiết của một trường (field)
+ */
+export async function fetchFieldDetails(fieldId: string): Promise<GraphQLResponse<any>> {
+  const query = `
+    query GetFieldDetails($fieldId: uuid!) {
+      core_core_dynamic_fields_by_pk(id: $fieldId) {
+        id
+        name
+        field_type
+        description
+        configuration
+        organization_id
+        status
+        __typename
+      }
+    }
+  `;
+
+  return executeGraphQLQuery(query, { fieldId });
+}
+
+/**
  * Fetch all forms
  */
 export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLResponse<FormsListResponse>> {

@@ -2,21 +2,54 @@ import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { InputField } from '@/components/ui/input-field';
-import { Field, FieldType, FormState } from '@/lib/types';
-import { submitFormData } from '@/lib/api';
+import { Field, FieldType, FormState, FormField } from '@/lib/types';
+import { submitFormData, removeFieldFromForm, updateField } from '@/lib/api';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogFooter 
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useQueryClient } from '@tanstack/react-query';
+import { PencilIcon, TrashIcon } from 'lucide-react';
 
 interface FormFieldsProps {
   formId: string;
   fields: Field[];
+  formFields?: FormField[]; // Array of form_fields (join table records)
+  onFieldsChange?: () => void;
+  readOnly?: boolean;
 }
 
-export function FormFields({ formId, fields }: FormFieldsProps) {
+export function FormFields({ 
+  formId, 
+  fields, 
+  formFields = [], 
+  onFieldsChange, 
+  readOnly = false 
+}: FormFieldsProps) {
   const { toast } = useToast();
   const [formState, setFormState] = useState<FormState>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
+
+  // State for editing field
+  const [editingField, setEditingField] = useState<Field | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editFieldName, setEditFieldName] = useState('');
+  const [editFieldDescription, setEditFieldDescription] = useState<string>('');
+  const [isEditingField, setIsEditingField] = useState(false);
+
+  // State for deleting field
+  const [isDeletingField, setIsDeletingField] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [fieldToDelete, setFieldToDelete] = useState<{field: Field, formFieldId: string} | null>(null);
 
   const handleFieldChange = (fieldId: string, value: any) => {
     setFormState(prev => ({
@@ -166,20 +199,261 @@ export function FormFields({ formId, fields }: FormFieldsProps) {
     setErrors({});
   };
 
+  // Handle opening the edit dialog
+  const handleOpenEditDialog = (field: Field) => {
+    setEditingField(field);
+    setEditFieldName(field.name);
+    setEditFieldDescription(field.description || '');
+    setIsEditDialogOpen(true);
+  };
+
+  // Handle closing the edit dialog
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setEditingField(null);
+    setEditFieldName('');
+    setEditFieldDescription('');
+  };
+
+  // Handle submitting field edits
+  const handleSubmitFieldEdit = async () => {
+    if (!editingField) return;
+    
+    setIsEditingField(true);
+    
+    try {
+      await updateField(editingField.id, {
+        name: editFieldName,
+        description: editFieldDescription
+      });
+      
+      toast({
+        title: "Thành công",
+        description: "Đã cập nhật trường thành công!",
+      });
+      
+      // Refresh the form fields
+      if (onFieldsChange) {
+        onFieldsChange();
+      }
+      
+      handleCloseEditDialog();
+    } catch (error) {
+      console.error("Error updating field:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể cập nhật trường. Vui lòng thử lại sau.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsEditingField(false);
+    }
+  };
+
+  // Handle opening the delete dialog
+  const handleOpenDeleteDialog = (field: Field) => {
+    // Find the form_field record for this field
+    const formField = formFields.find(ff => ff.dynamic_field_id === field.id);
+    
+    if (formField) {
+      setFieldToDelete({
+        field,
+        formFieldId: formField.id
+      });
+      setDeleteDialogOpen(true);
+    } else {
+      toast({
+        title: "Lỗi",
+        description: "Không thể xác định trường để xóa.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle deleting a field
+  const handleDeleteField = async () => {
+    if (!fieldToDelete) return;
+    
+    setIsDeletingField(true);
+    
+    try {
+      await removeFieldFromForm(fieldToDelete.formFieldId);
+      
+      toast({
+        title: "Thành công",
+        description: "Đã xóa trường khỏi form!",
+      });
+      
+      // Refresh the form fields
+      if (onFieldsChange) {
+        onFieldsChange();
+      }
+      
+      setDeleteDialogOpen(false);
+      setFieldToDelete(null);
+    } catch (error) {
+      console.error("Error deleting field:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể xóa trường. Vui lòng thử lại sau.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeletingField(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
+      {/* Edit Field Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Chỉnh sửa trường</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="name" className="text-right">
+                Tên trường
+              </label>
+              <Input
+                id="name"
+                value={editFieldName}
+                onChange={(e) => setEditFieldName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="description" className="text-right">
+                Mô tả
+              </label>
+              <Textarea
+                id="description"
+                value={editFieldDescription}
+                onChange={(e) => setEditFieldDescription(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            {editingField && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label className="text-right">
+                  Loại trường
+                </label>
+                <div className="col-span-3">
+                  <span className="px-2 py-1 bg-gray-100 rounded text-sm">
+                    {editingField.field_type}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCloseEditDialog}
+              disabled={isEditingField}
+            >
+              Hủy
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSubmitFieldEdit}
+              disabled={!editFieldName || isEditingField}
+            >
+              {isEditingField ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  Đang lưu...
+                </>
+              ) : (
+                'Lưu thay đổi'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Field Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Xác nhận xóa trường</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>Bạn có chắc chắn muốn xóa trường <strong>{fieldToDelete?.field.name}</strong> khỏi form này?</p>
+            <p className="text-sm text-gray-500 mt-2">Thao tác này không thể hoàn tác.</p>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={isDeletingField}
+            >
+              Hủy
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeleteField}
+              disabled={isDeletingField}
+            >
+              {isDeletingField ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  Đang xóa...
+                </>
+              ) : (
+                'Xóa trường'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {fields.map((field) => (
-        <InputField
-          key={field.id}
-          id={field.id}
-          name={field.name}
-          description={field.description}
-          fieldType={field.field_type as FieldType}
-          value={formState[field.id]}
-          onChange={(value) => handleFieldChange(field.id, value)}
-          options={field.options}
-          error={errors[field.id]}
-        />
+        <div key={field.id} className="relative">
+          {!readOnly && (
+            <div className="absolute top-4 right-4 flex space-x-2 z-10">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow"
+                onClick={() => handleOpenEditDialog(field)}
+              >
+                <PencilIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow text-red-500 hover:text-red-600"
+                onClick={() => handleOpenDeleteDialog(field)}
+              >
+                <TrashIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          <InputField
+            key={field.id}
+            id={field.id}
+            name={field.name}
+            description={field.description}
+            fieldType={field.field_type as FieldType}
+            value={formState[field.id]}
+            onChange={(value) => handleFieldChange(field.id, value)}
+            options={field.options}
+            error={errors[field.id]}
+          />
+        </div>
       ))}
 
       <div className={`mt-8 ${isMobile ? 'fixed bottom-0 left-0 right-0 flex p-4 bg-white border-t border-gray-200 z-10 space-x-2' : 'flex justify-end'}`}>

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useToast } from '@/hooks/use-toast';
 import { 
   CalendarIcon, 
   MicIcon, 
@@ -394,17 +395,104 @@ export function InputField({
               className="w-full py-6"
               type="button"
               onClick={() => {
-                // Would actually use navigator.geolocation
-                onChange({ lat: 21.0278, lng: 105.8342, address: "Hà Nội, Việt Nam" });
+                // Sử dụng Geolocation API thực tế
+                if (navigator.geolocation) {
+                  const locationButton = document.getElementById(`gps-btn-${id}`);
+                  if (locationButton) {
+                    locationButton.innerHTML = 'Đang lấy vị trí...';
+                    locationButton.setAttribute('disabled', 'true');
+                  }
+                  
+                  navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                      const { latitude, longitude } = position.coords;
+                      try {
+                        // Dùng Reverse Geocoding nếu có thể
+                        let address = "Vị trí đã lấy";
+                        try {
+                          const response = await fetch(
+                            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=vi`
+                          );
+                          if (response.ok) {
+                            const data = await response.json();
+                            address = data.display_name || address;
+                          }
+                        } catch (error) {
+                          console.error("Không thể lấy địa chỉ:", error);
+                        }
+                        
+                        onChange({ 
+                          lat: latitude, 
+                          lng: longitude, 
+                          address: address,
+                          timestamp: new Date().toISOString()
+                        });
+                      } catch (error) {
+                        console.error("Lỗi khi xử lý thông tin vị trí:", error);
+                        toast({
+                          title: "Lỗi",
+                          description: "Không thể lấy thông tin vị trí. Vui lòng thử lại.",
+                          variant: "destructive"
+                        });
+                      } finally {
+                        if (locationButton) {
+                          locationButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' + (value ? "Cập nhật vị trí" : "Nhấn để lấy vị trí hiện tại");
+                          locationButton.removeAttribute('disabled');
+                        }
+                      }
+                    },
+                    (error) => {
+                      console.error("Lỗi Geolocation:", error);
+                      let errorMessage = "Không thể lấy vị trí của bạn.";
+                      
+                      switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                          errorMessage = "Bạn đã từ chối quyền truy cập vị trí.";
+                          break;
+                        case error.POSITION_UNAVAILABLE:
+                          errorMessage = "Thông tin vị trí không khả dụng.";
+                          break;
+                        case error.TIMEOUT:
+                          errorMessage = "Quá thời gian yêu cầu vị trí.";
+                          break;
+                      }
+                      
+                      toast({
+                        title: "Lỗi",
+                        description: errorMessage,
+                        variant: "destructive"
+                      });
+                      
+                      if (locationButton) {
+                        locationButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' + "Thử lại";
+                        locationButton.removeAttribute('disabled');
+                      }
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                  );
+                } else {
+                  toast({
+                    title: "Không hỗ trợ",
+                    description: "Trình duyệt của bạn không hỗ trợ định vị.",
+                    variant: "destructive"
+                  });
+                }
               }}
+              id={`gps-btn-${id}`}
             >
               <MapPinIcon className="h-6 w-6 mr-2 text-amber-600" />
-              {value ? "Vị trí đã lưu" : "Nhấn để lấy vị trí hiện tại"}
+              {value ? "Cập nhật vị trí" : "Nhấn để lấy vị trí hiện tại"}
             </Button>
             {value && (
               <div className="p-3 bg-amber-50 rounded-md mt-2 text-sm">
-                <p>Toạ độ: {value.lat}, {value.lng}</p>
-                <p>Địa chỉ: {value.address}</p>
+                <p className="font-medium">Thông tin vị trí:</p>
+                <p>Toạ độ: {value.lat.toFixed(6)}, {value.lng.toFixed(6)}</p>
+                <p className="mt-1">{value.address}</p>
+                {value.timestamp && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Thời gian: {new Date(value.timestamp).toLocaleString('vi-VN')}
+                  </p>
+                )}
               </div>
             )}
           </div>

@@ -43,7 +43,7 @@ export default function FormsPage() {
 
   // Fetch form fields when a form is selected
   const {
-    data: fieldsData,
+    data: formData,
     isLoading: isLoadingFields,
     error: fieldsError,
     refetch: refetchFields
@@ -59,7 +59,11 @@ export default function FormsPage() {
         if (!response.data.core_core_dynamic_forms_by_pk || 
             !response.data.core_core_dynamic_forms_by_pk.core_dynamic_form_fields) {
           console.warn('No fields found in response');
-          return [];
+          return {
+            fields: [],
+            formFields: [],
+            details: null
+          };
         }
         
         // Trích xuất fields từ cấu trúc dữ liệu mới
@@ -71,7 +75,11 @@ export default function FormsPage() {
         // Log kết quả để debug
         console.log(`Received ${fields.length} fields for form ID ${selectedFormId}`);
         
-        return fields;
+        return {
+          fields,
+          formFields,
+          details: response.data.core_core_dynamic_forms_by_pk
+        };
       } catch (error) {
         console.error('Error fetching fields:', error);
         throw error;
@@ -79,6 +87,9 @@ export default function FormsPage() {
     },
     enabled: !!selectedFormId
   });
+  
+  // Trích xuất fields và formFields từ kết quả truy vấn
+  const fieldsData = formData?.fields || [];
 
   // Set the first form as selected when data loads
   useEffect(() => {
@@ -490,7 +501,12 @@ export default function FormsPage() {
                     ))}
                   </div>
                 ) : selectedFormId && fieldsData ? (
-                  <FormFields formId={selectedFormId} fields={fieldsData} />
+                  <FormFields 
+                    formId={selectedFormId} 
+                    fields={fieldsData} 
+                    formFields={formData?.formFields || []}
+                    onFieldsChange={refetchFields}
+                  />
                 ) : (
                   <div className="text-center py-12">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
