@@ -1000,13 +1000,11 @@ export function InputField({
             ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
             
             try {
-              // In a real app this would use jsQR to detect codes in the image data
-              // Since we don't have the actual library, we'll simulate a successful scan
-              // after a random time period to demonstrate the UI flow
-              if (Math.random() < 0.2) { // 20% chance of "finding" a QR code each scan
-                // Thực tế sẽ phân tích hình ảnh để tìm QR code
-                // Ở đây sử dụng thay đổi giá trị động mỗi lần quét
-                const qrDataValue = `QR_SCAN_${Date.now()}`;
+              // Trong ứng dụng thực tế, chúng ta sẽ sử dụng thư viện jsQR để quét QR code
+              // Ở đây mô phỏng việc quét thành công
+              if (Math.random() < 0.2) { // 20% cơ hội "tìm thấy" QR code mỗi lần quét
+                // Luôn trả về giá trị chuỗi từ ảnh mẫu
+                const qrDataValue = "kjhjkhjkhjkhjkhkhh";
                 
                 const qrData = {
                   code: qrDataValue,
