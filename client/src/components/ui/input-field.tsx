@@ -1004,8 +1004,10 @@ export function InputField({
               // Since we don't have the actual library, we'll simulate a successful scan
               // after a random time period to demonstrate the UI flow
               if (Math.random() < 0.2) { // 20% chance of "finding" a QR code each scan
-                // Sử dụng chuỗi cố định từ ảnh ví dụ
-                const qrDataValue = "kjhjkhjkhjkhjkhkhh";
+                // Thực tế sẽ phân tích hình ảnh để tìm QR code
+                // Ở đây sử dụng thay đổi giá trị động mỗi lần quét
+                const qrDataValue = `QR_SCAN_${Date.now()}`;
+                
                 const qrData = {
                   code: qrDataValue,
                   value: qrDataValue,
