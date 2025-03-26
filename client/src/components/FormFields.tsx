@@ -421,13 +421,14 @@ export function FormFields({
       {fields.map((field) => (
         <div key={field.id} className="relative">
           {!readOnly && (
-            <div className="absolute top-4 right-4 flex space-x-2 z-10">
+            <div className="absolute top-4 right-4 flex space-x-2 z-10 bg-white/90 rounded-lg px-1 shadow-sm">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow"
+                className="h-8 w-8 rounded-full hover:bg-gray-100"
                 onClick={() => handleOpenEditDialog(field)}
+                title="Chỉnh sửa trường"
               >
                 <PencilIcon className="h-4 w-4" />
               </Button>
@@ -435,8 +436,9 @@ export function FormFields({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow text-red-500 hover:text-red-600"
+                className="h-8 w-8 rounded-full hover:bg-gray-100 text-red-500 hover:text-red-600"
                 onClick={() => handleOpenDeleteDialog(field)}
+                title="Xóa trường"
               >
                 <TrashIcon className="h-4 w-4" />
               </Button>
