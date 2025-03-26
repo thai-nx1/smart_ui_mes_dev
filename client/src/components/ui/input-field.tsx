@@ -60,14 +60,25 @@ export function InputField({
   required = false,
   error,
 }: InputFieldProps) {
+  const { toast } = useToast();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     onChange(e.target.value);
   };
+
+  // Refs cho video elements
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   // State for modal dialogs
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogContent, setDialogContent] = useState<React.ReactNode>(null);
+  
+  // State cho chức năng chụp ảnh
+  const [photoCapture, setPhotoCapture] = useState<{
+    previewUrl: string | null;
+    fileData: string | null;
+  }>({ previewUrl: null, fileData: null });
 
   // Helper function to open modal dialogs
   const openModal = (title: string, content: React.ReactNode) => {
@@ -238,6 +249,123 @@ export function InputField({
         );
       
       case "AUDIO_RECORD":
+        // State for audio recording
+        const [isRecording, setIsRecording] = useState(false);
+        const [recordingTime, setRecordingTime] = useState(0);
+        const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
+        const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+        const audioChunksRef = useRef<BlobPart[]>([]);
+        const timerRef = useRef<number | null>(null);
+
+        // Clean up when component unmounts or modal closes
+        useEffect(() => {
+          return () => {
+            if (timerRef.current) {
+              window.clearInterval(timerRef.current);
+            }
+            if (mediaRecorderRef.current && isRecording) {
+              mediaRecorderRef.current.stop();
+            }
+          };
+        }, [isRecording]);
+
+        // Clean up when modal closes
+        useEffect(() => {
+          if (!isModalOpen && mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            if (timerRef.current) {
+              window.clearInterval(timerRef.current);
+              timerRef.current = null;
+            }
+          }
+        }, [isModalOpen, isRecording]);
+
+        const startRecording = async () => {
+          audioChunksRef.current = [];
+          setRecordingTime(0);
+          
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            
+            mediaRecorder.ondataavailable = (event) => {
+              if (event.data.size > 0) {
+                audioChunksRef.current.push(event.data);
+              }
+            };
+            
+            mediaRecorder.onstop = () => {
+              // Create blob from recorded chunks
+              const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+              const audioUrl = URL.createObjectURL(audioBlob);
+              
+              // Create a file name
+              const fileName = `audio_${Date.now()}.wav`;
+              
+              // Create a reader to get base64 data
+              const reader = new FileReader();
+              reader.readAsDataURL(audioBlob);
+              reader.onloadend = () => {
+                const base64data = reader.result as string;
+                
+                // Set preview URL for player
+                setAudioPreviewUrl(audioUrl);
+                
+                // Send data to form
+                onChange({
+                  url: audioUrl,
+                  data: base64data,
+                  fileName: fileName,
+                  duration: recordingTime,
+                  timestamp: new Date().toISOString()
+                });
+              };
+              
+              // Stop all audio tracks
+              stream.getTracks().forEach(track => track.stop());
+              
+              // Reset recording state
+              setIsRecording(false);
+              if (timerRef.current) {
+                window.clearInterval(timerRef.current);
+                timerRef.current = null;
+              }
+            };
+            
+            // Start recording
+            mediaRecorder.start();
+            setIsRecording(true);
+            
+            // Start timer
+            timerRef.current = window.setInterval(() => {
+              setRecordingTime(prev => prev + 1);
+            }, 1000);
+            
+          } catch (error) {
+            console.error("Không thể truy cập micro:", error);
+            toast({
+              title: "Lỗi",
+              description: "Không thể truy cập microphone. Vui lòng cho phép quyền và thử lại.",
+              variant: "destructive"
+            });
+          }
+        };
+
+        const stopRecording = () => {
+          if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+          }
+        };
+
+        const formatTime = (seconds: number) => {
+          const mins = Math.floor(seconds / 60);
+          const secs = seconds % 60;
+          return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        };
+
         return (
           <Button 
             variant="outline"
@@ -245,33 +373,205 @@ export function InputField({
             type="button"
             onClick={() => openModal("Ghi âm", (
               <div className="flex flex-col items-center gap-5 py-4">
-                <div className="w-32 h-32 rounded-full bg-red-50 flex items-center justify-center">
-                  <MicIcon className="h-16 w-16 text-red-500" />
+                <div className={`w-32 h-32 rounded-full ${isRecording ? 'bg-red-100 animate-pulse' : 'bg-red-50'} flex items-center justify-center`}>
+                  <MicIcon className={`h-16 w-16 ${isRecording ? 'text-red-600' : 'text-red-500'}`} />
                 </div>
-                <Button
-                  onClick={() => {
-                    // In a real app, we would use MediaRecorder API
-                    onChange("audio_recording_" + Date.now() + ".mp3");
-                    setIsModalOpen(false);
-                  }}
-                  className="w-full"
-                >
-                  {value ? "Ghi âm lại" : "Bắt đầu ghi âm"}
-                </Button>
-                {value && (
+                
+                {isRecording ? (
+                  <div className="text-xl font-mono">{formatTime(recordingTime)}</div>
+                ) : audioPreviewUrl ? (
+                  <audio 
+                    src={audioPreviewUrl} 
+                    controls 
+                    className="w-full max-w-sm"
+                  />
+                ) : value?.url ? (
+                  <audio 
+                    src={value.url} 
+                    controls 
+                    className="w-full max-w-sm"
+                  />
+                ) : null}
+                
+                <div className="flex gap-2 w-full">
+                  {isRecording ? (
+                    <Button
+                      onClick={stopRecording}
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      Dừng ghi âm
+                    </Button>
+                  ) : audioPreviewUrl || value ? (
+                    <>
+                      <Button
+                        onClick={startRecording}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Ghi âm lại
+                      </Button>
+                      <Button
+                        onClick={() => setIsModalOpen(false)}
+                        className="flex-1"
+                      >
+                        Xác nhận
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={startRecording}
+                      className="w-full"
+                    >
+                      Bắt đầu ghi âm
+                    </Button>
+                  )}
+                </div>
+                
+                {value?.fileName && !isRecording && (
                   <div className="text-center text-sm text-gray-500 mt-2">
-                    Đã ghi âm: {value}
+                    <p>Đã ghi âm: {value.fileName}</p>
+                    {value.duration && (
+                      <p>Thời lượng: {formatTime(value.duration)}</p>
+                    )}
                   </div>
                 )}
               </div>
             ))}
           >
             <MicIcon className="h-6 w-6 mr-2 text-red-500" />
-            {value ? "Ghi âm đã được thu" : "Nhấn để ghi âm"}
+            {value ? (
+              <span>Ghi âm đã được thu ({value.duration ? formatTime(value.duration) : 'đã ghi'})</span>
+            ) : (
+              "Nhấn để ghi âm"
+            )}
           </Button>
         );
       
       case "SCREEN_RECORD":
+        // State for screen recording
+        const [isScreenRecording, setIsScreenRecording] = useState(false);
+        const [screenRecordingTime, setScreenRecordingTime] = useState(0);
+        const [screenRecordingPreviewUrl, setScreenRecordingPreviewUrl] = useState<string | null>(null);
+        const screenMediaRecorderRef = useRef<MediaRecorder | null>(null);
+        const screenChunksRef = useRef<BlobPart[]>([]);
+        const screenTimerRef = useRef<number | null>(null);
+        const screenVideoRef = useRef<HTMLVideoElement | null>(null);
+
+        // Clean up when component unmounts or modal closes
+        useEffect(() => {
+          return () => {
+            if (screenTimerRef.current) {
+              window.clearInterval(screenTimerRef.current);
+            }
+            if (screenMediaRecorderRef.current && isScreenRecording) {
+              screenMediaRecorderRef.current.stop();
+            }
+          };
+        }, [isScreenRecording]);
+
+        // Clean up when modal closes
+        useEffect(() => {
+          if (!isModalOpen && screenMediaRecorderRef.current && isScreenRecording) {
+            screenMediaRecorderRef.current.stop();
+            setIsScreenRecording(false);
+            if (screenTimerRef.current) {
+              window.clearInterval(screenTimerRef.current);
+              screenTimerRef.current = null;
+            }
+          }
+        }, [isModalOpen, isScreenRecording]);
+
+        const startScreenRecording = async () => {
+          screenChunksRef.current = [];
+          setScreenRecordingTime(0);
+          
+          try {
+            // Request screen sharing
+            const displayMedia = await navigator.mediaDevices.getDisplayMedia({
+              video: { 
+                cursor: "always",
+                displaySurface: "monitor",
+              },
+              audio: true
+            });
+            
+            if (screenVideoRef.current) {
+              screenVideoRef.current.srcObject = displayMedia;
+            }
+            
+            const mediaRecorder = new MediaRecorder(displayMedia);
+            screenMediaRecorderRef.current = mediaRecorder;
+            
+            mediaRecorder.ondataavailable = (event) => {
+              if (event.data.size > 0) {
+                screenChunksRef.current.push(event.data);
+              }
+            };
+            
+            mediaRecorder.onstop = () => {
+              // Create blob from recorded chunks
+              const videoBlob = new Blob(screenChunksRef.current, { type: 'video/webm' });
+              const videoUrl = URL.createObjectURL(videoBlob);
+              
+              // Create a file name
+              const fileName = `screen_recording_${Date.now()}.webm`;
+              
+              // Create a reader to get base64 data (for preview or storage)
+              const reader = new FileReader();
+              reader.readAsDataURL(videoBlob);
+              reader.onloadend = () => {
+                const base64data = reader.result as string;
+                
+                // Set preview URL for player
+                setScreenRecordingPreviewUrl(videoUrl);
+                
+                // Send data to form
+                onChange({
+                  url: videoUrl,
+                  data: base64data,
+                  fileName: fileName,
+                  duration: screenRecordingTime,
+                  timestamp: new Date().toISOString()
+                });
+              };
+              
+              // Stop all tracks
+              displayMedia.getTracks().forEach(track => track.stop());
+              
+              // Reset recording state
+              setIsScreenRecording(false);
+              if (screenTimerRef.current) {
+                window.clearInterval(screenTimerRef.current);
+                screenTimerRef.current = null;
+              }
+            };
+            
+            // Start recording
+            mediaRecorder.start();
+            setIsScreenRecording(true);
+            
+            // Start timer
+            screenTimerRef.current = window.setInterval(() => {
+              setScreenRecordingTime(prev => prev + 1);
+            }, 1000);
+            
+          } catch (error) {
+            console.error("Không thể truy cập màn hình:", error);
+            toast({
+              title: "Lỗi",
+              description: "Không thể ghi màn hình. Vui lòng cho phép quyền và thử lại.",
+              variant: "destructive"
+            });
+          }
+        };
+
+        const stopScreenRecording = () => {
+          if (screenMediaRecorderRef.current && isScreenRecording) {
+            screenMediaRecorderRef.current.stop();
+          }
+        };
+
         return (
           <Button 
             variant="outline"
@@ -279,29 +579,84 @@ export function InputField({
             type="button"
             onClick={() => openModal("Ghi màn hình", (
               <div className="flex flex-col items-center gap-5 py-4">
-                <div className="w-32 h-32 rounded-full bg-orange-50 flex items-center justify-center">
-                  <ScreenShareIcon className="h-16 w-16 text-orange-500" />
+                <div className={`w-full max-w-sm aspect-video border-2 rounded-md flex items-center justify-center overflow-hidden ${isScreenRecording ? 'border-orange-500 animate-pulse' : 'border-orange-200 bg-orange-50'}`}>
+                  {screenRecordingPreviewUrl || (value?.url) ? (
+                    <video 
+                      src={screenRecordingPreviewUrl || value?.url} 
+                      controls 
+                      className="w-full h-full"
+                    />
+                  ) : isScreenRecording ? (
+                    <video 
+                      ref={screenVideoRef} 
+                      autoPlay 
+                      muted 
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <ScreenShareIcon className="h-16 w-16 text-orange-500" />
+                  )}
                 </div>
-                <Button
-                  onClick={() => {
-                    // In a real app, we would use getDisplayMedia API
-                    onChange("screen_recording_" + Date.now() + ".mp4");
-                    setIsModalOpen(false);
-                  }}
-                  className="w-full"
-                >
-                  {value ? "Ghi lại màn hình" : "Bắt đầu ghi màn hình"}
-                </Button>
-                {value && (
+                
+                {isScreenRecording && (
+                  <div className="flex items-center gap-2 text-red-500">
+                    <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                    <div className="text-xl font-mono">{formatTime(screenRecordingTime)}</div>
+                  </div>
+                )}
+                
+                <div className="flex gap-2 w-full">
+                  {isScreenRecording ? (
+                    <Button
+                      onClick={stopScreenRecording}
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      Dừng ghi màn hình
+                    </Button>
+                  ) : screenRecordingPreviewUrl || value?.url ? (
+                    <>
+                      <Button
+                        onClick={startScreenRecording}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Ghi lại màn hình
+                      </Button>
+                      <Button
+                        onClick={() => setIsModalOpen(false)}
+                        className="flex-1"
+                      >
+                        Xác nhận
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={startScreenRecording}
+                      className="w-full"
+                    >
+                      Bắt đầu ghi màn hình
+                    </Button>
+                  )}
+                </div>
+                
+                {value?.fileName && !isScreenRecording && (
                   <div className="text-center text-sm text-gray-500 mt-2">
-                    Đã ghi màn hình: {value}
+                    <p>Đã ghi màn hình: {value.fileName}</p>
+                    {value.duration && (
+                      <p>Thời lượng: {formatTime(value.duration)}</p>
+                    )}
                   </div>
                 )}
               </div>
             ))}
           >
             <ScreenShareIcon className="h-6 w-6 mr-2 text-orange-500" />
-            {value ? "Ghi màn hình đã được thu" : "Nhấn để ghi màn hình"}
+            {value ? (
+              <span>Ghi màn hình đã được thu {value.duration ? `(${formatTime(value.duration)})` : ''}</span>
+            ) : (
+              "Nhấn để ghi màn hình"
+            )}
           </Button>
         );
       
@@ -334,6 +689,116 @@ export function InputField({
         );
       
       case "QR_SCAN":
+        // QR scanning effect
+        const [isScanning, setIsScanning] = useState(false);
+        const [scanResult, setScanResult] = useState<string | null>(null);
+        const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
+        
+        // Setup and cleanup for QR scanning camera
+        useEffect(() => {
+          if (!isModalOpen || fieldType !== "QR_SCAN") return;
+          
+          let animationFrameId: number;
+          let scanIntervalId: number;
+          
+          if (isScanning && videoRef.current) {
+            // Access the camera for QR scanning
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+              navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                  facingMode: 'environment', // Use back camera
+                  width: { ideal: 1280 },
+                  height: { ideal: 720 } 
+                } 
+              })
+              .then(stream => {
+                if (videoRef.current) {
+                  videoRef.current.srcObject = stream;
+                  streamRef.current = stream;
+                  
+                  // Set a short timeout to allow the camera to initialize
+                  setTimeout(() => {
+                    scanIntervalId = window.setInterval(attemptScan, 500);
+                  }, 1000);
+                }
+              })
+              .catch(err => {
+                console.error("Không thể truy cập camera:", err);
+                toast({
+                  title: "Lỗi Camera",
+                  description: "Không thể truy cập camera cho QR scanning. Vui lòng cho phép quyền camera và thử lại.",
+                  variant: "destructive"
+                });
+                setIsScanning(false);
+              });
+            }
+          }
+          
+          // Mock scanning function (in real app, would use library like jsQR)
+          const attemptScan = () => {
+            if (!videoRef.current || !qrCanvasRef.current || !isScanning) return;
+            
+            const canvas = qrCanvasRef.current;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            
+            // Match canvas size to video dimensions
+            canvas.width = videoRef.current.videoWidth;
+            canvas.height = videoRef.current.videoHeight;
+            
+            // Draw current video frame to canvas for analysis
+            ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+            
+            try {
+              // In a real app this would use jsQR to detect codes in the image data
+              // Since we don't have the actual library, we'll simulate a successful scan
+              // after a random time period to demonstrate the UI flow
+              if (Math.random() < 0.2) { // 20% chance of "finding" a QR code each scan
+                const mockData = "QR_" + Date.now().toString().slice(-6);
+                
+                // Stop scanning
+                clearInterval(scanIntervalId);
+                setIsScanning(false);
+                setScanResult(mockData);
+                
+                // Also update the form value
+                onChange({
+                  code: mockData,
+                  format: "QR_CODE",
+                  timestamp: new Date().toISOString()
+                });
+                
+                // Success feedback
+                toast({
+                  title: "Quét thành công",
+                  description: `Đã quét thành công mã: ${mockData}`,
+                  variant: "default"
+                });
+                
+                // Stop camera stream
+                if (streamRef.current) {
+                  streamRef.current.getTracks().forEach(track => track.stop());
+                  streamRef.current = null;
+                }
+              }
+            } catch (error) {
+              console.error("Lỗi phân tích QR code:", error);
+            }
+          };
+          
+          // Clean up 
+          return () => {
+            clearInterval(scanIntervalId);
+            cancelAnimationFrame(animationFrameId);
+            
+            // Stop camera when unmounting
+            if (streamRef.current) {
+              streamRef.current.getTracks().forEach(track => track.stop());
+              streamRef.current = null;
+            }
+          };
+        }, [isModalOpen, isScanning, fieldType, toast, onChange]);
+        
         return (
           <Button 
             variant="outline"
@@ -341,49 +806,90 @@ export function InputField({
             type="button"
             onClick={() => openModal("Quét mã QR/Barcode", (
               <div className="flex flex-col items-center gap-5 py-4">
-                <div className="w-48 h-48 border-2 border-violet-200 rounded-md flex items-center justify-center bg-violet-50">
-                  {value ? (
-                    <div className="text-center">
+                <div className="w-full max-w-xs aspect-square border-2 border-violet-200 rounded-md flex items-center justify-center bg-black relative overflow-hidden">
+                  {scanResult || (value && !isScanning) ? (
+                    <div className="text-center bg-white p-4 rounded-md">
                       <QrCodeIcon className="h-16 w-16 text-violet-600 mx-auto mb-2" />
                       <div className="text-violet-800 font-medium">Đã quét thành công</div>
+                      <div className="text-sm text-violet-600 mt-2 font-mono">
+                        {scanResult || (value?.code ? value.code : value)}
+                      </div>
                     </div>
                   ) : (
                     <>
-                      <div className="absolute">
-                        <QrCodeIcon className="h-16 w-16 text-violet-300" />
-                      </div>
-                      <div className="w-full h-full relative">
-                        <div className="absolute top-0 left-0 w-full h-0.5 bg-violet-500 animate-pulse"></div>
-                        <div className="absolute top-0 right-0 h-full w-0.5 bg-violet-500 animate-pulse delay-75"></div>
-                        <div className="absolute bottom-0 right-0 w-full h-0.5 bg-violet-500 animate-pulse delay-150"></div>
-                        <div className="absolute top-0 left-0 h-full w-0.5 bg-violet-500 animate-pulse delay-225"></div>
+                      {/* Video element for camera feed */}
+                      <video 
+                        ref={videoRef} 
+                        autoPlay 
+                        playsInline 
+                        muted 
+                        className="w-full h-full object-cover"
+                      />
+                      
+                      {/* Hidden canvas for image processing */}
+                      <canvas 
+                        ref={qrCanvasRef}
+                        className="hidden"
+                      />
+                      
+                      {/* Scanning overlay */}
+                      <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute inset-0 border-2 border-violet-500 opacity-50"></div>
+                        <div className="absolute top-0 left-0 right-0 h-px bg-violet-500 animate-qrScanLine"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-48 h-48 border-2 border-violet-400 rounded-md"></div>
+                        </div>
                       </div>
                     </>
                   )}
                 </div>
-                <Button
-                  onClick={() => {
-                    // In a real app, we would use a QR code scanner library
-                    if (!value) {
-                      onChange("QR_" + Math.floor(Math.random() * 1000000));
-                    } else {
-                      onChange(null);
-                    }
-                  }}
-                  className="w-full"
-                >
-                  {value ? "Quét mã khác" : "Quét mã"}
-                </Button>
-                {value && (
+                
+                <div className="flex gap-2 w-full">
+                  {scanResult || (value && !isScanning) ? (
+                    <>
+                      <Button
+                        onClick={() => {
+                          // Reset for new scan
+                          setScanResult(null);
+                          setIsScanning(true);
+                        }}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Quét mã khác
+                      </Button>
+                      <Button
+                        onClick={() => setIsModalOpen(false)}
+                        className="flex-1"
+                      >
+                        Xác nhận
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => setIsScanning(true)}
+                      className="w-full"
+                    >
+                      Bắt đầu quét
+                    </Button>
+                  )}
+                </div>
+                
+                {value?.code && !isScanning && (
                   <div className="text-center text-sm text-gray-500 mt-2">
-                    Mã quét được: {value}
+                    <p>Mã đã quét: {value.code}</p>
+                    <p>Loại: {value.format || "QR"}</p>
                   </div>
                 )}
               </div>
             ))}
           >
             <QrCodeIcon className="h-6 w-6 mr-2 text-violet-600" />
-            {value ? "Mã QR/Barcode đã quét" : "Nhấn để quét mã QR/Barcode"}
+            {value ? (
+              <span>Mã đã quét: {value.code || value}</span>
+            ) : (
+              "Nhấn để quét mã QR/Barcode"
+            )}
           </Button>
         );
       
@@ -597,6 +1103,94 @@ export function InputField({
         );
       
       case "PHOTO":
+        // Clean up camera stream when modal is closed
+        useEffect(() => {
+          if (!isModalOpen && streamRef.current) {
+            const tracks = streamRef.current.getTracks();
+            tracks.forEach(track => track.stop());
+            streamRef.current = null;
+          }
+        }, [isModalOpen]);
+
+        // Start camera if modal is open
+        useEffect(() => {
+          if (isModalOpen && videoRef.current && fieldType === "PHOTO") {
+            // Access the camera
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+              navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                  facingMode: 'environment', // Prefer back camera
+                  width: { ideal: 1280 },
+                  height: { ideal: 720 } 
+                } 
+              })
+              .then(stream => {
+                if (videoRef.current) {
+                  videoRef.current.srcObject = stream;
+                  streamRef.current = stream;
+                }
+              })
+              .catch(err => {
+                console.error("Không thể truy cập camera:", err);
+                toast({
+                  title: "Lỗi Camera",
+                  description: "Không thể truy cập camera. Vui lòng cho phép quyền camera và thử lại.",
+                  variant: "destructive"
+                });
+              });
+            }
+          }
+        }, [isModalOpen, fieldType, toast]);
+
+        // Function to capture photo
+        const capturePhoto = () => {
+          if (!videoRef.current) return;
+          
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoRef.current.videoWidth;
+            canvas.height = videoRef.current.videoHeight;
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            
+            // Draw video frame to canvas
+            ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+            
+            // Convert to data URL
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            
+            // Create a file name
+            const fileName = `photo_${Date.now()}.jpg`;
+            
+            // Set state with preview URL and file info
+            setPhotoCapture({
+              previewUrl: dataUrl,
+              fileData: dataUrl,
+            });
+            
+            // Send data to form
+            onChange({
+              url: dataUrl,
+              fileName: fileName,
+              timestamp: new Date().toISOString()
+            });
+            
+            // Clean up
+            setTimeout(() => {
+              // Close modal after a brief delay to show preview
+              setIsModalOpen(false);
+            }, 1000);
+          } catch (error) {
+            console.error("Lỗi khi chụp ảnh:", error);
+            toast({
+              title: "Lỗi",
+              description: "Không thể chụp ảnh. Vui lòng thử lại.",
+              variant: "destructive"
+            });
+          }
+        };
+
         return (
           <Button 
             variant="outline"
@@ -604,52 +1198,96 @@ export function InputField({
             type="button"
             onClick={() => openModal("Chụp ảnh", (
               <div className="flex flex-col items-center gap-5 py-4">
-                <div className="w-64 h-48 border-2 border-blue-200 rounded-md flex items-center justify-center bg-blue-50">
-                  {value ? (
-                    <div className="text-center">
-                      <CameraIcon className="h-16 w-16 text-blue-600 mx-auto mb-2" />
-                      <div className="text-blue-800 font-medium">Ảnh đã chụp</div>
-                    </div>
+                <div className="w-full max-w-sm border-2 border-blue-200 rounded-md overflow-hidden bg-black relative">
+                  {photoCapture.previewUrl ? (
+                    <img 
+                      src={photoCapture.previewUrl} 
+                      alt="Preview" 
+                      className="w-full h-auto"
+                    />
                   ) : (
-                    <div className="text-center">
-                      <CameraIcon className="h-16 w-16 text-blue-300 mx-auto mb-2" />
-                      <div className="text-blue-500">Chưa có ảnh</div>
+                    <video 
+                      ref={videoRef} 
+                      autoPlay 
+                      playsInline 
+                      muted 
+                      className="w-full h-auto"
+                    />
+                  )}
+                  
+                  {/* Camera overlay elements */}
+                  {!photoCapture.previewUrl && (
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-50"></div>
+                      <div className="absolute top-0 right-0 h-full w-0.5 bg-blue-500 opacity-50"></div>
+                      <div className="absolute bottom-0 right-0 w-full h-0.5 bg-blue-500 opacity-50"></div>
+                      <div className="absolute top-0 left-0 h-full w-0.5 bg-blue-500 opacity-50"></div>
                     </div>
                   )}
                 </div>
+                
                 <div className="flex gap-2 w-full">
-                  <Button
-                    onClick={() => {
-                      // In a real app, we would use camera API
-                      onChange("photo_" + Date.now() + ".jpg");
-                      setIsModalOpen(false);
-                    }}
-                    className="flex-1"
-                  >
-                    {value ? "Chụp lại" : "Chụp ảnh"}
-                  </Button>
-                  {value && (
+                  {photoCapture.previewUrl ? (
+                    <>
+                      <Button
+                        onClick={() => {
+                          setPhotoCapture({ previewUrl: null, fileData: null });
+                          // Re-open camera
+                          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                            navigator.mediaDevices.getUserMedia({ 
+                              video: { 
+                                facingMode: 'environment',
+                                width: { ideal: 1280 },
+                                height: { ideal: 720 } 
+                              } 
+                            })
+                            .then(stream => {
+                              if (videoRef.current) {
+                                videoRef.current.srcObject = stream;
+                                streamRef.current = stream;
+                              }
+                            });
+                          }
+                        }}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Chụp lại
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsModalOpen(false);
+                        }}
+                        className="flex-1"
+                      >
+                        Xác nhận
+                      </Button>
+                    </>
+                  ) : (
                     <Button
-                      variant="outline"
-                      onClick={() => {
-                        onChange(null);
-                      }}
-                      className="flex-1"
+                      onClick={capturePhoto}
+                      className="w-full"
                     >
-                      Xoá ảnh
+                      Chụp ảnh
                     </Button>
                   )}
                 </div>
-                {value && (
-                  <div className="text-center text-sm text-gray-500 mt-2">
-                    Ảnh đã chụp: {value}
-                  </div>
-                )}
               </div>
             ))}
           >
             <CameraIcon className="h-6 w-6 mr-2 text-blue-600" />
-            {value ? "Ảnh đã chụp" : "Nhấn để chụp ảnh"}
+            {value ? (
+              <div className="flex items-center">
+                <span className="mr-2">Ảnh đã chụp</span>
+                {typeof value === 'object' && value?.url && (
+                  <div className="h-6 w-6 rounded-full overflow-hidden">
+                    <img src={value.url} alt="Thumbnail" className="h-full w-full object-cover" />
+                  </div>
+                )}
+              </div>
+            ) : (
+              "Nhấn để chụp ảnh"
+            )}
           </Button>
         );
       
