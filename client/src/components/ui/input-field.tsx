@@ -301,7 +301,20 @@ export function InputField({
             
             {value?.cached && (
               <div className="text-xs text-emerald-600 flex items-center gap-1">
-                <CheckIcon className="h-3 w-3" />
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-3 w-3" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M5 13l4 4L19 7" 
+                  />
+                </svg>
                 Đã lưu cục bộ lúc {new Date(value.timestamp).toLocaleTimeString('vi-VN')}
               </div>
             )}
@@ -861,7 +874,7 @@ export function InputField({
               filename: `form_export_${new Date().toISOString().split('T')[0]}.pdf`,
               image: { type: 'jpeg', quality: 0.98 },
               html2canvas: { scale: 2 },
-              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
             };
             
             // Hiển thị thông báo
