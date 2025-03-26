@@ -225,9 +225,43 @@ export default function FormsPage() {
     setSelectedFields([]);
     // Hiển thị dialog trước để tránh delay
     setShowAddFieldDialog(true);
-    // Lấy dữ liệu từ API thực tế
-    fetchAvailableFields();
+    
+    // Thêm tất cả 20 loại trường vào danh sách
+    const allFieldTypes = [
+      {id: createUUID(), name: "Trường TEXT", field_type: "TEXT" as FieldType, description: "Trường văn bản ngắn", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường PARAGRAPH", field_type: "PARAGRAPH" as FieldType, description: "Trường văn bản dài", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường NUMBER", field_type: "NUMBER" as FieldType, description: "Trường nhập số", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường SINGLE_CHOICE", field_type: "SINGLE_CHOICE" as FieldType, description: "Chọn một", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường MULTI_CHOICE", field_type: "MULTI_CHOICE" as FieldType, description: "Chọn nhiều", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường DATE", field_type: "DATE" as FieldType, description: "Chọn ngày", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường INPUT", field_type: "INPUT" as FieldType, description: "Nhập liệu", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường CACHE", field_type: "CACHE" as FieldType, description: "Lưu cache offline", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường AUDIO_RECORD", field_type: "AUDIO_RECORD" as FieldType, description: "Ghi âm", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường SCREEN_RECORD", field_type: "SCREEN_RECORD" as FieldType, description: "Ghi màn hình", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường IMPORT", field_type: "IMPORT" as FieldType, description: "Nhập dữ liệu", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường EXPORT", field_type: "EXPORT" as FieldType, description: "Xuất dữ liệu", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường QR_SCAN", field_type: "QR_SCAN" as FieldType, description: "Quét mã QR", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường GPS", field_type: "GPS" as FieldType, description: "Định vị", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường CHOOSE", field_type: "CHOOSE" as FieldType, description: "Lựa chọn", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường SELECT", field_type: "SELECT" as FieldType, description: "Chọn từ danh sách", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường SEARCH", field_type: "SEARCH" as FieldType, description: "Tìm kiếm", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường FILTER", field_type: "FILTER" as FieldType, description: "Lọc dữ liệu", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường DASHBOARD", field_type: "DASHBOARD" as FieldType, description: "Bảng điều khiển", status: "Active", __typename: "core_core_dynamic_fields"},
+      {id: createUUID(), name: "Trường PHOTO", field_type: "PHOTO" as FieldType, description: "Chụp ảnh", status: "Active", __typename: "core_core_dynamic_fields"}
+    ];
+    
+    // Hiển thị tất cả các loại trường
+    setAvailableFields(allFieldTypes);
   };
+  
+  // Hàm tạo UUID để sử dụng làm ID trường (tương thích với API GraphQL)
+  function createUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
   // Toggle field selection
   const toggleFieldSelection = (fieldId: string) => {
