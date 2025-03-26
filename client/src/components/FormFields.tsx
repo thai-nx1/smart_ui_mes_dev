@@ -252,21 +252,33 @@ export function FormFields({
 
   // Handle opening the delete dialog
   const handleOpenDeleteDialog = (field: Field) => {
-    // Find the form_field record for this field
-    const formField = formFields.find(ff => ff.dynamic_field_id === field.id);
+    // Kiểm tra xem đây có phải là field lưu trữ cục bộ không (ID bắt đầu bằng 'xxxxxxxx-')
+    const isLocalField = field.id.startsWith('xxxxxxxx-');
     
-    if (formField) {
+    if (isLocalField) {
+      // Không cần form_field ID cho local fields
       setFieldToDelete({
         field,
-        formFieldId: formField.id
+        formFieldId: field.id // Using field.id directly for localStorage
       });
       setDeleteDialogOpen(true);
     } else {
-      toast({
-        title: "Lỗi",
-        description: "Không thể xác định trường để xóa.",
-        variant: "destructive"
-      });
+      // Tìm form_field record đối với field từ API
+      const formField = formFields.find(ff => ff.dynamic_field_id === field.id);
+      
+      if (formField) {
+        setFieldToDelete({
+          field,
+          formFieldId: formField.id
+        });
+        setDeleteDialogOpen(true);
+      } else {
+        toast({
+          title: "Lỗi",
+          description: "Không thể xác định trường để xóa.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -277,16 +289,54 @@ export function FormFields({
     setIsDeletingField(true);
     
     try {
-      await removeFieldFromForm(fieldToDelete.formFieldId);
+      // Kiểm tra xem đây có phải field lưu trong localStorage không
+      const isLocalField = fieldToDelete.field.id.startsWith('xxxxxxxx-');
       
-      toast({
-        title: "Thành công",
-        description: "Đã xóa trường khỏi form!",
-      });
-      
-      // Refresh the form fields
-      if (onFieldsChange) {
-        onFieldsChange();
+      if (isLocalField) {
+        // Xóa trường từ localStorage
+        const storageKey = `local_form_fields_${formId}`;
+        
+        try {
+          // Lấy danh sách các trường hiện tại
+          const existingFields = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          
+          // Lọc bỏ trường cần xóa (dựa trên dynamic_field_id)
+          const updatedFields = existingFields.filter((item: any) => 
+            item.dynamic_field_id !== fieldToDelete.field.id &&
+            item.core_dynamic_field.id !== fieldToDelete.field.id
+          );
+          
+          // Lưu lại danh sách đã cập nhật
+          localStorage.setItem(storageKey, JSON.stringify(updatedFields));
+          
+          toast({
+            title: "Thành công",
+            description: "Đã xóa trường khỏi form!",
+          });
+          
+          // Refresh bằng cách đặt lại formId để tải lại trang
+          setTimeout(() => {
+            if (onFieldsChange) {
+              onFieldsChange();
+            }
+          }, 100);
+        } catch (localError) {
+          console.error("Error deleting local field:", localError);
+          throw localError;
+        }
+      } else {
+        // Xóa trường từ API
+        await removeFieldFromForm(fieldToDelete.formFieldId);
+        
+        toast({
+          title: "Thành công",
+          description: "Đã xóa trường khỏi form!",
+        });
+        
+        // Refresh the form fields
+        if (onFieldsChange) {
+          onFieldsChange();
+        }
       }
       
       setDeleteDialogOpen(false);

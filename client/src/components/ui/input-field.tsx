@@ -1004,24 +1004,26 @@ export function InputField({
               // Since we don't have the actual library, we'll simulate a successful scan
               // after a random time period to demonstrate the UI flow
               if (Math.random() < 0.2) { // 20% chance of "finding" a QR code each scan
-                const mockData = "QR_" + Date.now().toString().slice(-6);
+                // Tạo dữ liệu QR có format đúng
+                const qrDataValue = "QR_" + Date.now().toString().slice(-6);
+                const qrData = {
+                  code: qrDataValue,
+                  format: "QR_CODE",
+                  timestamp: new Date().toISOString()
+                };
                 
                 // Stop scanning
                 clearInterval(scanIntervalId);
                 setIsScanning(false);
-                setScanResult(mockData);
+                setScanResult(qrDataValue);
                 
-                // Also update the form value
-                onChange({
-                  code: mockData,
-                  format: "QR_CODE",
-                  timestamp: new Date().toISOString()
-                });
+                // Update the form value with object structure
+                onChange(qrData);
                 
                 // Success feedback
                 toast({
                   title: "Quét thành công",
-                  description: `Đã quét thành công mã: ${mockData}`,
+                  description: `Đã quét thành công mã: ${qrDataValue}`,
                   variant: "default"
                 });
                 
