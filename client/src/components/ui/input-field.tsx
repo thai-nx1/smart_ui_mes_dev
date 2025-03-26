@@ -1009,6 +1009,8 @@ export function InputField({
                 const qrData = {
                   code: qrDataValue,
                   format: "QR_CODE",
+                  value: qrDataValue, // Thêm value để đảm bảo đúng cấu trúcalue,
+                  format: "QR_CODE",
                   timestamp: new Date().toISOString()
                 };
                 
@@ -1138,7 +1140,7 @@ export function InputField({
           >
             <QrCodeIcon className="h-6 w-6 mr-2 text-violet-600" />
             {value ? (
-              <span>Mã đã quét: {value.code || value}</span>
+              <span>Mã đã quét: {value.value || value.code || value}</span>
             ) : (
               "Nhấn để quét mã QR/Barcode"
             )}
