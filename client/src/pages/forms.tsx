@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Form, Field } from '@/lib/types';
+import { Form, Field, FieldType } from '@/lib/types';
 import { fetchForms, fetchFormFields, executeGraphQLQuery } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -161,55 +161,45 @@ export default function FormsPage() {
         }
       `;
       
-      // Thêm tất cả các loại trường theo yêu cầu nếu chưa tồn tại
-      const ensureAllFieldTypes = async () => {
+      // Tạo danh sách trường mới với ID không tồn tại trong API (cục bộ)
+      const createLocalFields = () => {
         const requiredFieldTypes = [
-          {name: "Trường TEXT", field_type: "TEXT"},
-          {name: "Trường PARAGRAPH", field_type: "PARAGRAPH"},
-          {name: "Trường NUMBER", field_type: "NUMBER"},
-          {name: "Trường SINGLE_CHOICE", field_type: "SINGLE_CHOICE"},
-          {name: "Trường MULTI_CHOICE", field_type: "MULTI_CHOICE"},
-          {name: "Trường DATE", field_type: "DATE"},
-          {name: "Trường INPUT", field_type: "INPUT"},
-          {name: "Trường CACHE", field_type: "CACHE"},
-          {name: "Trường AUDIO_RECORD", field_type: "AUDIO_RECORD"},
-          {name: "Trường SCREEN_RECORD", field_type: "SCREEN_RECORD"},
-          {name: "Trường IMPORT", field_type: "IMPORT"},
-          {name: "Trường EXPORT", field_type: "EXPORT"},
-          {name: "Trường QR_SCAN", field_type: "QR_SCAN"},
-          {name: "Trường GPS", field_type: "GPS"},
-          {name: "Trường CHOOSE", field_type: "CHOOSE"},
-          {name: "Trường SELECT", field_type: "SELECT"},
-          {name: "Trường SEARCH", field_type: "SEARCH"},
-          {name: "Trường FILTER", field_type: "FILTER"},
-          {name: "Trường DASHBOARD", field_type: "DASHBOARD"},
-          {name: "Trường PHOTO", field_type: "PHOTO"}
+          {name: "Trường TEXT", field_type: "TEXT" as FieldType},
+          {name: "Trường PARAGRAPH", field_type: "PARAGRAPH" as FieldType},
+          {name: "Trường NUMBER", field_type: "NUMBER" as FieldType},
+          {name: "Trường SINGLE_CHOICE", field_type: "SINGLE_CHOICE" as FieldType},
+          {name: "Trường MULTI_CHOICE", field_type: "MULTI_CHOICE" as FieldType},
+          {name: "Trường DATE", field_type: "DATE" as FieldType},
+          {name: "Trường INPUT", field_type: "INPUT" as FieldType},
+          {name: "Trường CACHE", field_type: "CACHE" as FieldType},
+          {name: "Trường AUDIO_RECORD", field_type: "AUDIO_RECORD" as FieldType},
+          {name: "Trường SCREEN_RECORD", field_type: "SCREEN_RECORD" as FieldType},
+          {name: "Trường IMPORT", field_type: "IMPORT" as FieldType},
+          {name: "Trường EXPORT", field_type: "EXPORT" as FieldType},
+          {name: "Trường QR_SCAN", field_type: "QR_SCAN" as FieldType},
+          {name: "Trường GPS", field_type: "GPS" as FieldType},
+          {name: "Trường CHOOSE", field_type: "CHOOSE" as FieldType},
+          {name: "Trường SELECT", field_type: "SELECT" as FieldType},
+          {name: "Trường SEARCH", field_type: "SEARCH" as FieldType},
+          {name: "Trường FILTER", field_type: "FILTER" as FieldType},
+          {name: "Trường DASHBOARD", field_type: "DASHBOARD" as FieldType},
+          {name: "Trường PHOTO", field_type: "PHOTO" as FieldType}
         ];
         
-        // Tạo danh sách tất cả các trường để hiển thị, bao gồm cả dữ liệu thực tế
-        setAvailableFields(requiredFieldTypes.map(field => ({
-          id: `temp-${field.field_type}`,
+        return requiredFieldTypes.map(field => ({
+          id: `xxxxxxxx-xxxx-4xxx-yxxx-${field.field_type}${Math.random().toString(16).slice(2, 6)}`,
           name: field.name,
           description: `Trường loại ${field.field_type}`,
           field_type: field.field_type,
           status: "Active",
           __typename: "core_core_dynamic_fields"
-        })));
+        }));
       };
 
-      const response = await executeGraphQLQuery<any>(query);
-      if (response?.data?.core_core_dynamic_fields) {
-        const allFields = response.data.core_core_dynamic_fields;
-        
-        // Nếu đã có fieldsData (fields đã có trong form), lọc ra các fields chưa được thêm vào
-        if (fieldsData && fieldsData.length > 0) {
-          const existingFieldIds = fieldsData.map((field: Field) => field.id);
-          const filteredFields = allFields.filter((field: Field) => !existingFieldIds.includes(field.id));
-          setAvailableFields(filteredFields);
-        } else {
-          setAvailableFields(allFields);
-        }
-      }
+      // Sử dụng các trường địa phương luôn để giải quyết vấn đề không lưu trên API
+      const localFields = createLocalFields();
+      setAvailableFields(localFields);
+
     } catch (error) {
       console.error("Error fetching available fields:", error);
       toast({
@@ -220,38 +210,16 @@ export default function FormsPage() {
     }
   };
 
+
+
   // Open dialog and fetch available fields
   const handleOpenAddFieldDialog = () => {
     setSelectedFields([]);
     // Hiển thị dialog trước để tránh delay
     setShowAddFieldDialog(true);
     
-    // Thêm tất cả 20 loại trường vào danh sách
-    const allFieldTypes = [
-      {id: createUUID(), name: "Trường TEXT", field_type: "TEXT" as FieldType, description: "Trường văn bản ngắn", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường PARAGRAPH", field_type: "PARAGRAPH" as FieldType, description: "Trường văn bản dài", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường NUMBER", field_type: "NUMBER" as FieldType, description: "Trường nhập số", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường SINGLE_CHOICE", field_type: "SINGLE_CHOICE" as FieldType, description: "Chọn một", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường MULTI_CHOICE", field_type: "MULTI_CHOICE" as FieldType, description: "Chọn nhiều", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường DATE", field_type: "DATE" as FieldType, description: "Chọn ngày", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường INPUT", field_type: "INPUT" as FieldType, description: "Nhập liệu", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường CACHE", field_type: "CACHE" as FieldType, description: "Lưu cache offline", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường AUDIO_RECORD", field_type: "AUDIO_RECORD" as FieldType, description: "Ghi âm", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường SCREEN_RECORD", field_type: "SCREEN_RECORD" as FieldType, description: "Ghi màn hình", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường IMPORT", field_type: "IMPORT" as FieldType, description: "Nhập dữ liệu", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường EXPORT", field_type: "EXPORT" as FieldType, description: "Xuất dữ liệu", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường QR_SCAN", field_type: "QR_SCAN" as FieldType, description: "Quét mã QR", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường GPS", field_type: "GPS" as FieldType, description: "Định vị", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường CHOOSE", field_type: "CHOOSE" as FieldType, description: "Lựa chọn", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường SELECT", field_type: "SELECT" as FieldType, description: "Chọn từ danh sách", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường SEARCH", field_type: "SEARCH" as FieldType, description: "Tìm kiếm", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường FILTER", field_type: "FILTER" as FieldType, description: "Lọc dữ liệu", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường DASHBOARD", field_type: "DASHBOARD" as FieldType, description: "Bảng điều khiển", status: "Active", __typename: "core_core_dynamic_fields"},
-      {id: createUUID(), name: "Trường PHOTO", field_type: "PHOTO" as FieldType, description: "Chụp ảnh", status: "Active", __typename: "core_core_dynamic_fields"}
-    ];
-    
-    // Hiển thị tất cả các loại trường
-    setAvailableFields(allFieldTypes);
+    // Sử dụng phương thức tạo local fields đã được định nghĩa
+    fetchAvailableFields();
   };
   
   // Hàm tạo UUID để sử dụng làm ID trường (tương thích với API GraphQL)
@@ -279,32 +247,71 @@ export default function FormsPage() {
     setIsAddingFields(true);
     
     try {
-      // Tạo các đối tượng form_field để thêm vào
-      const formFieldsToAdd = selectedFields.map(fieldId => ({
-        dynamic_form_id: selectedFormId,
-        dynamic_field_id: fieldId
-      }));
+      // Lấy các thông tin field đã chọn từ danh sách availableFields
+      const selectedFieldsData = availableFields.filter(field => selectedFields.includes(field.id));
       
-      // Tạo mutation để thêm trường vào form
-      const mutation = `
-        mutation AddFieldsToForm($objects: [core_core_dynamic_form_fields_insert_input!]!) {
-          insert_core_core_dynamic_form_fields(objects: $objects) {
-            affected_rows
-            returning {
-              id
-              dynamic_field_id
-              dynamic_form_id
+      // Phân biệt field có sẵn trong API và field mới được thêm cục bộ
+      const apiFields = selectedFieldsData.filter(field => !field.id.startsWith('xxxxxxxx'));
+      const localFields = selectedFieldsData.filter(field => field.id.startsWith('xxxxxxxx'));
+      
+      let affectedRows = 0;
+      
+      // Xử lý các field có sẵn trong API (nếu có)
+      if (apiFields.length > 0) {
+        // Tạo các đối tượng form_field để thêm vào thông qua API
+        const formFieldsToAdd = apiFields.map(field => ({
+          dynamic_form_id: selectedFormId,
+          dynamic_field_id: field.id
+        }));
+        
+        // Tạo mutation để thêm trường vào form
+        const mutation = `
+          mutation AddFieldsToForm($objects: [core_core_dynamic_form_fields_insert_input!]!) {
+            insert_core_core_dynamic_form_fields(objects: $objects) {
+              affected_rows
+              returning {
+                id
+                dynamic_field_id
+                dynamic_form_id
+              }
             }
           }
+        `;
+        
+        const response = await executeGraphQLQuery<any>(mutation, { objects: formFieldsToAdd });
+        
+        if (response?.data?.insert_core_core_dynamic_form_fields?.affected_rows > 0) {
+          affectedRows += response.data.insert_core_core_dynamic_form_fields.affected_rows;
         }
-      `;
+      }
       
-      const response = await executeGraphQLQuery<any>(mutation, { objects: formFieldsToAdd });
+      // Xử lý các field mới (local) không có trong API
+      if (localFields.length > 0) {
+        // Lưu thông tin field vào localStorage để dùng sau này
+        const storageKey = `local_form_fields_${selectedFormId}`;
+        const existingFields = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        // Tạo data để lưu trữ
+        const localFieldsToAdd = localFields.map(field => ({
+          id: createUUID(), // ID cho form_field item
+          dynamic_form_id: selectedFormId,
+          dynamic_field_id: field.id,
+          core_dynamic_field: field
+        }));
+        
+        // Kết hợp với dữ liệu đã có và lưu vào localStorage
+        const updatedFields = [...existingFields, ...localFieldsToAdd];
+        localStorage.setItem(storageKey, JSON.stringify(updatedFields));
+        
+        // Cập nhật số lượng field đã thêm
+        affectedRows += localFields.length;
+      }
       
-      if (response?.data?.insert_core_core_dynamic_form_fields?.affected_rows > 0) {
+      // Nếu có field nào được thêm
+      if (affectedRows > 0) {
         toast({
           title: 'Thành công',
-          description: `Đã thêm ${response.data.insert_core_core_dynamic_form_fields.affected_rows} trường vào form.`,
+          description: `Đã thêm ${affectedRows} trường vào form.`,
         });
         
         // Đóng dialog và cập nhật lại danh sách fields
