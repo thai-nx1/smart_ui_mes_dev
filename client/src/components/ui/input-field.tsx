@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
+import jsQR from 'jsqr';
 import { 
   CalendarIcon, 
   MicIcon, 
@@ -1000,16 +1001,30 @@ export function InputField({
             ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
             
             try {
-              // Trong ứng dụng thực tế, chúng ta sẽ sử dụng thư viện jsQR để quét QR code
-              // Ở đây mô phỏng việc quét thành công
-              if (Math.random() < 0.2) { // 20% cơ hội "tìm thấy" QR code mỗi lần quét
-                // Luôn trả về giá trị chuỗi từ ảnh mẫu
-                const qrDataValue = "kjhjkhjkhjkhjkhkhh";
+              // Sử dụng thư viện jsQR để quét QR code từ ảnh canvas
+              // Lấy dữ liệu hình ảnh từ canvas
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              
+              // Sử dụng jsQR để phân tích hình ảnh tìm QR code
+              const code = jsQR(
+                imageData.data,
+                imageData.width,
+                imageData.height,
+                {
+                  inversionAttempts: "dontInvert", // Không cần đảo ngược màu
+                }
+              );
+              
+              // Nếu tìm thấy QR code
+              if (code) {
+                // Đọc giá trị từ QR code thực tế
+                const qrDataValue = code.data;
                 
+                // Tạo đối tượng dữ liệu QR code với giá trị thực
                 const qrData = {
                   code: qrDataValue,
                   value: qrDataValue,
-                  format: "QR_CODE",
+                  format: code.binaryData ? "QR_CODE" : "BARCODE", // Phân biệt loại mã
                   timestamp: new Date().toISOString()
                 };
                 
