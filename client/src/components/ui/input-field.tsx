@@ -435,7 +435,7 @@ export function InputField({
                   <div className="text-center text-sm text-gray-500 mt-2">
                     <p>Đã ghi âm: {value.fileName}</p>
                     {value.duration && (
-                      <p>Thời lượng: {formatTime(value.duration)}</p>
+                      <p>Thời lượng: {Math.floor(value.duration / 60).toString().padStart(2, '0')}:{(value.duration % 60).toString().padStart(2, '0')}</p>
                     )}
                   </div>
                 )}
@@ -646,7 +646,7 @@ export function InputField({
                   <div className="text-center text-sm text-gray-500 mt-2">
                     <p>Đã ghi màn hình: {value.fileName}</p>
                     {value.duration && (
-                      <p>Thời lượng: {formatTime(value.duration)}</p>
+                      <p>Thời lượng: {Math.floor(value.duration / 60).toString().padStart(2, '0')}:{(value.duration % 60).toString().padStart(2, '0')}</p>
                     )}
                   </div>
                 )}
