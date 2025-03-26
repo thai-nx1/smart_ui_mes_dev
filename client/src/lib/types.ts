@@ -45,7 +45,9 @@ export interface Field {
   options?: FieldOption[];
 }
 
-export type FieldType = 'TEXT' | 'PARAGRAPH' | 'NUMBER' | 'SINGLE_CHOICE' | 'MULTI_CHOICE' | 'DATE';
+export type FieldType = 'TEXT' | 'PARAGRAPH' | 'NUMBER' | 'SINGLE_CHOICE' | 'MULTI_CHOICE' | 'DATE' |
+  'INPUT' | 'CACHE' | 'AUDIO_RECORD' | 'SCREEN_RECORD' | 'IMPORT' | 'EXPORT' |
+  'QR_SCAN' | 'GPS' | 'CHOOSE' | 'SELECT' | 'SEARCH' | 'FILTER' | 'DASHBOARD' | 'PHOTO';
 
 export interface FieldOption {
   id: string;
@@ -78,7 +80,21 @@ export const fieldTypeColors: Record<FieldType, { bg: string, text: string }> = 
   'NUMBER': { bg: 'bg-green-100', text: 'text-green-800' },
   'SINGLE_CHOICE': { bg: 'bg-yellow-100', text: 'text-yellow-800' },
   'MULTI_CHOICE': { bg: 'bg-pink-100', text: 'text-pink-800' },
-  'DATE': { bg: 'bg-indigo-100', text: 'text-indigo-800' }
+  'DATE': { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+  'INPUT': { bg: 'bg-cyan-100', text: 'text-cyan-800' },
+  'CACHE': { bg: 'bg-emerald-100', text: 'text-emerald-800' },
+  'AUDIO_RECORD': { bg: 'bg-red-100', text: 'text-red-800' },
+  'SCREEN_RECORD': { bg: 'bg-orange-100', text: 'text-orange-800' },
+  'IMPORT': { bg: 'bg-lime-100', text: 'text-lime-800' },
+  'EXPORT': { bg: 'bg-teal-100', text: 'text-teal-800' },
+  'QR_SCAN': { bg: 'bg-violet-100', text: 'text-violet-800' },
+  'GPS': { bg: 'bg-amber-100', text: 'text-amber-800' },
+  'CHOOSE': { bg: 'bg-rose-100', text: 'text-rose-800' },
+  'SELECT': { bg: 'bg-fuchsia-100', text: 'text-fuchsia-800' },
+  'SEARCH': { bg: 'bg-sky-100', text: 'text-sky-800' },
+  'FILTER': { bg: 'bg-stone-100', text: 'text-stone-800' },
+  'DASHBOARD': { bg: 'bg-slate-100', text: 'text-slate-800' },
+  'PHOTO': { bg: 'bg-blue-200', text: 'text-blue-900' }
 };
 
 // Mock choices for choice fields

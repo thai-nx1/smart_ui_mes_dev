@@ -19,7 +19,9 @@ export type User = typeof users.$inferSelect;
 
 // Field types
 export const FieldTypeEnum = z.enum([
-  "TEXT", "PARAGRAPH", "NUMBER", "SINGLE_CHOICE", "MULTI_CHOICE", "DATE"
+  "TEXT", "PARAGRAPH", "NUMBER", "SINGLE_CHOICE", "MULTI_CHOICE", "DATE",
+  "INPUT", "CACHE", "AUDIO_RECORD", "SCREEN_RECORD", "IMPORT", "EXPORT",
+  "QR_SCAN", "GPS", "CHOOSE", "SELECT", "SEARCH", "FILTER", "DASHBOARD", "PHOTO"
 ]);
 
 export type FieldType = z.infer<typeof FieldTypeEnum>;

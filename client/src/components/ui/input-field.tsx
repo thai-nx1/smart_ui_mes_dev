@@ -1,17 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CalendarIcon } from "lucide-react";
+import { 
+  CalendarIcon, 
+  MicIcon, 
+  ScreenShareIcon, 
+  ImportIcon, 
+  Download, 
+  QrCodeIcon, 
+  MapPinIcon,
+  SearchIcon,
+  FilterIcon,
+  BarChartIcon,
+  BarChart2Icon,
+  LineChartIcon,
+  PieChartIcon,
+  CameraIcon,
+  DatabaseIcon,
+  ChevronDownIcon,
+  UploadIcon,
+  SaveIcon
+} from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { fieldTypeColors, FieldType, FieldOption } from "@/lib/types";
 
 interface InputFieldProps {
@@ -39,6 +62,18 @@ export function InputField({
 }: InputFieldProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     onChange(e.target.value);
+  };
+
+  // State for modal dialogs
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [dialogContent, setDialogContent] = useState<React.ReactNode>(null);
+
+  // Helper function to open modal dialogs
+  const openModal = (title: string, content: React.ReactNode) => {
+    setDialogTitle(title);
+    setDialogContent(content);
+    setIsModalOpen(true);
   };
 
   // Default options if none provided
@@ -167,6 +202,368 @@ export function InputField({
               />
             </PopoverContent>
           </Popover>
+        );
+        
+      // New field types
+      case "INPUT":
+        return (
+          <Input
+            id={id}
+            value={value || ""}
+            onChange={handleChange}
+            className={cn(error && "border-red-500")}
+            placeholder="Nhập dữ liệu đầu vào"
+            required={required}
+          />
+        );
+      
+      case "CACHE":
+        return (
+          <div className="grid gap-2">
+            <Alert className="bg-emerald-50">
+              <DatabaseIcon className="h-4 w-4 text-emerald-600" />
+              <AlertDescription className="text-emerald-800">
+                Trường này sẽ lưu cache để làm việc offline
+              </AlertDescription>
+            </Alert>
+            <Input
+              id={id}
+              value={value || ""}
+              onChange={handleChange}
+              className={cn(error && "border-red-500")}
+              placeholder="Dữ liệu sẽ được lưu cache"
+              required={required}
+            />
+          </div>
+        );
+      
+      case "AUDIO_RECORD":
+        return (
+          <Button 
+            variant="outline"
+            className="w-full py-6"
+            type="button"
+            onClick={() => openModal("Ghi âm", (
+              <div className="flex flex-col items-center gap-5 py-4">
+                <div className="w-32 h-32 rounded-full bg-red-50 flex items-center justify-center">
+                  <MicIcon className="h-16 w-16 text-red-500" />
+                </div>
+                <Button
+                  onClick={() => {
+                    // In a real app, we would use MediaRecorder API
+                    onChange("audio_recording_" + Date.now() + ".mp3");
+                    setIsModalOpen(false);
+                  }}
+                  className="w-full"
+                >
+                  {value ? "Ghi âm lại" : "Bắt đầu ghi âm"}
+                </Button>
+                {value && (
+                  <div className="text-center text-sm text-gray-500 mt-2">
+                    Đã ghi âm: {value}
+                  </div>
+                )}
+              </div>
+            ))}
+          >
+            <MicIcon className="h-6 w-6 mr-2 text-red-500" />
+            {value ? "Ghi âm đã được thu" : "Nhấn để ghi âm"}
+          </Button>
+        );
+      
+      case "SCREEN_RECORD":
+        return (
+          <Button 
+            variant="outline"
+            className="w-full py-6"
+            type="button"
+            onClick={() => openModal("Ghi màn hình", (
+              <div className="flex flex-col items-center gap-5 py-4">
+                <div className="w-32 h-32 rounded-full bg-orange-50 flex items-center justify-center">
+                  <ScreenShareIcon className="h-16 w-16 text-orange-500" />
+                </div>
+                <Button
+                  onClick={() => {
+                    // In a real app, we would use getDisplayMedia API
+                    onChange("screen_recording_" + Date.now() + ".mp4");
+                    setIsModalOpen(false);
+                  }}
+                  className="w-full"
+                >
+                  {value ? "Ghi lại màn hình" : "Bắt đầu ghi màn hình"}
+                </Button>
+                {value && (
+                  <div className="text-center text-sm text-gray-500 mt-2">
+                    Đã ghi màn hình: {value}
+                  </div>
+                )}
+              </div>
+            ))}
+          >
+            <ScreenShareIcon className="h-6 w-6 mr-2 text-orange-500" />
+            {value ? "Ghi màn hình đã được thu" : "Nhấn để ghi màn hình"}
+          </Button>
+        );
+      
+      case "IMPORT":
+        return (
+          <div className="grid gap-2">
+            <Button 
+              variant="outline"
+              className="w-full py-6"
+              type="button"
+            >
+              <ImportIcon className="h-6 w-6 mr-2 text-lime-600" />
+              Nhập dữ liệu
+            </Button>
+          </div>
+        );
+      
+      case "EXPORT":
+        return (
+          <div className="grid gap-2">
+            <Button 
+              variant="outline"
+              className="w-full py-6"
+              type="button"
+            >
+              <Download className="h-6 w-6 mr-2 text-teal-600" />
+              Xuất dữ liệu
+            </Button>
+          </div>
+        );
+      
+      case "QR_SCAN":
+        return (
+          <Button 
+            variant="outline"
+            className="w-full py-6"
+            type="button"
+            onClick={() => openModal("Quét mã QR/Barcode", (
+              <div className="flex flex-col items-center gap-5 py-4">
+                <div className="w-48 h-48 border-2 border-violet-200 rounded-md flex items-center justify-center bg-violet-50">
+                  {value ? (
+                    <div className="text-center">
+                      <QrCodeIcon className="h-16 w-16 text-violet-600 mx-auto mb-2" />
+                      <div className="text-violet-800 font-medium">Đã quét thành công</div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="absolute">
+                        <QrCodeIcon className="h-16 w-16 text-violet-300" />
+                      </div>
+                      <div className="w-full h-full relative">
+                        <div className="absolute top-0 left-0 w-full h-0.5 bg-violet-500 animate-pulse"></div>
+                        <div className="absolute top-0 right-0 h-full w-0.5 bg-violet-500 animate-pulse delay-75"></div>
+                        <div className="absolute bottom-0 right-0 w-full h-0.5 bg-violet-500 animate-pulse delay-150"></div>
+                        <div className="absolute top-0 left-0 h-full w-0.5 bg-violet-500 animate-pulse delay-225"></div>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <Button
+                  onClick={() => {
+                    // In a real app, we would use a QR code scanner library
+                    if (!value) {
+                      onChange("QR_" + Math.floor(Math.random() * 1000000));
+                    } else {
+                      onChange(null);
+                    }
+                  }}
+                  className="w-full"
+                >
+                  {value ? "Quét mã khác" : "Quét mã"}
+                </Button>
+                {value && (
+                  <div className="text-center text-sm text-gray-500 mt-2">
+                    Mã quét được: {value}
+                  </div>
+                )}
+              </div>
+            ))}
+          >
+            <QrCodeIcon className="h-6 w-6 mr-2 text-violet-600" />
+            {value ? "Mã QR/Barcode đã quét" : "Nhấn để quét mã QR/Barcode"}
+          </Button>
+        );
+      
+      case "GPS":
+        return (
+          <div className="grid gap-2">
+            <Button 
+              variant="outline"
+              className="w-full py-6"
+              type="button"
+              onClick={() => {
+                // Would actually use navigator.geolocation
+                onChange({ lat: 21.0278, lng: 105.8342, address: "Hà Nội, Việt Nam" });
+              }}
+            >
+              <MapPinIcon className="h-6 w-6 mr-2 text-amber-600" />
+              {value ? "Vị trí đã lưu" : "Nhấn để lấy vị trí hiện tại"}
+            </Button>
+            {value && (
+              <div className="p-3 bg-amber-50 rounded-md mt-2 text-sm">
+                <p>Toạ độ: {value.lat}, {value.lng}</p>
+                <p>Địa chỉ: {value.address}</p>
+              </div>
+            )}
+          </div>
+        );
+      
+      case "CHOOSE":
+        return (
+          <Select 
+            value={value || ""}
+            onValueChange={onChange}
+          >
+            <SelectTrigger className={cn(error && "border-red-500")}>
+              <SelectValue placeholder="Chọn một lựa chọn" />
+            </SelectTrigger>
+            <SelectContent>
+              {fieldOptions.map((option) => (
+                <SelectItem key={option.id} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      
+      case "SELECT":
+        return (
+          <Select 
+            value={value || ""}
+            onValueChange={onChange}
+          >
+            <SelectTrigger className={cn(error && "border-red-500")}>
+              <SelectValue placeholder="Chọn một giá trị" />
+            </SelectTrigger>
+            <SelectContent>
+              {fieldOptions.map((option) => (
+                <SelectItem key={option.id} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      
+      case "SEARCH":
+        return (
+          <div className="relative">
+            <SearchIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              id={id}
+              value={value || ""}
+              onChange={handleChange}
+              className={cn("pl-10", error && "border-red-500")}
+              placeholder="Tìm kiếm..."
+              required={required}
+            />
+          </div>
+        );
+      
+      case "FILTER":
+        return (
+          <div className="grid gap-2">
+            <div className="flex">
+              <Input
+                id={id}
+                value={value || ""}
+                onChange={handleChange}
+                className={cn(error && "border-red-500")}
+                placeholder="Lọc theo điều kiện..."
+                required={required}
+              />
+              <Button variant="ghost" className="ml-2">
+                <FilterIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        );
+      
+      case "DASHBOARD":
+        return (
+          <div className="grid grid-cols-2 gap-2">
+            <Card className="p-2 cursor-pointer hover:border-primary transition-colors">
+              <CardContent className="p-2 flex justify-center items-center">
+                <BarChartIcon className="h-12 w-12 text-slate-600" />
+              </CardContent>
+            </Card>
+            <Card className="p-2 cursor-pointer hover:border-primary transition-colors">
+              <CardContent className="p-2 flex justify-center items-center">
+                <LineChartIcon className="h-12 w-12 text-slate-600" />
+              </CardContent>
+            </Card>
+            <Card className="p-2 cursor-pointer hover:border-primary transition-colors">
+              <CardContent className="p-2 flex justify-center items-center">
+                <PieChartIcon className="h-12 w-12 text-slate-600" />
+              </CardContent>
+            </Card>
+            <Card className="p-2 cursor-pointer hover:border-primary transition-colors">
+              <CardContent className="p-2 flex justify-center items-center">
+                <BarChart2Icon className="h-12 w-12 text-slate-600" />
+              </CardContent>
+            </Card>
+          </div>
+        );
+      
+      case "PHOTO":
+        return (
+          <Button 
+            variant="outline"
+            className="w-full py-6"
+            type="button"
+            onClick={() => openModal("Chụp ảnh", (
+              <div className="flex flex-col items-center gap-5 py-4">
+                <div className="w-64 h-48 border-2 border-blue-200 rounded-md flex items-center justify-center bg-blue-50">
+                  {value ? (
+                    <div className="text-center">
+                      <CameraIcon className="h-16 w-16 text-blue-600 mx-auto mb-2" />
+                      <div className="text-blue-800 font-medium">Ảnh đã chụp</div>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <CameraIcon className="h-16 w-16 text-blue-300 mx-auto mb-2" />
+                      <div className="text-blue-500">Chưa có ảnh</div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-2 w-full">
+                  <Button
+                    onClick={() => {
+                      // In a real app, we would use camera API
+                      onChange("photo_" + Date.now() + ".jpg");
+                      setIsModalOpen(false);
+                    }}
+                    className="flex-1"
+                  >
+                    {value ? "Chụp lại" : "Chụp ảnh"}
+                  </Button>
+                  {value && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        onChange(null);
+                      }}
+                      className="flex-1"
+                    >
+                      Xoá ảnh
+                    </Button>
+                  )}
+                </div>
+                {value && (
+                  <div className="text-center text-sm text-gray-500 mt-2">
+                    Ảnh đã chụp: {value}
+                  </div>
+                )}
+              </div>
+            ))}
+          >
+            <CameraIcon className="h-6 w-6 mr-2 text-blue-600" />
+            {value ? "Ảnh đã chụp" : "Nhấn để chụp ảnh"}
+          </Button>
         );
       
       default:
