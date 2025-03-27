@@ -1,13 +1,4 @@
 import React, { useState } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -175,72 +166,59 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
 
   return (
     <>
-      <Table>
-        <TableCaption>{t('submission.tableCaption', 'Danh sách biểu mẫu đã nộp')}</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">{t('submission.id', 'ID')}</TableHead>
-            <TableHead>{t('submission.data', 'Dữ liệu')}</TableHead>
-            <TableHead className="text-right w-[120px]">{t('submission.actions', 'Thao tác')}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((submission) => (
-            <TableRow key={submission.id}>
-              <TableCell className="font-medium">{submission.id.slice(0, 8)}...</TableCell>
-              <TableCell>
-                {Array.isArray(submission.submission_data) ? (
-                  <div className="space-y-1">
-                    {submission.submission_data.slice(0, 2).map((field: FieldData) => (
-                      <div key={field.id} className="text-sm">
-                        <span className="font-medium">{field.name}: </span>
-                        <span className="text-muted-foreground">
-                          {typeof field.value === 'string' 
-                            ? field.value.length > 20 
-                              ? field.value.substring(0, 20) + '...' 
-                              : field.value
-                            : Array.isArray(field.value) 
-                              ? field.value.join(', ').substring(0, 20) + (field.value.join(', ').length > 20 ? '...' : '')
-                              : field.value}
-                        </span>
-                      </div>
-                    ))}
-                    {submission.submission_data.length > 2 && (
-                      <div className="text-sm text-muted-foreground">
-                        {t('submission.moreFields', '... và {count} trường khác', { count: submission.submission_data.length - 2 })}
-                      </div>
-                    )}
+      <div className="p-4 border rounded-lg shadow-sm">
+        {data.map((submission) => (
+          <div key={submission.id} className="mb-6 p-4 border rounded-lg">
+            {Array.isArray(submission.submission_data) ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {submission.submission_data.map((field: FieldData) => (
+                  <div key={field.id} className="flex flex-col border-b pb-2">
+                    <span className="font-medium text-sm mb-1">{field.name}:</span>
+                    <span className="text-muted-foreground">
+                      {typeof field.value === 'string' 
+                        ? field.value
+                        : Array.isArray(field.value) 
+                          ? field.value.join(', ')
+                          : String(field.value)}
+                    </span>
                   </div>
-                ) : (
-                  <pre className="text-xs overflow-auto max-h-20 p-2 bg-muted rounded-md">
-                    {JSON.stringify(submission.submission_data, null, 2)}
-                  </pre>
-                )}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    onClick={() => handleView(submission)}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  {!readOnly && (
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
-                      onClick={() => handleEdit(submission)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                ))}
+              </div>
+            ) : (
+              <pre className="text-xs overflow-auto max-h-40 p-2 bg-muted rounded-md">
+                {JSON.stringify(submission.submission_data, null, 2)}
+              </pre>
+            )}
+            <div className="flex justify-end gap-2 mt-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => handleView(submission)}
+                className="flex items-center"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                {t('actions.view', 'Xem')}
+              </Button>
+              {!readOnly && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleEdit(submission)}
+                  className="flex items-center"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t('actions.edit', 'Sửa')}
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+        {data.length === 0 && (
+          <div className="p-8 text-center">
+            <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi')}</p>
+          </div>
+        )}
+      </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
