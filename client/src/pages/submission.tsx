@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'wouter';
 import { MainLayout } from '@/components/MainLayout';
-import { fetchSubmissionForms, updateSubmissionForm } from '@/lib/api';
-import { SubmissionForm } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { fetchSubmissionForms, updateSubmissionForm, submitFormData } from '@/lib/api';
+import { SubmissionForm, FormSubmission } from '@/lib/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 import { SubmissionDataTable } from '@/components/SubmissionDataTable';
+import { AddSubmissionDialog } from '@/components/AddSubmissionDialog';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SubmissionPage() {
@@ -48,6 +49,28 @@ export default function SubmissionPage() {
     }
   });
 
+  // Mutation để tạo mới submission form
+  const createSubmissionMutation = useMutation({
+    mutationFn: async (formData: FormSubmission) => {
+      // Gọi API submitFormData với workflowId hiện tại
+      return submitFormData(formData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/submission-forms', workflowId] });
+      toast({
+        title: t('submission.createSuccess', 'Tạo mới thành công'),
+        description: t('submission.createSuccessMessage', 'Biểu mẫu mới đã được tạo thành công.'),
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: t('submission.createError', 'Lỗi tạo mới'),
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    }
+  });
+
   // Xử lý khi lưu dữ liệu chỉnh sửa
   const handleSaveSubmission = async (submissionId: string, submissionData: any[]) => {
     try {
@@ -56,6 +79,20 @@ export default function SubmissionPage() {
     } catch (error) {
       console.error('Error saving submission:', error);
       return false;
+    }
+  };
+
+  // Xử lý khi tạo mới submission form
+  const handleCreateSubmission = async (newSubmission: FormSubmission) => {
+    try {
+      // Thêm workflowId vào dữ liệu submission
+      await createSubmissionMutation.mutateAsync({
+        ...newSubmission,
+        workflowId: workflowId
+      } as any); // Tạm thời dùng 'as any' vì FormSubmission không có workflowId
+    } catch (error) {
+      console.error('Error creating submission:', error);
+      throw error;
     }
   };
 
@@ -110,11 +147,17 @@ export default function SubmissionPage() {
   return (
     <MainLayout title={t('submission.title', 'Dữ liệu đã nộp')}>
       <Card>
-        <CardHeader>
-          <CardTitle>{t('submission.formData', 'Dữ liệu biểu mẫu đã nộp')}</CardTitle>
-          <CardDescription>
-            {t('submission.description', 'Danh sách các biểu mẫu đã được gửi qua workflow này')}
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle>{t('submission.formData', 'Dữ liệu biểu mẫu đã nộp')}</CardTitle>
+            <CardDescription>
+              {t('submission.description', 'Danh sách các biểu mẫu đã được gửi qua workflow này')}
+            </CardDescription>
+          </div>
+          <AddSubmissionDialog 
+            onSubmit={handleCreateSubmission}
+            workflowId={workflowId}
+          />
         </CardHeader>
         <CardContent>
           {data.length === 0 ? (

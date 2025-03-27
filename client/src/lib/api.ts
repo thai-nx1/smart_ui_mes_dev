@@ -206,7 +206,7 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
 /**
  * Submit form data using GraphQL mutation
  */
-export async function submitFormData(submission: FormSubmission): Promise<GraphQLResponse<any>> {
+export async function submitFormData(submission: FormSubmission & { workflowId?: string }): Promise<GraphQLResponse<any>> {
   // Cấu trúc mutation theo mẫu được cung cấp
   const query = `
     mutation SubmissionForm($formId: uuid!, $userId: uuid!, $organizationId: uuid!, $submissionData: jsonb!, $workflowId: uuid!) {
@@ -244,10 +244,10 @@ export async function submitFormData(submission: FormSubmission): Promise<GraphQ
 
   const variables = {
     formId: submission.formId,
-    userId: "5c065b51-3862-4004-ae96-ca23245aa21e", // Sử dụng ID cố định từ mẫu
-    organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // Sử dụng ID cố định từ mẫu
+    userId: DEFAULT_USER_ID, // Sử dụng ID cố định từ constants
+    organizationId: DEFAULT_ORGANIZATION_ID, // Sử dụng ID cố định từ constants
     submissionData: submissionFields,
-    workflowId: "add1fe74-3c9a-4b4c-a43a-b9a1d4c5c5b2" // Sử dụng ID cố định từ mẫu
+    workflowId: submission.workflowId || "add1fe74-3c9a-4b4c-a43a-b9a1d4c5c5b2" // Sử dụng ID từ tham số hoặc ID mặc định
   };
 
   console.log("Submitting form with data:", variables);
