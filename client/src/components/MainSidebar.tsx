@@ -22,6 +22,7 @@ import { fetchMainMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { CreateIncidentButton } from '@/components/CreateIncidentButton';
 
 export function MainSidebar({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -194,20 +195,31 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
       {isOpen && menu.core_dynamic_child_menus && (
         <SidebarMenuSub>
           {menu.core_dynamic_child_menus.map((subMenu) => (
-            <SidebarMenuSubButton
-              key={subMenu.id}
-              asChild
-            >
-              {subMenu.workflow_id ? (
-                <Link href={`/submission/${subMenu.workflow_id}`}>
-                  {subMenu.name}
-                </Link>
-              ) : (
-                <Link href={`/menu/${menu.id}/submenu/${subMenu.id}`}>
-                  {subMenu.name}
-                </Link>
+            <div key={subMenu.id} className="flex flex-col">
+              <SidebarMenuSubButton asChild>
+                {subMenu.workflow_id ? (
+                  <Link href={`/submission/${subMenu.workflow_id}`}>
+                    {subMenu.name}
+                  </Link>
+                ) : (
+                  <Link href={`/menu/${menu.id}/submenu/${subMenu.id}`}>
+                    {subMenu.name}
+                  </Link>
+                )}
+              </SidebarMenuSubButton>
+              
+              {/* Thêm nút tạo sự vụ nếu submenu có workflow_id */}
+              {subMenu.workflow_id && (
+                <div className="ml-7 mt-1 mb-2">
+                  <CreateIncidentButton 
+                    submenuId={subMenu.id}
+                    submenuName={subMenu.name}
+                    submenuWorkflowId={subMenu.workflow_id}
+                    className="w-full text-xs py-1 px-2 h-auto"
+                  />
+                </div>
               )}
-            </SidebarMenuSubButton>
+            </div>
           ))}
         </SidebarMenuSub>
       )}
