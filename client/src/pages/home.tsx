@@ -3,40 +3,43 @@ import { Link } from 'wouter';
 import { FormLayout } from '@/components/FormLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
+  const { t } = useTranslation();
+  
   return (
     <FormLayout>
       <div className="py-12">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-            Hệ thống Quản lý Form Động
+          <h1 className="text-4xl font-extrabold sm:text-5xl sm:tracking-tight lg:text-6xl">
+            {t('app.title', 'Hệ thống Quản lý Form Động')}
           </h1>
-          <p className="mt-6 text-xl text-gray-500">
-            Tạo, quản lý và gửi các biểu mẫu tùy chỉnh một cách nhanh chóng và dễ dàng.
+          <p className="mt-6 text-xl text-muted-foreground">
+            {t('home.description', 'Tạo, quản lý và gửi các biểu mẫu tùy chỉnh một cách nhanh chóng và dễ dàng.')}
           </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/forms">
               <Button size="lg" className="px-8 py-6 text-lg">
-                Xem danh sách form
+                {t('home.viewForms', 'Xem danh sách form')}
               </Button>
             </Link>
             <Link href="/workflow">
               <Button size="lg" className="px-8 py-6 text-lg" variant="outline">
-                Hệ thống Workflow
+                {t('home.viewWorkflow', 'Hệ thống Workflow')}
               </Button>
             </Link>
           </div>
         </div>
 
         <div className="mt-20">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-12">
-            Các loại trường dữ liệu
+          <h2 className="text-2xl font-bold text-center mb-12">
+            {t('home.fieldTypes', 'Các loại trường dữ liệu')}
           </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <FeatureCard
-              title="Văn bản & Đoạn văn"
-              description="Thu thập văn bản ngắn hoặc các đoạn văn dài từ người dùng."
+              title={t('home.features.textTitle', 'Văn bản & Đoạn văn')}
+              description={t('home.features.textDescription', 'Thu thập văn bản ngắn hoặc các đoạn văn dài từ người dùng.')}
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
@@ -48,8 +51,8 @@ export default function Home() {
               }
             />
             <FeatureCard
-              title="Lựa chọn"
-              description="Cho phép người dùng chọn một hoặc nhiều tùy chọn từ danh sách."
+              title={t('home.features.choiceTitle', 'Lựa chọn')}
+              description={t('home.features.choiceDescription', 'Cho phép người dùng chọn một hoặc nhiều tùy chọn từ danh sách.')}
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M8 2h8" />
@@ -60,8 +63,8 @@ export default function Home() {
               }
             />
             <FeatureCard
-              title="Số & Ngày tháng"
-              description="Thu thập dữ liệu số và ngày tháng với định dạng chính xác."
+              title={t('home.features.numberTitle', 'Số & Ngày tháng')}
+              description={t('home.features.numberDescription', 'Thu thập dữ liệu số và ngày tháng với định dạng chính xác.')}
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />

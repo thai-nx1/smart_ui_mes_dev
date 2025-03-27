@@ -19,6 +19,21 @@ const resources = {
           settings: 'Settings'
         }
       },
+      // Trang chủ
+      home: {
+        description: 'Create, manage, and submit customized forms quickly and easily.',
+        viewForms: 'View Forms',
+        viewWorkflow: 'Workflow System',
+        fieldTypes: 'Field Types',
+        features: {
+          textTitle: 'Text & Paragraph',
+          textDescription: 'Collect short text or long paragraphs from users.',
+          choiceTitle: 'Choice',
+          choiceDescription: 'Allow users to select one or more options from a list.',
+          numberTitle: 'Number & Date',
+          numberDescription: 'Collect numeric data and dates with precise formatting.'
+        }
+      },
       // Các chuỗi chung
       common: {
         save: 'Save',
@@ -170,6 +185,21 @@ const resources = {
           forms: 'Biểu mẫu',
           workflow: 'Quy trình',
           settings: 'Cài đặt'
+        }
+      },
+      // Trang chủ
+      home: {
+        description: 'Tạo, quản lý và gửi các biểu mẫu tùy chỉnh một cách nhanh chóng và dễ dàng.',
+        viewForms: 'Xem danh sách form',
+        viewWorkflow: 'Hệ thống Workflow',
+        fieldTypes: 'Các loại trường dữ liệu',
+        features: {
+          textTitle: 'Văn bản & Đoạn văn',
+          textDescription: 'Thu thập văn bản ngắn hoặc các đoạn văn dài từ người dùng.',
+          choiceTitle: 'Lựa chọn',
+          choiceDescription: 'Cho phép người dùng chọn một hoặc nhiều tùy chọn từ danh sách.',
+          numberTitle: 'Số & Ngày tháng',
+          numberDescription: 'Thu thập dữ liệu số và ngày tháng với định dạng chính xác.'
         }
       },
       // Các chuỗi chung

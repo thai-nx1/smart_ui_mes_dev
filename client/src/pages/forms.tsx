@@ -14,6 +14,7 @@ import { Form, Field, FieldType } from '@/lib/types';
 import { fetchForms, fetchFormFields, executeGraphQLQuery } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
 
 export default function FormsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +28,7 @@ export default function FormsPage() {
   const [location, setLocation] = useLocation();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   // Fetch forms list
   const {
@@ -119,20 +121,20 @@ export default function FormsPage() {
   useEffect(() => {
     if (formsError) {
       toast({
-        title: 'Lỗi',
-        description: 'Không thể tải danh sách form. Vui lòng thử lại sau.',
+        title: t('common.error', 'Lỗi'),
+        description: t('forms.errors.loadForms', 'Không thể tải danh sách form. Vui lòng thử lại sau.'),
         variant: 'destructive'
       });
     }
 
     if (fieldsError) {
       toast({
-        title: 'Lỗi',
-        description: 'Không thể tải chi tiết form. Vui lòng thử lại sau.',
+        title: t('common.error', 'Lỗi'),
+        description: t('forms.errors.loadFields', 'Không thể tải chi tiết form. Vui lòng thử lại sau.'),
         variant: 'destructive'
       });
     }
-  }, [formsError, fieldsError, toast]);
+  }, [formsError, fieldsError, toast, t]);
 
   // Filter forms by search term
   const filteredForms = formsData?.filter(form => 
@@ -181,32 +183,32 @@ export default function FormsPage() {
       // Tạo danh sách trường mới với ID không tồn tại trong API (cục bộ)
       const createLocalFields = () => {
         const requiredFieldTypes = [
-          {name: "Trường TEXT", field_type: "TEXT" as FieldType},
-          {name: "Trường PARAGRAPH", field_type: "PARAGRAPH" as FieldType},
-          {name: "Trường NUMBER", field_type: "NUMBER" as FieldType},
-          {name: "Trường SINGLE_CHOICE", field_type: "SINGLE_CHOICE" as FieldType},
-          {name: "Trường MULTI_CHOICE", field_type: "MULTI_CHOICE" as FieldType},
-          {name: "Trường DATE", field_type: "DATE" as FieldType},
-          {name: "Trường INPUT", field_type: "INPUT" as FieldType},
-          {name: "Trường CACHE", field_type: "CACHE" as FieldType},
-          {name: "Trường AUDIO_RECORD", field_type: "AUDIO_RECORD" as FieldType},
-          {name: "Trường SCREEN_RECORD", field_type: "SCREEN_RECORD" as FieldType},
-          {name: "Trường IMPORT", field_type: "IMPORT" as FieldType},
-          {name: "Trường EXPORT", field_type: "EXPORT" as FieldType},
-          {name: "Trường QR_SCAN", field_type: "QR_SCAN" as FieldType},
-          {name: "Trường GPS", field_type: "GPS" as FieldType},
-          {name: "Trường CHOOSE", field_type: "CHOOSE" as FieldType},
-          {name: "Trường SELECT", field_type: "SELECT" as FieldType},
-          {name: "Trường SEARCH", field_type: "SEARCH" as FieldType},
-          {name: "Trường FILTER", field_type: "FILTER" as FieldType},
-          {name: "Trường DASHBOARD", field_type: "DASHBOARD" as FieldType},
-          {name: "Trường PHOTO", field_type: "PHOTO" as FieldType}
+          {name: t('fieldTypes.text', 'Trường TEXT'), field_type: "TEXT" as FieldType},
+          {name: t('fieldTypes.paragraph', 'Trường PARAGRAPH'), field_type: "PARAGRAPH" as FieldType},
+          {name: t('fieldTypes.number', 'Trường NUMBER'), field_type: "NUMBER" as FieldType},
+          {name: t('fieldTypes.singleChoice', 'Trường SINGLE_CHOICE'), field_type: "SINGLE_CHOICE" as FieldType},
+          {name: t('fieldTypes.multiChoice', 'Trường MULTI_CHOICE'), field_type: "MULTI_CHOICE" as FieldType},
+          {name: t('fieldTypes.date', 'Trường DATE'), field_type: "DATE" as FieldType},
+          {name: t('fieldTypes.input', 'Trường INPUT'), field_type: "INPUT" as FieldType},
+          {name: t('fieldTypes.cache', 'Trường CACHE'), field_type: "CACHE" as FieldType},
+          {name: t('fieldTypes.audioRecord', 'Trường AUDIO_RECORD'), field_type: "AUDIO_RECORD" as FieldType},
+          {name: t('fieldTypes.screenRecord', 'Trường SCREEN_RECORD'), field_type: "SCREEN_RECORD" as FieldType},
+          {name: t('fieldTypes.import', 'Trường IMPORT'), field_type: "IMPORT" as FieldType},
+          {name: t('fieldTypes.export', 'Trường EXPORT'), field_type: "EXPORT" as FieldType},
+          {name: t('fieldTypes.qrScan', 'Trường QR_SCAN'), field_type: "QR_SCAN" as FieldType},
+          {name: t('fieldTypes.gps', 'Trường GPS'), field_type: "GPS" as FieldType},
+          {name: t('fieldTypes.choose', 'Trường CHOOSE'), field_type: "CHOOSE" as FieldType},
+          {name: t('fieldTypes.select', 'Trường SELECT'), field_type: "SELECT" as FieldType},
+          {name: t('fieldTypes.search', 'Trường SEARCH'), field_type: "SEARCH" as FieldType},
+          {name: t('fieldTypes.filter', 'Trường FILTER'), field_type: "FILTER" as FieldType},
+          {name: t('fieldTypes.dashboard', 'Trường DASHBOARD'), field_type: "DASHBOARD" as FieldType},
+          {name: t('fieldTypes.photo', 'Trường PHOTO'), field_type: "PHOTO" as FieldType}
         ];
         
         return requiredFieldTypes.map(field => ({
           id: `xxxxxxxx-xxxx-4xxx-yxxx-${field.field_type}${Math.random().toString(16).slice(2, 6)}`,
           name: field.name,
-          description: `Trường loại ${field.field_type}`,
+          description: t('fieldTypes.description', 'Trường loại {{type}}', { type: field.field_type }),
           field_type: field.field_type,
           status: "Active",
           __typename: "core_core_dynamic_fields"
@@ -220,8 +222,8 @@ export default function FormsPage() {
     } catch (error) {
       console.error("Error fetching available fields:", error);
       toast({
-        title: 'Lỗi',
-        description: 'Không thể tải danh sách các trường có sẵn. Vui lòng thử lại sau.',
+        title: t('common.error', 'Lỗi'),
+        description: t('forms.errors.loadAvailableFields', 'Không thể tải danh sách các trường có sẵn. Vui lòng thử lại sau.'),
         variant: 'destructive'
       });
     }
@@ -287,8 +289,8 @@ export default function FormsPage() {
       localStorage.setItem(storageKey, JSON.stringify(updatedFields));
       
       toast({
-        title: 'Thành công',
-        description: `Đã thêm ${localFields.length} trường vào form.`,
+        title: t('common.success', 'Thành công'),
+        description: t('forms.success.fieldsAdded', 'Đã thêm {{count}} trường vào form.', { count: localFields.length }),
       });
       
       // Đóng dialog và cập nhật lại danh sách fields
@@ -304,8 +306,8 @@ export default function FormsPage() {
     } catch (error) {
       console.error("Error adding fields to form:", error);
       toast({
-        title: 'Lỗi',
-        description: 'Không thể thêm trường vào form. Vui lòng thử lại sau.',
+        title: t('common.error', 'Lỗi'),
+        description: t('forms.errors.addFields', 'Không thể thêm trường vào form. Vui lòng thử lại sau.'),
         variant: 'destructive'
       });
     } finally {
@@ -319,7 +321,7 @@ export default function FormsPage() {
       <Dialog open={showAddFieldDialog} onOpenChange={setShowAddFieldDialog}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Thêm trường vào form</DialogTitle>
+            <DialogTitle>{t('form.addField', 'Thêm trường vào form')}</DialogTitle>
           </DialogHeader>
           
           <div className="max-h-[50vh] overflow-y-auto py-4">
@@ -331,10 +333,10 @@ export default function FormsPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                     </svg>
-                    <p>Đang tải danh sách trường...</p>
+                    <p>{t('common.loading', 'Đang tải...')}</p>
                   </div>
                 ) : (
-                  'Không có trường nào có sẵn để thêm vào form này'
+                  t('form.noFieldsAvailable', 'Không có trường nào có sẵn để thêm vào form này')
                 )}
               </div>
             ) : (
@@ -375,7 +377,7 @@ export default function FormsPage() {
               onClick={() => setShowAddFieldDialog(false)}
               disabled={isAddingFields}
             >
-              Hủy
+              {t('common.cancel', 'Hủy')}
             </Button>
             <Button
               onClick={handleAddFieldsToForm}
@@ -387,10 +389,10 @@ export default function FormsPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                   </svg>
-                  Đang thêm...
+                  {t('form.adding', 'Đang thêm...')}
                 </>
               ) : (
-                <>Thêm {selectedFields.length} trường</>
+                <>{t('form.addCount', 'Thêm {{count}} trường', { count: selectedFields.length })}</>
               )}
             </Button>
           </DialogFooter>
@@ -404,7 +406,7 @@ export default function FormsPage() {
             <Card>
               <CardHeader className="px-4 py-5 border-b border-gray-200 bg-gray-50">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium text-gray-900">Danh sách Form</h2>
+                  <h2 className="text-lg font-medium text-gray-900">{t('form.formsList', 'Danh sách Form')}</h2>
                   <button 
                     type="button" 
                     className="inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
@@ -426,7 +428,7 @@ export default function FormsPage() {
                     <Input
                       type="text"
                       className="pl-10"
-                      placeholder="Tìm kiếm form..."
+                      placeholder={t('common.search', 'Tìm kiếm...')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -471,7 +473,7 @@ export default function FormsPage() {
                   </ul>
                 ) : (
                   <div className="p-4 text-center text-gray-500">
-                    {searchTerm ? 'Không tìm thấy form phù hợp' : 'Không có form nào'}
+                    {searchTerm ? t('form.noMatchingForms', 'Không tìm thấy form phù hợp') : t('form.noForms', 'Không có form nào')}
                   </div>
                 )}
               </CardContent>
@@ -494,7 +496,7 @@ export default function FormsPage() {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                       </svg>
-                      Quay lại
+                      {t('common.back', 'Quay lại')}
                     </Button>
                   )}
                   <h2 className="text-lg font-medium text-gray-900">
@@ -503,7 +505,7 @@ export default function FormsPage() {
                     ) : selectedForm ? (
                       selectedForm.name
                     ) : (
-                      'Chọn một form'
+                      t('form.selectForm', 'Chọn một form')
                     )}
                   </h2>
                   <div className="flex space-x-2">
@@ -516,7 +518,7 @@ export default function FormsPage() {
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                       </svg>
-                      Chỉnh sửa
+                      {t('common.edit', 'Chỉnh sửa')}
                     </Button>
                     
                     <Button 
@@ -529,7 +531,7 @@ export default function FormsPage() {
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                       </svg>
-                      Thêm
+                      {t('common.add', 'Thêm')}
                     </Button>
                   </div>
                 </div>
@@ -538,9 +540,9 @@ export default function FormsPage() {
                 ) : (
                   <p className="mt-1 text-sm text-gray-500">
                     {selectedForm ? (
-                      selectedForm.description || 'Nhấn vào các trường để điền thông tin'
+                      selectedForm.description || t('form.clickFieldsToFill', 'Nhấn vào các trường để điền thông tin')
                     ) : (
-                      'Vui lòng chọn một form từ danh sách'
+                      t('form.pleaseSelectForm', 'Vui lòng chọn một form từ danh sách')
                     )}
                   </p>
                 )}
@@ -574,7 +576,7 @@ export default function FormsPage() {
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                       <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
-                    <p className="text-gray-500">Vui lòng chọn một form để xem chi tiết</p>
+                    <p className="text-gray-500">{t('form.selectFormToViewDetails', 'Vui lòng chọn một form để xem chi tiết')}</p>
                   </div>
                 )}
               </CardContent>
