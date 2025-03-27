@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { FieldValue } from '@/lib/types';
-import { Edit, X, Save, Eye } from 'lucide-react';
+import { Edit, X, Save, Eye, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface FieldData {
@@ -119,69 +119,140 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
     }
   };
 
+  // Mock data for choices, should come from API
+  const getChoices = (fieldType: string): { label: string; value: string }[] => {
+    return [
+      { label: 'Lựa chọn 1', value: '1' },
+      { label: 'Lựa chọn 2', value: '2' },
+      { label: 'Lựa chọn 3', value: '3' },
+      { label: 'Lựa chọn 4', value: '4' }
+    ];
+  };
+
   // Render form field dựa vào loại
   const renderFieldInput = (field: FieldData, index: number) => {
     if (isEditing) {
       switch (field.field_type) {
         case 'TEXT':
           return (
-            <Input
-              value={field.value as string || ''}
-              onChange={(e) => handleValueChange(index, e.target.value)}
-              className="w-full"
-            />
+            <div className="border rounded-md p-4 w-full">
+              <Input
+                placeholder="Nhập văn bản"
+                value={field.value as string || ''}
+                onChange={(e) => handleValueChange(index, e.target.value)}
+                className="w-full border-none focus:ring-0 p-0"
+              />
+            </div>
           );
         case 'PARAGRAPH':
           return (
-            <Textarea
-              value={field.value as string || ''}
-              onChange={(e) => handleValueChange(index, e.target.value)}
-              className="w-full"
-              rows={3}
-            />
+            <div className="border rounded-md p-4 w-full">
+              <Textarea
+                placeholder="Nhập đoạn văn bản dài"
+                value={field.value as string || ''}
+                onChange={(e) => handleValueChange(index, e.target.value)}
+                className="w-full border-none focus:ring-0 p-0 min-h-[100px]"
+              />
+            </div>
           );
         case 'NUMBER':
           return (
-            <Input
-              type="number"
-              value={field.value as number || 0}
-              onChange={(e) => handleValueChange(index, Number(e.target.value))}
-              className="w-full"
-            />
+            <div className="border rounded-md p-4 w-full">
+              <Input
+                type="number"
+                placeholder="0"
+                value={field.value as number || 0}
+                onChange={(e) => handleValueChange(index, Number(e.target.value))}
+                className="w-full border-none focus:ring-0 p-0"
+              />
+            </div>
           );
         case 'DATE':
           return (
-            <Input
-              type="datetime-local"
-              value={field.value ? new Date(field.value as number).toISOString().slice(0, 16) : ''}
-              onChange={(e) => handleValueChange(index, new Date(e.target.value).getTime())}
-              className="w-full"
-            />
+            <div className="border rounded-md p-4 w-full">
+              <div className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4" />
+                <Input
+                  type="date"
+                  placeholder="Chọn một ngày"
+                  value={field.value ? new Date(field.value as number).toISOString().slice(0, 10) : ''}
+                  onChange={(e) => handleValueChange(index, new Date(e.target.value).getTime())}
+                  className="w-full border-none focus:ring-0 p-0"
+                />
+              </div>
+            </div>
           );
         case 'SINGLE_CHOICE':
           return (
-            <Input
-              value={field.value as string || ''}
-              onChange={(e) => handleValueChange(index, e.target.value)}
-              className="w-full"
-            />
+            <div className="border rounded-md p-4 w-full">
+              <div className="space-y-2">
+                {getChoices(field.field_type).map((choice) => (
+                  <div key={choice.value} className="flex items-center">
+                    <input
+                      type="radio"
+                      id={`choice-${field.id}-${choice.value}`}
+                      name={`choice-group-${field.id}`}
+                      value={choice.value}
+                      checked={field.value === choice.value}
+                      onChange={() => handleValueChange(index, choice.value)}
+                      className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
+                    />
+                    <label 
+                      htmlFor={`choice-${field.id}-${choice.value}`}
+                      className="ml-2 text-sm font-medium"
+                    >
+                      {choice.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
           );
         case 'MULTI_CHOICE':
+          const selectedValues = Array.isArray(field.value) ? field.value : 
+                                field.value ? [field.value as string] : [];
+          
           return (
-            <Textarea
-              value={Array.isArray(field.value) ? field.value.join(', ') : field.value as string || ''}
-              onChange={(e) => handleValueChange(index, e.target.value.split(', '))}
-              className="w-full"
-              rows={2}
-            />
+            <div className="border rounded-md p-4 w-full">
+              <div className="space-y-2">
+                {getChoices(field.field_type).map((choice) => (
+                  <div key={choice.value} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`multi-choice-${field.id}-${choice.value}`}
+                      value={choice.value}
+                      checked={selectedValues.includes(choice.value)}
+                      onChange={(e) => {
+                        let newValues = [...selectedValues];
+                        if (e.target.checked) {
+                          newValues.push(choice.value);
+                        } else {
+                          newValues = newValues.filter(v => v !== choice.value);
+                        }
+                        handleValueChange(index, newValues);
+                      }}
+                      className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                    />
+                    <label 
+                      htmlFor={`multi-choice-${field.id}-${choice.value}`}
+                      className="ml-2 text-sm font-medium"
+                    >
+                      {choice.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
           );
         default:
           return (
-            <Input
-              value={field.value as string || ''}
-              onChange={(e) => handleValueChange(index, e.target.value)}
-              className="w-full"
-            />
+            <div className="border rounded-md p-4 w-full">
+              <Input
+                value={field.value as string || ''}
+                onChange={(e) => handleValueChange(index, e.target.value)}
+                className="w-full border-none focus:ring-0 p-0"
+              />
+            </div>
           );
       }
     } else {
@@ -190,7 +261,15 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
         case 'DATE':
           return formatDate(field.value as number);
         case 'MULTI_CHOICE':
-          return Array.isArray(field.value) ? field.value.join(', ') : field.value;
+          return Array.isArray(field.value) ? 
+            field.value.map(v => {
+              const choice = getChoices(field.field_type).find(c => c.value === v);
+              return choice ? choice.label : v;
+            }).join(', ') : 
+            field.value;
+        case 'SINGLE_CHOICE':
+          const choice = getChoices(field.field_type).find(c => c.value === field.value);
+          return choice ? choice.label : field.value;
         default:
           return field.value;
       }
