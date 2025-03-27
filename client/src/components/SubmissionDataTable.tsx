@@ -42,7 +42,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
     return date.toLocaleString();
   };
 
-  // Xử lý khi nhấn nút chỉnh sửa
+  // Xử lý khi nhấn nút chỉnh sửa tất cả
   const handleEdit = (submission: any) => {
     setSelectedSubmission(submission);
     if (Array.isArray(submission.submission_data)) {
@@ -54,7 +54,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
     setIsEditing(false);
   };
 
-  // Xử lý khi nhấn nút xem
+  // Xử lý khi nhấn nút xem tất cả
   const handleView = (submission: any) => {
     setSelectedSubmission(submission);
     if (Array.isArray(submission.submission_data)) {
@@ -64,6 +64,21 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
     }
     setDialogOpen(true);
     setIsEditing(false);
+  };
+  
+  // Xử lý khi nhấn vào một trường cụ thể để chỉnh sửa
+  const handleEditField = (submission: any, fieldId: string) => {
+    setSelectedSubmission(submission);
+    if (Array.isArray(submission.submission_data)) {
+      // Tìm field cần chỉnh sửa trong submission_data
+      const fieldToEdit = submission.submission_data.find((field: FieldData) => field.id === fieldId);
+      if (fieldToEdit) {
+        // Chỉ lấy trường cụ thể để chỉnh sửa
+        setEditedData([fieldToEdit]);
+        setDialogOpen(true);
+        setIsEditing(true); // Mở chế độ chỉnh sửa ngay lập tức
+      }
+    }
   };
 
   // Xử lý khi thay đổi giá trị field
@@ -77,7 +92,25 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
   const handleSave = async () => {
     if (onSave && selectedSubmission) {
       try {
-        await onSave(editedData);
+        if (editedData.length === 1 && Array.isArray(selectedSubmission.submission_data)) {
+          // Nếu đang chỉnh sửa một trường duy nhất, cần cập nhật đúng trường đó trong tất cả dữ liệu
+          const allSubmissionData = [...selectedSubmission.submission_data];
+          const editedFieldIndex = allSubmissionData.findIndex(field => field.id === editedData[0].id);
+          
+          if (editedFieldIndex !== -1) {
+            // Cập nhật trường đã chỉnh sửa trong tất cả dữ liệu
+            allSubmissionData[editedFieldIndex] = editedData[0];
+            // Gửi tất cả dữ liệu để cập nhật
+            await onSave(allSubmissionData);
+          } else {
+            // Nếu không tìm thấy, vẫn gửi dữ liệu đã chỉnh sửa
+            await onSave(editedData);
+          }
+        } else {
+          // Trường hợp chỉnh sửa tất cả các trường
+          await onSave(editedData);
+        }
+        
         setDialogOpen(false);
         setIsEditing(false);
       } catch (error) {
@@ -172,8 +205,18 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
             {Array.isArray(submission.submission_data) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {submission.submission_data.map((field: FieldData) => (
-                  <div key={field.id} className="flex flex-col border-b pb-2">
-                    <span className="font-medium text-sm mb-1">{field.name}:</span>
+                  <div 
+                    key={field.id} 
+                    className="flex flex-col border-b pb-2 hover:bg-muted p-2 rounded cursor-pointer transition-colors"
+                    onClick={() => !readOnly && handleEditField(submission, field.id)}
+                    title={readOnly ? undefined : t('submission.clickToEdit', 'Nhấp để chỉnh sửa trường này')}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm mb-1">{field.name}:</span>
+                      {!readOnly && (
+                        <Edit className="h-3 w-3 text-muted-foreground opacity-50 hover:opacity-100" />
+                      )}
+                    </div>
                     <span className="text-muted-foreground">
                       {typeof field.value === 'string' 
                         ? field.value
@@ -225,12 +268,18 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
           <DialogHeader>
             <DialogTitle>
               {isEditing 
-                ? t('submission.editData', 'Chỉnh sửa dữ liệu biểu mẫu') 
-                : t('submission.viewData', 'Xem dữ liệu biểu mẫu')}
+                ? editedData.length === 1
+                  ? t('submission.editSingleField', 'Chỉnh sửa trường: {fieldName}', { fieldName: editedData[0]?.name })
+                  : t('submission.editData', 'Chỉnh sửa dữ liệu biểu mẫu')
+                : editedData.length === 1
+                  ? t('submission.viewSingleField', 'Xem trường: {fieldName}', { fieldName: editedData[0]?.name })
+                  : t('submission.viewData', 'Xem dữ liệu biểu mẫu')}
             </DialogTitle>
             <DialogDescription>
               {isEditing 
-                ? t('submission.editDescription', 'Chỉnh sửa thông tin của biểu mẫu đã nộp.')
+                ? editedData.length === 1
+                  ? t('submission.editSingleFieldDescription', 'Chỉnh sửa giá trị cho trường này.')
+                  : t('submission.editDescription', 'Chỉnh sửa thông tin của biểu mẫu đã nộp.')
                 : t('submission.viewDescription', 'Chi tiết thông tin của biểu mẫu đã nộp.')}
             </DialogDescription>
           </DialogHeader>
