@@ -3,6 +3,41 @@ export interface GraphQLResponse<T> {
   data: T;
 }
 
+// Menu related types
+export interface Menu {
+  id: string;
+  code: string;
+  name: string;
+  parent_id: string | null;
+  workflow_id: string | null;
+  __typename: string;
+  core_dynamic_child_menus?: Menu[];
+}
+
+export interface MenusResponse {
+  core_core_dynamic_menus: Menu[];
+}
+
+export interface MenusWithChildrenResponse {
+  core_core_dynamic_menus: Menu[];
+}
+
+export interface Workflow {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  __typename: string;
+}
+
+export interface WorkflowResponse {
+  core_core_dynamic_workflows: Workflow[];
+}
+
+// Constants for API calls
+export const DEFAULT_ORGANIZATION_ID = "8c96bdee-09ef-40ce-b1fa-954920e71efe";
+export const DEFAULT_USER_ID = "5c065b51-3862-4004-ae96-ca23245aa21e";
+
 export interface FormsListResponse {
   core_core_dynamic_forms: Form[];
 }

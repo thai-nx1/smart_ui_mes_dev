@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'wouter';
-import { FormLayout } from '@/components/FormLayout';
+import { MainLayout } from '@/components/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ export default function Home() {
   const { t } = useTranslation();
   
   return (
-    <FormLayout>
+    <MainLayout title={t('app.title', 'Hệ thống Quản lý Form Động')}>
       <div className="py-12">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl font-extrabold sm:text-5xl sm:tracking-tight lg:text-6xl">
@@ -83,7 +83,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </FormLayout>
+    </MainLayout>
   );
 }
 

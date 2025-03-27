@@ -1,4 +1,14 @@
-import { GraphQLResponse, FormsListResponse, FormDetailsResponse, FormSubmission } from './types';
+import { 
+  GraphQLResponse, 
+  FormsListResponse, 
+  FormDetailsResponse, 
+  FormSubmission,
+  MenusResponse,
+  MenusWithChildrenResponse,
+  WorkflowResponse,
+  DEFAULT_ORGANIZATION_ID,
+  DEFAULT_USER_ID
+} from './types';
 
 const GRAPHQL_ENDPOINT = 'https://delicate-herring-66.hasura.app/v1/graphql';
 console.log('Using GraphQL endpoint:', GRAPHQL_ENDPOINT);
@@ -241,6 +251,77 @@ export async function submitFormData(submission: FormSubmission): Promise<GraphQ
 
   console.log("Submitting form with data:", variables);
   return executeGraphQLQuery(query, variables);
+}
+
+/**
+ * Fetch main menus (parent menus)
+ */
+export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildrenResponse>> {
+  const query = `
+    query core_core_dynamic_menus {
+      core_core_dynamic_menus(
+        limit: 20
+        offset: 0
+        where: {parent_id: {_is_null: true}}
+      ) {
+        id
+        code
+        name
+        workflow_id
+        core_dynamic_child_menus {
+          id
+          code
+          name
+          workflow_id
+          __typename
+        }
+        __typename
+      }
+    }
+  `;
+
+  return executeGraphQLQuery<GraphQLResponse<MenusWithChildrenResponse>>(query);
+}
+
+/**
+ * Fetch all menus 
+ */
+export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
+  const query = `
+    query core_core_dynamic_menus_all {
+      core_core_dynamic_menus {
+        id
+        code
+        name
+        parent_id
+        workflow_id
+        __typename
+      }
+    }
+  `;
+
+  return executeGraphQLQuery<GraphQLResponse<MenusResponse>>(query);
+}
+
+/**
+ * Fetch workflows related to a specific menu
+ */
+export async function fetchMenuWorkflows(menuId: string): Promise<GraphQLResponse<WorkflowResponse>> {
+  const query = `
+    query GetWorkflowsByMenu($menuId: uuid!) {
+      core_core_dynamic_workflows(
+        where: {menu_id: {_eq: $menuId}}
+      ) {
+        id
+        name
+        description
+        status
+        __typename
+      }
+    }
+  `;
+
+  return executeGraphQLQuery<GraphQLResponse<WorkflowResponse>>(query, { menuId });
 }
 
 /**
