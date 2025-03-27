@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { FieldValue } from '@/lib/types';
-import { Edit, X, Save, Eye, Calendar } from 'lucide-react';
+import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface FieldData {
@@ -22,18 +22,22 @@ interface FieldData {
   field_type: string;
 }
 
+type ViewMode = 'card' | 'table';
+
 interface SubmissionDataTableProps {
   data: any[];
   onSave?: (data: FieldData[]) => Promise<boolean | void>;
   readOnly?: boolean;
+  viewMode?: ViewMode;
 }
 
-export function SubmissionDataTable({ data, onSave, readOnly = false }: SubmissionDataTableProps) {
+export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode = 'card' }: SubmissionDataTableProps) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<FieldData[]>([]);
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentViewMode, setCurrentViewMode] = useState<ViewMode>(viewMode);
 
   // Format thời gian từ timestamp
   const formatDate = (timestamp: number) => {
@@ -276,9 +280,117 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
     }
   };
 
-  return (
-    <>
-      <div className="p-4 border rounded-lg shadow-sm">
+  // Xử lý khi thay đổi chế độ hiển thị
+  const toggleViewMode = () => {
+    setCurrentViewMode(prevMode => prevMode === 'card' ? 'table' : 'card');
+  };
+
+  // Lấy danh sách tất cả loại trường duy nhất từ dữ liệu
+  const getUniqueFieldTypes = () => {
+    const fieldTypes = new Set<string>();
+    data.forEach(submission => {
+      if (Array.isArray(submission.submission_data)) {
+        submission.submission_data.forEach((field: FieldData) => {
+          fieldTypes.add(field.name);
+        });
+      }
+    });
+    return Array.from(fieldTypes);
+  };
+
+  // Hiển thị giá trị của trường
+  const renderFieldValue = (value: FieldValue, fieldType: string) => {
+    if (value === null || value === undefined) return '-';
+    
+    switch (fieldType) {
+      case 'DATE':
+        return formatDate(value as number);
+      case 'MULTI_CHOICE':
+        return Array.isArray(value) ? value.join(', ') : String(value);
+      default:
+        return typeof value === 'string' 
+          ? value 
+          : Array.isArray(value) 
+            ? value.join(', ') 
+            : String(value);
+    }
+  };
+
+  // Render chế độ xem dạng bảng
+  const renderTableView = () => {
+    const fieldNames = getUniqueFieldTypes();
+    
+    return (
+      <div className="w-full overflow-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-muted">
+              {fieldNames.map(fieldName => (
+                <th key={fieldName} className="p-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border">
+                  {fieldName}
+                </th>
+              ))}
+              <th className="p-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider border">
+                {t('actions.actions', 'Thao tác')}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((submission) => {
+              if (!Array.isArray(submission.submission_data)) return null;
+              
+              return (
+                <tr key={submission.id} className="hover:bg-muted/50">
+                  {fieldNames.map(fieldName => {
+                    const field = submission.submission_data.find(
+                      (f: FieldData) => f.name === fieldName
+                    );
+                    
+                    return (
+                      <td 
+                        key={`${submission.id}-${fieldName}`} 
+                        className="p-3 border text-sm"
+                        onClick={() => field && !readOnly && handleEditField(submission, field.id)}
+                      >
+                        {field ? renderFieldValue(field.value, field.field_type) : '-'}
+                      </td>
+                    );
+                  })}
+                  <td className="p-3 border text-center">
+                    <div className="flex justify-center gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleView(submission)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      {!readOnly && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleEdit(submission)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  // Render chế độ xem dạng card
+  const renderCardView = () => {
+    return (
+      <div>
         {data.map((submission) => (
           <div key={submission.id} className="mb-6 p-4 border rounded-lg">
             {Array.isArray(submission.submission_data) ? (
@@ -335,10 +447,45 @@ export function SubmissionDataTable({ data, onSave, readOnly = false }: Submissi
             </div>
           </div>
         ))}
-        {data.length === 0 && (
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div className="p-4 border rounded-lg shadow-sm">
+        <div className="mb-4 flex justify-between items-center">
+          <h3 className="text-lg font-medium">
+            {t('submission.title', 'Dữ liệu đã nộp')}
+          </h3>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant={currentViewMode === 'card' ? 'default' : 'outline'} 
+              size="sm" 
+              onClick={() => setCurrentViewMode('card')}
+              className="flex items-center"
+            >
+              <LayoutGrid className="h-4 w-4 mr-2" />
+              {t('viewMode.card', 'Thẻ')}
+            </Button>
+            <Button 
+              variant={currentViewMode === 'table' ? 'default' : 'outline'} 
+              size="sm" 
+              onClick={() => setCurrentViewMode('table')}
+              className="flex items-center"
+            >
+              <Table className="h-4 w-4 mr-2" />
+              {t('viewMode.table', 'Bảng')}
+            </Button>
+          </div>
+        </div>
+
+        {data.length === 0 ? (
           <div className="p-8 text-center">
             <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi')}</p>
           </div>
+        ) : (
+          currentViewMode === 'card' ? renderCardView() : renderTableView()
         )}
       </div>
 
