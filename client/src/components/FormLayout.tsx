@@ -1,6 +1,9 @@
 import React from 'react';
 import { Link } from 'wouter';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface FormLayoutProps {
   children: React.ReactNode;
@@ -8,10 +11,11 @@ interface FormLayoutProps {
 
 export function FormLayout({ children }: FormLayoutProps) {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
   
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-white shadow-sm">
+      <header className="bg-card text-card-foreground shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -24,23 +28,30 @@ export function FormLayout({ children }: FormLayoutProps) {
                 </svg>
               </div>
               <Link href="/">
-                <h1 className={`ml-3 ${isMobile ? 'text-base' : 'text-xl'} font-semibold text-gray-800 cursor-pointer`}>
-                  {isMobile ? 'Form Động' : 'Hệ thống Quản lý Form Động'}
+                <h1 className={`ml-3 ${isMobile ? 'text-base' : 'text-xl'} font-semibold cursor-pointer`}>
+                  {isMobile ? t('app.shortTitle', 'Form Động') : t('app.title', 'Hệ thống Quản lý Form Động')}
                 </h1>
               </Link>
               
               {!isMobile && (
                 <div className="ml-6 flex space-x-4">
                   <Link href="/forms">
-                    <a className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Forms</a>
+                    <span className="text-foreground/70 hover:text-primary px-3 py-2 rounded-md text-sm font-medium cursor-pointer">{t('app.nav.forms', 'Forms')}</span>
                   </Link>
                   <Link href="/workflow">
-                    <a className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">Workflow</a>
+                    <span className="text-foreground/70 hover:text-primary px-3 py-2 rounded-md text-sm font-medium cursor-pointer">{t('app.nav.workflow', 'Workflow')}</span>
                   </Link>
                 </div>
               )}
             </div>
-            <div>
+            
+            <div className="flex items-center space-x-2">
+              {/* Thêm LanguageSwitcher */}
+              <LanguageSwitcher />
+              
+              {/* Thêm ThemeSwitcher */}
+              <ThemeSwitcher />
+              
               <Link href="/forms">
                 <button type="button" className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -49,7 +60,7 @@ export function FormLayout({ children }: FormLayoutProps) {
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                  {isMobile ? '' : 'Đăng nhập'}
+                  {isMobile ? '' : t('app.login', 'Đăng nhập')}
                 </button>
               </Link>
             </div>
@@ -57,16 +68,16 @@ export function FormLayout({ children }: FormLayoutProps) {
         </div>
       </header>
 
-      <main className="flex-grow">
+      <main className="flex-grow bg-background text-foreground">
         <div className={`max-w-7xl mx-auto ${isMobile ? 'px-2 py-3' : 'px-4 sm:px-6 lg:px-8 py-6'}`}>
           {children}
         </div>
       </main>
 
-      <footer className="bg-white border-t border-gray-200">
+      <footer className="bg-card text-card-foreground border-t border-border">
         <div className={`max-w-7xl mx-auto ${isMobile ? 'py-3' : 'py-6'} px-4 sm:px-6 lg:px-8`}>
-          <p className="text-sm text-gray-500 text-center">
-            © {new Date().getFullYear()} {isMobile ? 'Form Động' : 'Hệ thống Quản lý Form Động'}
+          <p className="text-sm text-muted-foreground text-center">
+            © {new Date().getFullYear()} {isMobile ? t('app.shortTitle', 'Form Động') : t('app.title', 'Hệ thống Quản lý Form Động')}
           </p>
         </div>
       </footer>
