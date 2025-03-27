@@ -198,9 +198,15 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
               key={subMenu.id}
               asChild
             >
-              <Link href={`/menu/${menu.id}/submenu/${subMenu.id}`}>
-                {subMenu.name}
-              </Link>
+              {subMenu.workflow_id ? (
+                <Link href={`/submission/${subMenu.workflow_id}`}>
+                  {subMenu.name}
+                </Link>
+              ) : (
+                <Link href={`/menu/${menu.id}/submenu/${subMenu.id}`}>
+                  {subMenu.name}
+                </Link>
+              )}
             </SidebarMenuSubButton>
           ))}
         </SidebarMenuSub>

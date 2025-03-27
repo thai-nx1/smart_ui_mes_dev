@@ -6,6 +6,7 @@ import {
   MenusResponse,
   MenusWithChildrenResponse,
   WorkflowResponse,
+  SubmissionFormsResponse,
   DEFAULT_ORGANIZATION_ID,
   DEFAULT_USER_ID
 } from './types';
@@ -322,6 +323,34 @@ export async function fetchMenuWorkflows(menuId: string): Promise<GraphQLRespons
   `;
 
   return executeGraphQLQuery<GraphQLResponse<WorkflowResponse>>(query, { menuId });
+}
+
+/**
+ * Fetch submission forms for a specific workflow
+ */
+export async function fetchSubmissionForms(workflowId: string): Promise<GraphQLResponse<SubmissionFormsResponse>> {
+  const query = `
+    query GetSubmissionForms($workflowId: uuid!, $organizationId: uuid!, $userId: uuid!) {
+      core_core_submission_forms(where: {
+        workflow_id: {_eq: $workflowId},
+        organization_id: {_eq: $organizationId},
+        user_id: {_eq: $userId}
+      }) {
+        id
+        submission_data
+        workflow_id
+        __typename
+      }
+    }
+  `;
+  
+  const variables = {
+    workflowId,
+    organizationId: DEFAULT_ORGANIZATION_ID,
+    userId: DEFAULT_USER_ID
+  };
+
+  return executeGraphQLQuery<GraphQLResponse<SubmissionFormsResponse>>(query, variables);
 }
 
 /**

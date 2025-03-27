@@ -139,3 +139,15 @@ export const mockChoices: FieldOption[] = [
   { id: '3', label: 'Lựa chọn 3', value: '3' },
   { id: '4', label: 'Lựa chọn 4', value: '4' }
 ];
+
+// Submission form types
+export interface SubmissionForm {
+  id: string;
+  submission_data: any;
+  workflow_id: string;
+  __typename: string;
+}
+
+export interface SubmissionFormsResponse {
+  core_core_submission_forms: SubmissionForm[];
+}
