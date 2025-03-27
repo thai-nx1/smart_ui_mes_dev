@@ -145,6 +145,7 @@ export interface SubmissionForm {
   id: string;
   submission_data: any;
   workflow_id: string;
+  form_id: string;
   __typename: string;
 }
 

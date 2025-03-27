@@ -1,24 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'wouter';
 import { MainLayout } from '@/components/MainLayout';
-import { fetchSubmissionForms } from '@/lib/api';
+import { fetchSubmissionForms, updateSubmissionForm } from '@/lib/api';
 import { SubmissionForm } from '@/lib/types';
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
+import { SubmissionDataTable } from '@/components/SubmissionDataTable';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SubmissionPage() {
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const params = useParams<{ workflowId: string }>();
   const workflowId = params.workflowId;
   
@@ -31,6 +26,38 @@ export default function SubmissionPage() {
     },
     enabled: !!workflowId
   });
+
+  // Mutation để cập nhật dữ liệu submission form
+  const updateSubmissionMutation = useMutation({
+    mutationFn: async ({ submissionId, submissionData }: { submissionId: string; submissionData: any[] }) => {
+      return updateSubmissionForm(submissionId, submissionData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/submission-forms', workflowId] });
+      toast({
+        title: t('submission.updateSuccess', 'Cập nhật thành công'),
+        description: t('submission.updateSuccessMessage', 'Dữ liệu biểu mẫu đã được cập nhật thành công.'),
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: t('submission.updateError', 'Lỗi cập nhật'),
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Xử lý khi lưu dữ liệu chỉnh sửa
+  const handleSaveSubmission = async (submissionId: string, submissionData: any[]) => {
+    try {
+      await updateSubmissionMutation.mutateAsync({ submissionId, submissionData });
+      return true;
+    } catch (error) {
+      console.error('Error saving submission:', error);
+      return false;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -95,30 +122,24 @@ export default function SubmissionPage() {
               <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi qua workflow này')}</p>
             </div>
           ) : (
-            <Table>
-              <TableCaption>{t('submission.tableCaption', 'Danh sách biểu mẫu đã nộp')}</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">{t('submission.id', 'ID')}</TableHead>
-                  <TableHead>{t('submission.data', 'Dữ liệu')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((submission: SubmissionForm) => (
-                  <TableRow key={submission.id}>
-                    <TableCell className="font-medium">{submission.id.slice(0, 8)}...</TableCell>
-                    <TableCell>
-                      {typeof submission.submission_data === 'string' 
-                        ? submission.submission_data
-                        : <pre className="text-xs overflow-auto max-h-40 p-2 bg-muted rounded-md">
-                            {JSON.stringify(submission.submission_data, null, 2)}
-                          </pre>
-                      }
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <SubmissionDataTable 
+              data={data}
+              onSave={async (editedData) => {
+                // Lấy submission ID hiện tại
+                const currentSubmission = data.find(s => 
+                  Array.isArray(s.submission_data) && 
+                  editedData.length > 0 && 
+                  s.submission_data.some(f => f.id === editedData[0].id)
+                );
+                
+                if (currentSubmission) {
+                  const result = await handleSaveSubmission(currentSubmission.id, editedData);
+                  return result;
+                }
+                
+                throw new Error(t('submission.noSubmissionFound', 'Không tìm thấy biểu mẫu để cập nhật'));
+              }}
+            />
           )}
         </CardContent>
       </Card>

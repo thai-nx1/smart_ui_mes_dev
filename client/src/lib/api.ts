@@ -339,6 +339,7 @@ export async function fetchSubmissionForms(workflowId: string): Promise<GraphQLR
         id
         submission_data
         workflow_id
+        form_id
         __typename
       }
     }
@@ -351,6 +352,31 @@ export async function fetchSubmissionForms(workflowId: string): Promise<GraphQLR
   };
 
   return executeGraphQLQuery<GraphQLResponse<SubmissionFormsResponse>>(query, variables);
+}
+
+/**
+ * Update submission form data
+ */
+export async function updateSubmissionForm(submissionId: string, submissionData: any[]): Promise<GraphQLResponse<any>> {
+  const query = `
+    mutation UpdateSubmissionForm($submissionId: uuid!, $submissionData: jsonb!) {
+      update_core_core_submission_forms_by_pk(
+        pk_columns: { id: $submissionId },
+        _set: { submission_data: $submissionData }
+      ) {
+        id
+        submission_data
+        __typename
+      }
+    }
+  `;
+
+  const variables = {
+    submissionId,
+    submissionData
+  };
+
+  return executeGraphQLQuery(query, variables);
 }
 
 /**
