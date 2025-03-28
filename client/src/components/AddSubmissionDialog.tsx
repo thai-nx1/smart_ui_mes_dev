@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2, Check } from 'lucide-react';
-import { fetchForms, fetchFormFields } from '@/lib/api';
+import { fetchForms, fetchFormFields, fetchMenuForms } from '@/lib/api';
 import { Form, Field, FormField, FieldSubmission, FormSubmission } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
 
@@ -45,13 +45,35 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
     }
   }, [selectedFormId]);
   
-  // Hàm tải danh sách form
+  // Hàm tải danh sách form sử dụng API mới
   const loadForms = async () => {
     setIsLoadingForms(true);
     try {
-      const response = await fetchForms(20, 0);
-      if (response.data) {
-        setForms(response.data.core_core_dynamic_forms);
+      // Nếu có workflow id, chúng ta sẽ dùng API mới để lấy form theo menu
+      if (workflowId) {
+        // Cần lấy menuId từ workflowId, giả sử workflow_id và menu_id là giống nhau
+        // trong trường hợp thực tế, cần phải có API để map giữa workflowId và menuId
+        const menuId = workflowId;
+        
+        // Lấy form với loại CREATE
+        const response = await fetchMenuForms(menuId, 'CREATE');
+        if (response.data && response.data.core_core_dynamic_menu_forms) {
+          // Chuyển đổi dữ liệu để phù hợp với cấu trúc form đang dùng
+          const menuForms = response.data.core_core_dynamic_menu_forms.map((menuForm: any) => ({
+            id: menuForm.core_dynamic_form.id,
+            name: menuForm.core_dynamic_form.name,
+            description: menuForm.core_dynamic_form.description || '',
+            status: 'ACTIVE',
+            __typename: 'core_core_dynamic_forms'
+          }));
+          setForms(menuForms);
+        }
+      } else {
+        // Fallback về API cũ nếu không có workflowId
+        const response = await fetchForms(20, 0);
+        if (response.data) {
+          setForms(response.data.core_core_dynamic_forms);
+        }
       }
     } catch (error) {
       console.error('Error loading forms:', error);
@@ -65,16 +87,29 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
     setIsLoadingFields(true);
     try {
       console.log('Fetching fields for form ID:', formId);
-      const response = await fetchFormFields(formId);
       
-      if (response.data && response.data.core_core_dynamic_forms_by_pk) {
-        const formDetails = response.data.core_core_dynamic_forms_by_pk;
-        const formFields = formDetails.core_dynamic_form_fields;
-        
-        // Chuyển đổi dữ liệu để lấy danh sách fields
-        const extractedFields = formFields.map((formField: FormField) => formField.core_dynamic_field);
-        console.log('Received', extractedFields.length, 'fields for form ID', formId);
+      // Nếu đã có dữ liệu fields từ API fetchMenuForms, dùng luôn không cần gọi API khác
+      const formWithFields = forms.find(form => form.id === formId) as any;
+      if (formWithFields && formWithFields.core_dynamic_form_fields) {
+        // Trường hợp khi dùng API mới, dữ liệu fields đã được lấy sẵn
+        const extractedFields = formWithFields.core_dynamic_form_fields.map(
+          (formField: any) => formField.core_dynamic_field
+        );
+        console.log('Using pre-fetched fields data:', extractedFields.length, 'fields');
         setFields(extractedFields);
+      } else {
+        // Trường hợp sử dụng API cũ
+        const response = await fetchFormFields(formId);
+        
+        if (response.data && response.data.core_core_dynamic_forms_by_pk) {
+          const formDetails = response.data.core_core_dynamic_forms_by_pk;
+          const formFields = formDetails.core_dynamic_form_fields;
+          
+          // Chuyển đổi dữ liệu để lấy danh sách fields
+          const extractedFields = formFields.map((formField: FormField) => formField.core_dynamic_field);
+          console.log('Received', extractedFields.length, 'fields for form ID', formId);
+          setFields(extractedFields);
+        }
       }
     } catch (error) {
       console.error('Error loading form fields:', error);

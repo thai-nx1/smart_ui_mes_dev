@@ -147,7 +147,7 @@ export async function fetchFieldDetails(fieldId: string): Promise<GraphQLRespons
 }
 
 /**
- * Fetch all forms
+ * Fetch all forms - Deprecated, use fetchMenuForms instead
  */
 export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLResponse<FormsListResponse>> {
   const query = `
@@ -163,6 +163,43 @@ export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLRespons
   `;
 
   return executeGraphQLQuery<GraphQLResponse<FormsListResponse>>(query, { limit, offset });
+}
+
+/**
+ * Fetch forms by menu ID and form type (CREATE/EDIT/VIEW)
+ */
+export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT' | 'VIEW'): Promise<GraphQLResponse<any>> {
+  const query = `
+    query GetMenuForms($menuId: uuid!, $formType: String!) {
+      core_core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}}) {
+        id
+        form_type
+        form_id
+        menu_id
+        core_dynamic_form {
+          id
+          name
+          code
+          core_dynamic_form_fields {
+            id
+            is_required
+            position
+            core_dynamic_field {
+              id
+              code
+              field_type
+              configuration
+              description
+              name
+              status
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  return executeGraphQLQuery(query, { menuId, formType });
 }
 
 /**
