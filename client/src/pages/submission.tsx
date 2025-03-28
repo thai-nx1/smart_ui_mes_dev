@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'wouter';
 import { MainLayout } from '@/components/MainLayout';
-import { fetchSubmissionForms, updateSubmissionForm, submitFormData } from '@/lib/api';
-import { SubmissionForm, FormSubmission } from '@/lib/types';
+import { fetchSubmissionForms, updateSubmissionForm, submitFormData, fetchAllMenus } from '@/lib/api';
+import { SubmissionForm, FormSubmission, Menu } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
@@ -82,14 +82,39 @@ export default function SubmissionPage() {
     }
   };
 
+  // Truy vấn để lấy tất cả các menu để tìm menu phù hợp
+  const { data: allMenusData } = useQuery({
+    queryKey: ['/api/all-menus'],
+    queryFn: async () => {
+      const response = await fetchAllMenus();
+      return response.data.core_core_dynamic_menus;
+    }
+  });
+
   // Xử lý khi tạo mới submission form
   const handleCreateSubmission = async (newSubmission: FormSubmission) => {
     try {
-      // Thêm workflowId vào dữ liệu submission
+      // Tìm menu (submenu) có workflow_id trùng với workflowId hiện tại
+      const currentSubmenu = allMenusData?.find((menu: Menu) => menu.workflow_id === workflowId);
+      const parentMenu = allMenusData?.find((menu: Menu) => menu.id === currentSubmenu?.parent_id);
+      
+      // Ưu tiên sử dụng ID của submenu nếu có
+      // Nếu không tìm thấy bất kỳ submenu nào phù hợp, sử dụng ID được cung cấp bởi API
+      const menuIdToUse = currentSubmenu?.id || parentMenu?.id || "aca06cb6-7dfa-4bda-89a8-42d8f3c18ec8";
+      
+      console.log("Found menu/submenu for workflow:", { 
+        workflowId,
+        submenuId: currentSubmenu?.id,
+        parentMenuId: parentMenu?.id,
+        menuIdToUse
+      });
+      
+      // Thêm workflowId và menuId vào dữ liệu submission
       await createSubmissionMutation.mutateAsync({
         ...newSubmission,
-        workflowId: workflowId
-      } as any); // Tạm thời dùng 'as any' vì FormSubmission không có workflowId
+        workflowId,
+        menuId: menuIdToUse
+      });
     } catch (error) {
       console.error('Error creating submission:', error);
       throw error;

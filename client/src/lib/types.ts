@@ -99,7 +99,8 @@ export interface FieldSubmission {
 export interface FormSubmission {
   formId: string;
   data: Record<string, FieldSubmission>;
-  workflowId?: string; // ID của workflow hoặc menu (dùng để reference tới menu)
+  workflowId?: string; // ID của workflow
+  menuId?: string; // ID của menu/submenu mà submission này thuộc về
 }
 
 // Field value types for form state

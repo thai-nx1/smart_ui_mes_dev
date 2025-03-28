@@ -290,11 +290,11 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
     title = String(titleField.value);
   }
 
-  // QUAN TRỌNG: API đang gặp lỗi "Menu not found" khi sử dụng workflowId làm menuId
-  // Chúng ta cần sử dụng ID của menu đã được kiểm chứng hoạt động
-  const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID của menu "Khiếu nại"
+  // QUAN TRỌNG: Cần sử dụng ID của submenu thay vì workflowId
+  // Theo yêu cầu, cần sử dụng menuId từ tham số truyền vào
+  const menuId = submission.menuId || submission.workflowId || "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
   
-  console.log("Using fixed menuId for submission:", menuId);
+  console.log("Using menuId for submission:", menuId);
   
   const variables = {
     menuId: menuId,
