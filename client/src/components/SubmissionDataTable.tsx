@@ -43,6 +43,7 @@ interface SubmissionDataTableProps {
   viewMode?: ViewMode;
   menuId?: string; // ID của menu để lấy thông tin form
   workflowId?: string; // ID của workflow để lấy transitions
+  formData?: any; // Data của form VIEW từ API fetchMenuViewForm
 }
 
 export function SubmissionDataTable({ 
@@ -51,7 +52,8 @@ export function SubmissionDataTable({
   readOnly = true, // Mặc định là chỉ xem
   viewMode = 'card',
   menuId,
-  workflowId
+  workflowId,
+  formData
 }: SubmissionDataTableProps) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
@@ -66,11 +68,11 @@ export function SubmissionDataTable({
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [dataChanged, setDataChanged] = useState(false);
   
-  // Lấy thông tin form từ API nếu có menuId
-  const { data: formData } = useQuery({
+  // Lấy thông tin form từ API nếu có menuId và không có formData từ props
+  const { data: formDataFromAPI } = useQuery({
     queryKey: ['menu-view-form', menuId],
     queryFn: () => menuId ? fetchMenuViewForm(menuId) : Promise.resolve(null),
-    enabled: !!menuId
+    enabled: !!menuId && !formData
   });
   
   // State cho thông tin transitions
@@ -477,13 +479,16 @@ export function SubmissionDataTable({
 
   // Ưu tiên sử dụng trường dữ liệu từ API fetchMenuViewForm
   const viewFormFields = useMemo(() => {
-    if (formData?.data?.core_core_dynamic_menu_forms?.[0]?.core_dynamic_form?.core_dynamic_form_fields) {
-      return formData.data.core_core_dynamic_menu_forms[0].core_dynamic_form.core_dynamic_form_fields.map(
+    // Ưu tiên sử dụng formData từ prop, nếu không có thì dùng formDataFromAPI
+    const formDataToUse = formData || formDataFromAPI;
+    
+    if (formDataToUse?.data?.core_core_dynamic_menu_forms?.[0]?.core_dynamic_form?.core_dynamic_form_fields) {
+      return formDataToUse.data.core_core_dynamic_menu_forms[0].core_dynamic_form.core_dynamic_form_fields.map(
         (ff: any) => ff.core_dynamic_field?.name
       ).filter(Boolean);
     }
     return [];
-  }, [formData]);
+  }, [formData, formDataFromAPI]);
   
   // Render chế độ xem dạng bảng
   const renderTableView = () => {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'wouter';
 import { MainLayout } from '@/components/MainLayout';
-import { fetchMenuRecords, updateSubmissionForm, submitFormData, fetchAllMenus } from '@/lib/api';
+import { fetchMenuRecords, updateSubmissionForm, submitFormData, fetchAllMenus, fetchMenuViewForm } from '@/lib/api';
 import { SubmissionForm, FormSubmission, Menu } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -52,12 +52,64 @@ export default function SubmissionPage() {
     workflowId
   });
 
-  // Sử dụng API QueryMenuRecord thay cho fetchSubmissionForms
+  // API 1: Sử dụng API QueryMenuRecord để lấy dữ liệu records
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/menu-records', menuIdToUse],
     queryFn: async () => {
+      // Gọi API theo cấu trúc:
+      // query QueryMenuRecord {
+      //   core_core_menu_records(
+      //     limit: null
+      //     offset: null
+      //     where: { menu_id: { _eq: "7ffe9691-7f9b-430d-a945-16e0d9b173c4" } }
+      //   ) {
+      //     id
+      //     title
+      //     data
+      //     created_at
+      //     created_by
+      //   }
+      // }
       const response = await fetchMenuRecords(menuIdToUse, 100, 0); // limit=100, offset=0
       return response.data.core_core_menu_records;
+    },
+    enabled: !!menuIdToUse
+  });
+  
+  // API 2: Lấy thông tin form VIEW từ menu để lấy thông tin các cột hiển thị
+  const { data: formViewData } = useQuery({
+    queryKey: ['/api/menu-view-form', menuIdToUse],
+    queryFn: async () => {
+      // API load form (CREATE/EDIT/VIEW) theo menu
+      // query MyQuery {
+      //   core_core_dynamic_menu_forms(where: {menu_id: {_eq: "???"}, form_type: {_eq: "VIEW"}}) {
+      //     id
+      //     form_type
+      //     form_id
+      //     menu_id
+      //     core_dynamic_form {
+      //       id
+      //       name
+      //       code
+      //       core_dynamic_form_fields {
+      //         id
+      //         is_required
+      //         position
+      //         core_dynamic_field {
+      //           id
+      //           code
+      //           field_type
+      //           configuration
+      //           description
+      //           name
+      //           status
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      const response = await fetchMenuViewForm(menuIdToUse);
+      return response;
     },
     enabled: !!menuIdToUse
   });
@@ -229,6 +281,7 @@ export default function SubmissionPage() {
               }}
               menuId={menuIdToUse}
               workflowId={workflowId}
+              formData={formViewData}
             />
           )}
         </CardContent>
