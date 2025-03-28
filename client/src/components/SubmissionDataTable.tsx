@@ -321,26 +321,35 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
     const fieldNames = getUniqueFieldTypes();
     
     return (
-      <div className="w-full overflow-auto">
+      <div className="w-full overflow-auto rounded-md border border-border">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-muted">
+            <tr className="bg-muted/70 text-primary-foreground">
               {fieldNames.map(fieldName => (
-                <th key={fieldName} className="p-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider border">
-                  {fieldName}
+                <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
+                  <div className="flex items-center">
+                    <span>{fieldName}</span>
+                  </div>
                 </th>
               ))}
-              <th className="p-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider border">
-                {t('actions.actions', 'Thao tác')}
+              <th className="p-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border">
+                <div className="flex items-center justify-center">
+                  {t('actions.actions', 'Thao tác')}
+                </div>
               </th>
             </tr>
           </thead>
-          <tbody>
-            {data.map((submission) => {
+          <tbody className="divide-y divide-border bg-card">
+            {data.map((submission, rowIndex) => {
               if (!Array.isArray(submission.submission_data)) return null;
               
               return (
-                <tr key={submission.id} className="hover:bg-muted/50">
+                <tr 
+                  key={submission.id} 
+                  className={`group transition-colors duration-150 ${
+                    rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80'
+                  } hover:bg-primary/5`}
+                >
                   {fieldNames.map(fieldName => {
                     const field = submission.submission_data.find(
                       (f: FieldData) => f.name === fieldName
@@ -349,20 +358,35 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
                     return (
                       <td 
                         key={`${submission.id}-${fieldName}`} 
-                        className="p-3 border text-sm"
+                        className={`p-3 border-r last:border-r-0 border-border text-sm relative ${
+                          field && !readOnly ? 'cursor-pointer hover:bg-primary/10' : ''
+                        }`}
                         onClick={() => field && !readOnly && handleEditField(submission, field.id)}
                       >
-                        {field ? renderFieldValue(field.value, field.field_type) : '-'}
+                        {field ? (
+                          <div className="relative">
+                            <div className="mr-6">
+                              {renderFieldValue(field.value, field.field_type)}
+                            </div>
+                            {!readOnly && (
+                              <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <Edit className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
                       </td>
                     );
                   })}
-                  <td className="p-3 border text-center">
-                    <div className="flex justify-center gap-2">
+                  <td className="p-2 text-center">
+                    <div className="flex justify-center gap-1">
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => handleView(submission)}
-                        className="h-8 w-8 p-0"
+                        className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -371,7 +395,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
                           variant="ghost" 
                           size="sm" 
                           onClick={() => handleEdit(submission)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -390,45 +414,59 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   // Render chế độ xem dạng card
   const renderCardView = () => {
     return (
-      <div>
+      <div className="space-y-6">
         {data.map((submission) => (
-          <div key={submission.id} className="mb-6 p-4 border rounded-lg">
+          <div 
+            key={submission.id} 
+            className="group mb-6 p-5 border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 bg-card"
+          >
             {Array.isArray(submission.submission_data) ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {submission.submission_data.map((field: FieldData) => (
                   <div 
                     key={field.id} 
-                    className="flex flex-col border-b pb-2 hover:bg-muted p-2 rounded cursor-pointer transition-colors"
+                    className="flex flex-col border border-transparent bg-background/50 p-3 rounded-md hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all duration-200"
                     onClick={() => !readOnly && handleEditField(submission, field.id)}
                     title={readOnly ? undefined : t('submission.clickToEdit', 'Nhấp để chỉnh sửa trường này')}
                   >
                     <div className="flex justify-between items-center">
-                      <span className="font-medium text-sm mb-1">{field.name}:</span>
+                      <span className="font-semibold text-sm text-primary mb-2 inline-flex items-center">
+                        {field.name}
+                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          {field.field_type}
+                        </span>
+                      </span>
                       {!readOnly && (
-                        <Edit className="h-3 w-3 text-muted-foreground opacity-50 hover:opacity-100" />
+                        <Edit className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200" />
                       )}
                     </div>
-                    <span className="text-muted-foreground">
+                    <div className="mt-1 font-medium">
                       {typeof field.value === 'string' 
-                        ? field.value
+                        ? field.value || <span className="text-muted-foreground italic text-sm">Chưa có dữ liệu</span>
                         : Array.isArray(field.value) 
-                          ? field.value.join(', ')
-                          : String(field.value)}
-                    </span>
+                          ? field.value.length > 0 
+                            ? field.value.map((v, i) => (
+                                <span key={i} className="inline-flex items-center mr-2 mb-1 px-2 py-1 bg-primary/10 text-sm rounded">
+                                  {v}
+                                </span>
+                              ))
+                            : <span className="text-muted-foreground italic text-sm">Chưa có dữ liệu</span>
+                          : String(field.value) || <span className="text-muted-foreground italic text-sm">Chưa có dữ liệu</span>}
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <pre className="text-xs overflow-auto max-h-40 p-2 bg-muted rounded-md">
+              <pre className="text-xs overflow-auto max-h-40 p-3 bg-muted rounded-md font-mono">
                 {JSON.stringify(submission.submission_data, null, 2)}
               </pre>
             )}
-            <div className="flex justify-end gap-2 mt-4">
+            <div className="flex justify-end gap-2 mt-6 pt-3 border-t">
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="sm" 
                 onClick={() => handleView(submission)}
-                className="flex items-center"
+                className="flex items-center hover:bg-primary/10 hover:text-primary transition-colors"
               >
                 <Eye className="h-4 w-4 mr-2" />
                 {t('actions.view', 'Xem')}
@@ -438,7 +476,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
                   variant="outline" 
                   size="sm" 
                   onClick={() => handleEdit(submission)}
-                  className="flex items-center"
+                  className="flex items-center border-primary/20 hover:border-primary hover:bg-primary/10 transition-colors"
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   {t('actions.edit', 'Sửa')}
@@ -453,26 +491,35 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
 
   return (
     <>
-      <div className="p-4 border rounded-lg shadow-sm">
-        <div className="mb-4 flex justify-between items-center">
-          <h3 className="text-lg font-medium">
+      <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+        <div className="p-4 bg-muted/30 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h3 className="text-lg font-semibold text-primary">
             {t('submission.title', 'Dữ liệu đã nộp')}
           </h3>
-          <div className="flex items-center gap-2">
+          
+          <div className="flex items-center gap-2 p-1 bg-background rounded-md border shadow-sm">
             <Button 
-              variant={currentViewMode === 'card' ? 'default' : 'outline'} 
+              variant={currentViewMode === 'card' ? 'default' : 'ghost'} 
               size="sm" 
               onClick={() => setCurrentViewMode('card')}
-              className="flex items-center"
+              className={`flex items-center ${
+                currentViewMode === 'card' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'text-muted-foreground hover:text-foreground'
+              } transition-all`}
             >
               <LayoutGrid className="h-4 w-4 mr-2" />
               {t('viewMode.card', 'Thẻ')}
             </Button>
             <Button 
-              variant={currentViewMode === 'table' ? 'default' : 'outline'} 
+              variant={currentViewMode === 'table' ? 'default' : 'ghost'} 
               size="sm" 
               onClick={() => setCurrentViewMode('table')}
-              className="flex items-center"
+              className={`flex items-center ${
+                currentViewMode === 'table' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'text-muted-foreground hover:text-foreground'
+              } transition-all`}
             >
               <Table className="h-4 w-4 mr-2" />
               {t('viewMode.table', 'Bảng')}
@@ -480,19 +527,45 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
           </div>
         </div>
 
-        {data.length === 0 ? (
-          <div className="p-8 text-center">
-            <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi')}</p>
-          </div>
-        ) : (
-          currentViewMode === 'card' ? renderCardView() : renderTableView()
-        )}
+        <div className="p-4">
+          {data.length === 0 ? (
+            <div className="py-20 px-4 text-center bg-background/50 rounded-lg border border-dashed">
+              <div className="mx-auto max-w-md">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="42" 
+                  height="42" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="1" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="mx-auto mb-4 text-muted-foreground/50"
+                >
+                  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2z"></path>
+                  <path d="M7 7h10"></path>
+                  <path d="M7 11h10"></path>
+                  <path d="M7 15h4"></path>
+                </svg>
+                <p className="text-muted-foreground font-medium mb-2">
+                  {t('submission.noData', 'Chưa có dữ liệu nào được gửi')}
+                </p>
+                <p className="text-sm text-muted-foreground/70">
+                  {t('submission.noDataDescription', 'Các biểu mẫu đã nộp sẽ hiển thị ở đây.')}
+                </p>
+              </div>
+            </div>
+          ) : (
+            currentViewMode === 'card' ? renderCardView() : renderTableView()
+          )}
+        </div>
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto border-none shadow-lg">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="text-xl font-bold text-primary">
               {isEditing 
                 ? editedData.length === 1
                   ? t('submission.editSingleField', 'Chỉnh sửa trường: {fieldName}', { fieldName: editedData[0]?.name })
@@ -501,7 +574,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
                   ? t('submission.viewSingleField', 'Xem trường: {fieldName}', { fieldName: editedData[0]?.name })
                   : t('submission.viewData', 'Xem dữ liệu biểu mẫu')}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-muted-foreground mt-1">
               {isEditing 
                 ? editedData.length === 1
                   ? t('submission.editSingleFieldDescription', 'Chỉnh sửa giá trị cho trường này.')
@@ -510,16 +583,30 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
+          <div className="divide-y divide-border">
             {editedData.map((field, index) => (
-              <div key={field.id} className="grid grid-cols-[150px_1fr] gap-4 items-start">
-                <div className="font-medium">{field.name}:</div>
-                <div>{renderFieldInput(field, index)}</div>
+              <div 
+                key={field.id} 
+                className={`py-4 ${isEditing ? 'hover:bg-muted/40' : ''} rounded-md transition-colors`}
+              >
+                <div className="flex flex-col md:flex-row md:items-start gap-2 md:gap-6 px-1">
+                  <div className="w-full md:w-1/4 flex items-center">
+                    <span className="font-semibold text-sm text-primary inline-flex items-center">
+                      {field.name}
+                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                        {field.field_type}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="w-full md:w-3/4 flex-1">
+                    {renderFieldInput(field, index)}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
 
-          <DialogFooter className="flex justify-between">
+          <DialogFooter className="flex justify-between border-t pt-4 mt-4">
             {!readOnly && (
               <>
                 {isEditing ? (
@@ -527,23 +614,26 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
                     <Button 
                       variant="outline" 
                       onClick={() => setIsEditing(false)}
+                      className="flex items-center gap-1 border-gray-300"
                     >
-                      <X className="mr-2 h-4 w-4" />
-                      {t('actions.cancel', 'Hủy')}
+                      <X className="h-4 w-4" />
+                      <span>{t('actions.cancel', 'Hủy')}</span>
                     </Button>
                     <Button 
                       onClick={handleSave}
+                      className="flex items-center gap-1 bg-primary hover:bg-primary/90 transition-colors"
                     >
-                      <Save className="mr-2 h-4 w-4" />
-                      {t('actions.save', 'Lưu')}
+                      <Save className="h-4 w-4" />
+                      <span>{t('actions.save', 'Lưu')}</span>
                     </Button>
                   </>
                 ) : (
                   <Button 
                     onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-1 bg-primary hover:bg-primary/90 transition-colors"
                   >
-                    <Edit className="mr-2 h-4 w-4" />
-                    {t('actions.edit', 'Chỉnh sửa')}
+                    <Edit className="h-4 w-4" />
+                    <span>{t('actions.edit', 'Chỉnh sửa')}</span>
                   </Button>
                 )}
               </>
@@ -552,8 +642,9 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
               <Button 
                 variant="outline" 
                 onClick={() => setDialogOpen(false)}
+                className="flex items-center gap-1 border-gray-300"
               >
-                {t('actions.close', 'Đóng')}
+                <span>{t('actions.close', 'Đóng')}</span>
               </Button>
             )}
           </DialogFooter>

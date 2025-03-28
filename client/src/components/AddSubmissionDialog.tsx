@@ -158,60 +158,91 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors">
           <PlusCircle className="h-4 w-4" />
           {t('submission.addNew', 'Thêm mới')}
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[550px]">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="sm:max-w-[600px] p-0 border-none shadow-lg rounded-lg overflow-hidden">
+        <DialogHeader className="bg-muted/30 border-b p-6">
+          <DialogTitle className="text-xl font-bold text-primary">
             {t('submission.createNew', 'Tạo biểu mẫu mới')}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-muted-foreground mt-1">
             {t('submission.selectFormDescription', 'Chọn loại biểu mẫu bạn muốn tạo.')}
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-6">
+        <div className="p-6">
           {isLoadingForms ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <span className="ml-2">{t('common.loading', 'Đang tải...')}</span>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="relative w-16 h-16">
+                <Loader2 className="h-16 w-16 animate-spin text-primary/30 absolute" />
+                <Loader2 className="h-16 w-16 animate-spin text-primary absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+              </div>
+              <span className="mt-4 text-muted-foreground font-medium">
+                {t('common.loading', 'Đang tải...')}
+              </span>
             </div>
           ) : (
             <>
-              <h3 className="mb-4 text-sm font-medium">
+              <h3 className="mb-4 text-sm font-medium text-foreground flex items-center">
+                <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></span>
                 {t('submission.availableForms', 'Các biểu mẫu có sẵn:')}
               </h3>
               
-              <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 gap-3 max-h-[350px] overflow-y-auto pr-2 scroll-smooth">
                 {forms.length > 0 ? (
                   forms.map((form) => (
                     <div 
                       key={form.id}
-                      className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      className={`group p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
                         selectedFormId === form.id 
-                          ? 'bg-primary/10 border-primary' 
-                          : 'hover:bg-muted'
+                          ? 'bg-primary/10 border-primary shadow-sm' 
+                          : 'hover:bg-background/80 hover:border-primary/20 hover:shadow-sm'
                       }`}
                       onClick={() => handleFormSelect(form.id)}
                     >
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium">{form.name}</h4>
-                        {selectedFormId === form.id && (
-                          <Check className="h-5 w-5 text-primary" />
+                        <h4 className={`font-medium ${selectedFormId === form.id ? 'text-primary' : ''}`}>
+                          {form.name}
+                        </h4>
+                        {selectedFormId === form.id ? (
+                          <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center">
+                            <Check className="h-4 w-4" />
+                          </div>
+                        ) : (
+                          <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 group-hover:border-primary/40 transition-colors"></div>
                         )}
                       </div>
                       {form.description && (
-                        <p className="text-sm text-muted-foreground mt-1">{form.description}</p>
+                        <p className="text-sm text-muted-foreground mt-1.5">{form.description}</p>
                       )}
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {t('submission.noFormsAvailable', 'Không có biểu mẫu nào.')}
+                  <div className="text-center py-10 px-4 border border-dashed rounded-lg">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="36" 
+                      height="36" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="1" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      className="mx-auto mb-4 text-muted-foreground/50"
+                    >
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <path d="M14 2v6h6"></path>
+                      <path d="M5 12h14"></path>
+                      <path d="M5 18h8"></path>
+                    </svg>
+                    <p className="text-muted-foreground font-medium">
+                      {t('submission.noFormsAvailable', 'Không có biểu mẫu nào.')}
+                    </p>
                   </div>
                 )}
               </div>
@@ -220,32 +251,39 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
           
           {isLoadingFields && (
             <div className="flex items-center justify-center py-4 mt-4 border-t">
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              <span className="ml-2 text-sm">
+              <div className="relative">
+                <Loader2 className="h-5 w-5 animate-spin text-primary/30 absolute" />
+                <Loader2 className="h-5 w-5 animate-spin text-primary absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+              </div>
+              <span className="ml-8 text-sm text-muted-foreground">
                 {t('submission.loadingFormFields', 'Đang tải thông tin biểu mẫu...')}
               </span>
             </div>
           )}
         </div>
         
-        <DialogFooter>
+        <DialogFooter className="border-t p-4 flex-row justify-between gap-2">
           <Button 
             variant="outline" 
             onClick={() => setIsOpen(false)}
+            className="border-gray-300 hover:bg-background flex items-center gap-1"
           >
-            {t('actions.cancel', 'Hủy')}
+            <span>{t('actions.cancel', 'Hủy')}</span>
           </Button>
           <Button
             onClick={handleCreateSubmission}
             disabled={!selectedFormId || isLoadingFields || isSubmitting}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
           >
             {isSubmitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <div className="relative">
+                <Loader2 className="h-4 w-4 animate-spin text-white/30 absolute" />
+                <Loader2 className="h-4 w-4 animate-spin text-white absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+              </div>
             ) : (
               <PlusCircle className="h-4 w-4" />
             )}
-            {t('submission.create', 'Tạo biểu mẫu')}
+            <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
           </Button>
         </DialogFooter>
       </DialogContent>
