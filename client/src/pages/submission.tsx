@@ -41,9 +41,9 @@ export default function SubmissionPage() {
     
   const parentMenu = menusData?.find((menu: Menu) => menu.id === currentSubmenu?.parent_id);
   
-  // Ưu tiên sử dụng menuId từ query parameter, nếu không có thì sử dụng submenu từ workflowId
-  // ID mặc định - danh sách menu workflow ID 6b1988ea-c4c5-4810-815d-1de6b06a9392
-  const menuIdToUse = menuIdFromQuery || currentSubmenu?.id || "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+  // Ưu tiên sử dụng menuId từ query parameter (được truyền qua URL submission?menuId=xxx)
+  // Cách xử lý áp dụng cho mọi submenu, giống như cách xử lý cho submenu khiếu nại (ID: "ss")
+  const menuIdToUse = menuIdFromQuery || currentSubmenu?.id || "";
   
   console.log("Menu information:", {
     menuIdFromQuery,
@@ -182,13 +182,14 @@ export default function SubmissionPage() {
   // Xử lý khi tạo mới submission form
   const handleCreateSubmission = async (newSubmission: FormSubmission) => {
     try {
-      // Sử dụng submenu ID đã được tìm thấy ở trên
-      const menuIdForSubmission = currentSubmenu?.id || parentMenu?.id || "aca06cb6-7dfa-4bda-89a8-42d8f3c18ec8";
+      // Ưu tiên sử dụng menuId từ query parameter hoặc từ currentSubmenu
+      // Áp dụng logic giống như submenu khiếu nại (ID: "ss")
+      const menuIdForSubmission = menuIdFromQuery || currentSubmenu?.id || "";
       
       console.log("Found menu/submenu for workflow:", { 
         workflowId,
         submenuId: currentSubmenu?.id,
-        parentMenuId: parentMenu?.id,
+        menuIdFromQuery,
         menuIdToUse: menuIdForSubmission
       });
       
@@ -196,7 +197,8 @@ export default function SubmissionPage() {
       await createSubmissionMutation.mutateAsync({
         ...newSubmission,
         workflowId,
-        menuId: menuIdForSubmission
+        menuId: menuIdForSubmission,
+        formId: newSubmission.formId
       });
     } catch (error) {
       console.error('Error creating submission:', error);

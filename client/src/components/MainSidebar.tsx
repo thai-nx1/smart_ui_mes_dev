@@ -279,9 +279,13 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
       {isOpen && menu.core_dynamic_child_menus && (
         <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200">
           {menu.core_dynamic_child_menus.map((subMenu) => {
-            const href = subMenu.workflow_id 
-              ? `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}`
-              : `/menu/${menu.id}/submenu/${subMenu.id}`;
+            let href = "";
+            // Xử lý đặc biệt cho tất cả các submenu, áp dụng cách xử lý giống như submenu khiếu nại
+            if (subMenu.workflow_id) {
+              href = `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}`;
+            } else {
+              href = `/menu/${menu.id}/submenu/${subMenu.id}`;
+            }
             const isActive = location === href || location.startsWith(`/submission/${subMenu.workflow_id}`);
             
             // Khi click vào submenu, sẽ gọi 2 API:
