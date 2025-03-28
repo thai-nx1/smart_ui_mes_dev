@@ -28,6 +28,7 @@ interface TransitionFormDialogProps {
 
 interface FormField {
   id: string;
+  form_field_id?: string; // ID của form_field để tạo key duy nhất
   name: string;
   value: any;
   field_type: string;
@@ -60,12 +61,20 @@ export function TransitionFormDialog({
       const userId = "5c065b51-3862-4004-ae96-ca23245aa21e"; 
       const submissionName = transitionName + " - " + new Date().toISOString();
       
+      // Chuẩn bị dữ liệu để gửi đi, loại bỏ trường form_field_id vì API không cần
+      const submissionData = formValues.map(field => ({
+        id: field.id,
+        name: field.name,
+        value: field.value,
+        field_type: field.field_type
+      }));
+      
       return submitTransitionForm(
         transitionId,
         recordId,
         userId,
         submissionName,
-        formValues
+        submissionData
       );
     },
     onSuccess: () => {
@@ -94,8 +103,10 @@ export function TransitionFormDialog({
       const fields = formData.data.core_core_dynamic_workflow_transitions_by_pk.core_dynamic_form.core_dynamic_form_fields;
       
       // Map các field từ API sang định dạng formValues
+      // Sử dụng id của form_field để đảm bảo keys luôn unique ngay cả khi có trùng field
       const initialValues = fields.map((field: any) => ({
         id: field.core_dynamic_field.id,
+        form_field_id: field.id, // Thêm ID của form_field để tạo key duy nhất
         name: field.core_dynamic_field.name,
         field_type: field.core_dynamic_field.field_type,
         value: getDefaultValueByType(field.core_dynamic_field.field_type),
@@ -298,7 +309,7 @@ export function TransitionFormDialog({
         ) : (
           <form onSubmit={handleSubmit} className="grid gap-6 py-4">
             {formValues.map((field) => (
-              <div key={field.id} className="grid gap-2">
+              <div key={field.form_field_id || `field-${field.id}-${Math.random().toString(36).substr(2, 9)}`} className="grid gap-2">
                 <div className="flex justify-between">
                   <label htmlFor={field.id} className="text-sm font-medium leading-none">
                     {field.name}

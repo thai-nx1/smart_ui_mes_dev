@@ -606,7 +606,7 @@ export async function submitTransitionForm(
       insert_submission_form(
         args: {
           name: $name
-          record_id: $recordId
+          menu_record_id: $recordId
           transition_id: $transitionId
           user_id: $userId
           submission_data: $submissionData
@@ -627,6 +627,7 @@ export async function submitTransitionForm(
     submissionData
   };
   
+  console.log("Submitting transition form with data:", variables);
   return executeGraphQLQuery(query, variables);
 }
 
