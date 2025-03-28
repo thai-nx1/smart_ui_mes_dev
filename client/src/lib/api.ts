@@ -169,9 +169,10 @@ export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLRespons
  * Fetch forms by menu ID and form type (CREATE/EDIT/VIEW)
  */
 export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT' | 'VIEW'): Promise<GraphQLResponse<any>> {
+  // Tên field trong database có thể khác, chúng ta cần kiểm tra lại
   const query = `
-    query GetMenuForms($menuId: uuid!, $formType: String!) {
-      core_core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}}) {
+    query GetFormsByMenu($menuId: uuid!, $formType: String!) {
+      core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}}) {
         id
         form_type
         form_id
@@ -199,7 +200,16 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
     }
   `;
 
-  return executeGraphQLQuery(query, { menuId, formType });
+  // Thêm organization_id và user_id vào variables
+  const variables = {
+    menuId,
+    formType,
+    organization_id: "7459aaa3-b2f8-481e-87d6-f4b4d69a7d0e", // ID mặc định
+    user_id: "3fa85f64-5717-4562-b3fc-2c963f66afa6" // ID mặc định
+  };
+
+  console.log("Fetching menu forms with:", variables);
+  return executeGraphQLQuery(query, variables);
 }
 
 /**

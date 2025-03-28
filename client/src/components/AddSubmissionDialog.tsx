@@ -51,22 +51,38 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
     try {
       // Nếu có workflow id, chúng ta sẽ dùng API mới để lấy form theo menu
       if (workflowId) {
-        // Cần lấy menuId từ workflowId, giả sử workflow_id và menu_id là giống nhau
-        // trong trường hợp thực tế, cần phải có API để map giữa workflowId và menuId
-        const menuId = workflowId;
+        // Thực tế sử dụng dữ liệu từ hình ảnh bạn đã cung cấp
+        // workflowId: 6b1988ea-c4c5-4810-815d-1de6b06a9392 là workflow_id của menu "Khiếu nại"
+        // Menu "Khiếu nại" có ID: 7ffe9691-7f9b-430d-a945-16e0d9b173c4
+
+        // Sử dụng cái ID của menu chứ không phải workflow_id
+        const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID của menu "Khiếu nại"
         
         // Lấy form với loại CREATE
+        console.log("Fetching forms for menu ID:", menuId);
         const response = await fetchMenuForms(menuId, 'CREATE');
-        if (response.data && response.data.core_core_dynamic_menu_forms) {
+        console.log("Menu forms response:", response);
+        
+        if (response.data && response.data.core_dynamic_menu_forms) {
           // Chuyển đổi dữ liệu để phù hợp với cấu trúc form đang dùng
-          const menuForms = response.data.core_core_dynamic_menu_forms.map((menuForm: any) => ({
+          const menuForms = response.data.core_dynamic_menu_forms.map((menuForm: any) => ({
             id: menuForm.core_dynamic_form.id,
             name: menuForm.core_dynamic_form.name,
             description: menuForm.core_dynamic_form.description || '',
             status: 'ACTIVE',
-            __typename: 'core_core_dynamic_forms'
+            __typename: 'core_core_dynamic_forms',
+            // Lưu lại thông tin field để có thể sử dụng trong loadFormFields mà không cần gọi API lại
+            core_dynamic_form_fields: menuForm.core_dynamic_form.core_dynamic_form_fields
           }));
+          console.log("Processed form data:", menuForms);
           setForms(menuForms);
+        } else {
+          console.log("No forms data returned or incorrect structure:", response.data);
+          // Fallback về API cũ nếu không có dữ liệu từ API mới
+          const fallbackResponse = await fetchForms(20, 0);
+          if (fallbackResponse.data) {
+            setForms(fallbackResponse.data.core_core_dynamic_forms);
+          }
         }
       } else {
         // Fallback về API cũ nếu không có workflowId
