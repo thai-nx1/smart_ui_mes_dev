@@ -475,16 +475,27 @@ export function SubmissionDataTable({
     );
   };
 
+  // Ưu tiên sử dụng trường dữ liệu từ API fetchMenuViewForm
+  const viewFormFields = useMemo(() => {
+    if (formData?.data?.core_core_dynamic_menu_forms?.[0]?.core_dynamic_form?.core_dynamic_form_fields) {
+      return formData.data.core_core_dynamic_menu_forms[0].core_dynamic_form.core_dynamic_form_fields.map(
+        (ff: any) => ff.core_dynamic_field?.name
+      ).filter(Boolean);
+    }
+    return [];
+  }, [formData]);
+  
   // Render chế độ xem dạng bảng
   const renderTableView = () => {
-    const fieldNames = getUniqueFieldTypes();
+    // Sử dụng trường từ API nếu có, nếu không sử dụng các trường từ dữ liệu
+    const fieldNames = viewFormFields.length > 0 ? viewFormFields : getUniqueFieldTypes();
     
     return (
       <div className="w-full overflow-auto rounded-md border border-border">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-muted/70 text-primary-foreground">
-              {fieldNames.map(fieldName => (
+              {fieldNames.map((fieldName: string) => (
                 <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
                   <div className="flex items-center">
                     <span>{fieldName}</span>
@@ -509,7 +520,7 @@ export function SubmissionDataTable({
                     rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80'
                   } hover:bg-primary/5`}
                 >
-                  {fieldNames.map(fieldName => {
+                  {fieldNames.map((fieldName: string) => {
                     const field = submission.data.find(
                       (f: FieldData) => f.name === fieldName
                     );
@@ -711,7 +722,7 @@ export function SubmissionDataTable({
             </div>
             
             <div className="flex items-center gap-2">
-              {getUniqueFieldTypes().slice(0, 4).map(fieldName => (
+              {getUniqueFieldTypes().slice(0, 4).map((fieldName: string) => (
                 <Button 
                   key={fieldName}
                   variant="outline"

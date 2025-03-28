@@ -18,6 +18,13 @@ export default function SubmissionPage() {
   const params = useParams<{ workflowId: string }>();
   const workflowId = params.workflowId;
   
+  // Lấy menuId từ query parameter nếu có
+  const getQueryParam = (name: string): string | null => {
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get(name);
+  };
+  const menuIdFromQuery = getQueryParam('menuId');
+  
   // Truy vấn để lấy tất cả các menu để tìm menu phù hợp
   const { data: menusData } = useQuery({
     queryKey: ['/api/all-menus'],
@@ -27,11 +34,23 @@ export default function SubmissionPage() {
     }
   });
 
-  // Tìm submenu từ workflowId
-  const currentSubmenu = menusData?.find((menu: Menu) => menu.workflow_id === workflowId);
+  // Tìm submenu từ workflowId hoặc từ menuId trên URL
+  const currentSubmenu = menuIdFromQuery 
+    ? menusData?.find((menu: Menu) => menu.id === menuIdFromQuery) 
+    : menusData?.find((menu: Menu) => menu.workflow_id === workflowId);
+    
   const parentMenu = menusData?.find((menu: Menu) => menu.id === currentSubmenu?.parent_id);
+  
+  // Ưu tiên sử dụng menuId từ query parameter, nếu không có thì sử dụng submenu từ workflowId
   // ID mặc định - danh sách menu workflow ID 6b1988ea-c4c5-4810-815d-1de6b06a9392
-  const menuIdToUse = currentSubmenu?.id || "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+  const menuIdToUse = menuIdFromQuery || currentSubmenu?.id || "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+  
+  console.log("Menu information:", {
+    menuIdFromQuery,
+    currentSubmenuId: currentSubmenu?.id,
+    menuIdToUse,
+    workflowId
+  });
 
   // Sử dụng API QueryMenuRecord thay cho fetchSubmissionForms
   const { data, isLoading, error } = useQuery({
@@ -208,6 +227,8 @@ export default function SubmissionPage() {
                 
                 throw new Error(t('submission.noSubmissionFound', 'Không tìm thấy biểu mẫu để cập nhật'));
               }}
+              menuId={menuIdToUse}
+              workflowId={workflowId}
             />
           )}
         </CardContent>

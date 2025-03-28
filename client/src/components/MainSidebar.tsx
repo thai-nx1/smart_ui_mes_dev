@@ -280,9 +280,17 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
         <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200">
           {menu.core_dynamic_child_menus.map((subMenu) => {
             const href = subMenu.workflow_id 
-              ? `/submission/${subMenu.workflow_id}`
+              ? `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}`
               : `/menu/${menu.id}/submenu/${subMenu.id}`;
-            const isActive = location === href;
+            const isActive = location === href || location.startsWith(`/submission/${subMenu.workflow_id}`);
+            
+            // Khi click vào submenu, sẽ gọi 2 API:
+            // 1. API lấy data từ core_core_menu_records theo menu_id
+            // 2. API lấy form VIEW từ core_core_dynamic_menu_forms theo menu_id
+            const handleSubmenuClick = () => {
+              // Xử lý đã được thực hiện trong component Submission thông qua menuId param
+              console.log(`Navigating to submenu: ${subMenu.name}, ID: ${subMenu.id}, workflowId: ${subMenu.workflow_id}`);
+            };
             
             return (
               <SidebarMenuSubButton
@@ -291,6 +299,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                 className={`pl-9 flex items-center gap-2 transition-all ${
                   isActive ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'
                 }`}
+                onClick={handleSubmenuClick}
               >
                 <Link href={href}>
                   {subMenu.workflow_id ? (
