@@ -46,22 +46,22 @@ export function TransitionFormDialog({
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [formValues, setFormValues] = useState<FormField[]>([]);
-  
+
   // Truy vấn API để lấy form fields cho transition
   const { data: formData, isLoading, refetch } = useQuery({
     queryKey: ['transition-form', transitionId],
     queryFn: () => fetchTransitionForm(transitionId),
     enabled: isOpen && !!transitionId,
   });
-  
+
   // Hàm để load form fields khi bấm vào nút transition
   const fetchAndSetFormFields = async (transitionId: string) => {
     try {
       const result = await fetchTransitionForm(transitionId);
-      
+
       if (result?.data?.core_core_dynamic_workflow_transitions_by_pk?.core_dynamic_form?.core_dynamic_form_fields) {
         const fields = result.data.core_core_dynamic_workflow_transitions_by_pk.core_dynamic_form.core_dynamic_form_fields;
-        
+
         // Map các field từ API sang định dạng formValues
         const initialValues = fields.map((field: any) => ({
           id: field.core_dynamic_field.id,
@@ -71,7 +71,7 @@ export function TransitionFormDialog({
           value: getDefaultValueByType(field.core_dynamic_field.field_type),
           is_required: field.is_required
         }));
-        
+
         setFormValues(initialValues);
       }
     } catch (error) {
@@ -87,10 +87,11 @@ export function TransitionFormDialog({
   // Mutation để gửi dữ liệu form
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      // TODO: Thay thế bằng user ID thực từ authentication system
+      // TODO: Thay thế bằng user ID thực từ authentication system và workflowId
       const userId = "5c065b51-3862-4004-ae96-ca23245aa21e"; 
+      const workflowId = "YOUR_WORKFLOW_ID"; // Replace with actual workflow ID
       const submissionName = transitionName + " - " + new Date().toISOString();
-      
+
       // Chuẩn bị dữ liệu để gửi đi, loại bỏ trường form_field_id vì API không cần
       const submissionData = formValues.map(field => ({
         id: field.id,
@@ -98,12 +99,17 @@ export function TransitionFormDialog({
         value: field.value,
         field_type: field.field_type
       }));
-      
+
+      // Assuming fetchTransitionForm returns formId in formData
+      const formId = formData?.data?.core_core_dynamic_workflow_transitions_by_pk?.core_dynamic_form?.id;
+
+      if (!formId) {
+          throw new Error("Form ID not found in formData");
+      }
+
       return submitTransitionForm(
-        transitionId,
-        recordId,
-        userId,
-        submissionName,
+        formId,
+        workflowId,
         submissionData
       );
     },
@@ -127,11 +133,11 @@ export function TransitionFormDialog({
   // Xử lý khi mở dialog
   const handleOpen = (open: boolean) => {
     setIsOpen(open);
-    
+
     // Khởi tạo formValues từ dữ liệu API khi dialog mở
     if (open && formData?.data?.core_core_dynamic_workflow_transitions_by_pk?.core_dynamic_form?.core_dynamic_form_fields) {
       const fields = formData.data.core_core_dynamic_workflow_transitions_by_pk.core_dynamic_form.core_dynamic_form_fields;
-      
+
       // Map các field từ API sang định dạng formValues
       // Sử dụng id của form_field để đảm bảo keys luôn unique ngay cả khi có trùng field
       const initialValues = fields.map((field: any) => ({
@@ -142,7 +148,7 @@ export function TransitionFormDialog({
         value: getDefaultValueByType(field.core_dynamic_field.field_type),
         is_required: field.is_required
       }));
-      
+
       setFormValues(initialValues);
     }
   };
@@ -291,7 +297,7 @@ export function TransitionFormDialog({
       case 'MULTI_CHOICE':
         const selectedValues = Array.isArray(field.value) ? field.value : 
                               field.value ? [field.value as string] : [];
-        
+
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
@@ -368,7 +374,7 @@ export function TransitionFormDialog({
             Chi tiết thông tin của biểu mẫu đã nộp.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="py-2 border-b">
           <h3 className="text-base font-medium">Hành động có sẵn:</h3>
           <div className="mt-2 flex space-x-2">
@@ -383,7 +389,7 @@ export function TransitionFormDialog({
             </span>
           </div>
         </div>
-        
+
         {isLoading ? (
           <div className="py-6">
             <div className="animate-pulse space-y-4">
@@ -400,7 +406,7 @@ export function TransitionFormDialog({
                 {renderFieldInput(field)}
               </div>
             ))}
-            
+
             <div className="flex justify-end mt-6">
               <Button 
                 type="submit" 
