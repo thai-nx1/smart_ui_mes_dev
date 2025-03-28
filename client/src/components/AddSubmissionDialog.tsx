@@ -159,10 +159,26 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
       const formWithFields = forms.find(form => form.id === formId) as any;
       if (formWithFields && formWithFields.core_dynamic_form_fields) {
         // Trường hợp khi dùng API mới, dữ liệu fields đã được lấy sẵn
-        const extractedFields = formWithFields.core_dynamic_form_fields.map(
-          (formField: any) => formField.core_dynamic_field
+        
+        // Sắp xếp các field theo position nếu có
+        const sortedFormFields = [...formWithFields.core_dynamic_form_fields].sort((a, b) => {
+          // Nếu position là null hoặc undefined, đặt vào cuối
+          if (a.position === null || a.position === undefined) return 1;
+          if (b.position === null || b.position === undefined) return -1;
+          
+          // Sắp xếp theo position
+          return a.position - b.position;
+        });
+        
+        const extractedFields = sortedFormFields.map(
+          (formField: any) => ({
+            ...formField.core_dynamic_field,
+            position: formField.position,
+            is_required: formField.is_required
+          })
         );
-        console.log('Using pre-fetched fields data:', extractedFields.length, 'fields');
+        
+        console.log('Using pre-fetched fields data:', extractedFields.length, 'fields with positions');
         setFields(extractedFields);
       } else {
         // Trường hợp sử dụng API cũ
@@ -477,62 +493,76 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                   
                   {field.field_type === 'SINGLE_CHOICE' && (
                     <div className="space-y-2">
-                      {['1', '2', '3', '4'].map((value) => (
-                        <div key={value} className="flex items-center">
-                          <input
-                            id={`${field.id}-${value}`}
-                            type="radio"
-                            name={`choice-group-${field.id}`}
-                            value={value}
-                            checked={fieldValues[field.id] === value}
-                            onChange={() => handleFieldValueChange(field.id, value)}
-                            className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
-                          />
-                          <label 
-                            htmlFor={`${field.id}-${value}`}
-                            className="ml-2 text-sm font-medium"
-                          >
-                            {`Lựa chọn ${value}`}
-                          </label>
-                        </div>
-                      ))}
+                      {/* Sử dụng option_values nếu có, ngược lại sử dụng giá trị mặc định */}
+                      {(field.option_values && Array.isArray(JSON.parse(field.option_values)) 
+                        ? JSON.parse(field.option_values) 
+                        : ['1', '2', '3', '4']).map((option: any) => {
+                          const value = typeof option === 'object' ? option.value : option;
+                          const label = typeof option === 'object' ? option.label : `Lựa chọn ${option}`;
+                          
+                          return (
+                            <div key={value} className="flex items-center">
+                              <input
+                                id={`${field.id}-${value}`}
+                                type="radio"
+                                name={`choice-group-${field.id}`}
+                                value={value}
+                                checked={fieldValues[field.id] === value}
+                                onChange={() => handleFieldValueChange(field.id, value)}
+                                className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
+                              />
+                              <label 
+                                htmlFor={`${field.id}-${value}`}
+                                className="ml-2 text-sm font-medium"
+                              >
+                                {label}
+                              </label>
+                            </div>
+                          );
+                      })}
                     </div>
                   )}
                   
                   {field.field_type === 'MULTI_CHOICE' && (
                     <div className="space-y-2">
-                      {['1', '2', '3', '4'].map((value) => {
-                        const selectedValues = Array.isArray(fieldValues[field.id]) 
-                          ? fieldValues[field.id] 
-                          : fieldValues[field.id] ? [fieldValues[field.id]] : [];
-                        
-                        return (
-                          <div key={value} className="flex items-center">
-                            <input
-                              id={`multi-${field.id}-${value}`}
-                              type="checkbox"
-                              value={value}
-                              checked={selectedValues.includes(value)}
-                              onChange={(e) => {
-                                let newValues = [...selectedValues];
-                                if (e.target.checked) {
-                                  newValues.push(value);
-                                } else {
-                                  newValues = newValues.filter(v => v !== value);
-                                }
-                                handleFieldValueChange(field.id, newValues);
-                              }}
-                              className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                            />
-                            <label 
-                              htmlFor={`multi-${field.id}-${value}`}
-                              className="ml-2 text-sm font-medium"
-                            >
-                              {`Lựa chọn ${value}`}
-                            </label>
-                          </div>
-                        );
-                      })}
+                      {/* Sử dụng option_values nếu có, ngược lại sử dụng giá trị mặc định */}
+                      {(field.option_values && Array.isArray(JSON.parse(field.option_values)) 
+                        ? JSON.parse(field.option_values) 
+                        : ['1', '2', '3', '4']).map((option: any) => {
+                          const value = typeof option === 'object' ? option.value : option;
+                          const label = typeof option === 'object' ? option.label : `Lựa chọn ${option}`;
+                          
+                          const selectedValues = Array.isArray(fieldValues[field.id]) 
+                            ? fieldValues[field.id] 
+                            : fieldValues[field.id] ? [fieldValues[field.id]] : [];
+                          
+                          return (
+                            <div key={value} className="flex items-center">
+                              <input
+                                id={`multi-${field.id}-${value}`}
+                                type="checkbox"
+                                value={value}
+                                checked={selectedValues.includes(value)}
+                                onChange={(e) => {
+                                  let newValues = [...selectedValues];
+                                  if (e.target.checked) {
+                                    newValues.push(value);
+                                  } else {
+                                    newValues = newValues.filter(v => v !== value);
+                                  }
+                                  handleFieldValueChange(field.id, newValues);
+                                }}
+                                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                              />
+                              <label 
+                                htmlFor={`multi-${field.id}-${value}`}
+                                className="ml-2 text-sm font-medium"
+                              >
+                                {label}
+                              </label>
+                            </div>
+                          );
+                        })}
                     </div>
                   )}
                 </div>

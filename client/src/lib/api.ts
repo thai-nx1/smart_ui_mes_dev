@@ -187,6 +187,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
               description
               name
               status
+              option_values
             }
           }
         }
@@ -616,6 +617,7 @@ export async function fetchTransitionForm(transitionId: string): Promise<GraphQL
               description
               name
               status
+              option_values
             }
           }
         }
@@ -696,6 +698,7 @@ export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse
               description
               name
               status
+              option_values
             }
           }
         }

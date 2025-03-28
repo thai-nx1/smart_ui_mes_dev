@@ -78,6 +78,11 @@ export interface Field {
   status: string;
   __typename: string;
   options?: FieldOption[];
+  option_values?: any;
+  position?: number;
+  is_required?: boolean;
+  code?: string;
+  configuration?: string;
 }
 
 export type FieldType = 'TEXT' | 'PARAGRAPH' | 'NUMBER' | 'SINGLE_CHOICE' | 'MULTI_CHOICE' | 'DATE' |
