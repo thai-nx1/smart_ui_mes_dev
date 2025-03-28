@@ -170,6 +170,16 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
           return a.position - b.position;
         });
         
+        // Debug dữ liệu option_values
+        sortedFormFields.forEach((field) => {
+          if (field.core_dynamic_field.field_type === 'SINGLE_CHOICE' || 
+              field.core_dynamic_field.field_type === 'MULTI_CHOICE') {
+            console.log(`Field ${field.core_dynamic_field.name} option_values:`, 
+              field.core_dynamic_field.option_values,
+              'Type:', typeof field.core_dynamic_field.option_values);
+          }
+        });
+        
         const extractedFields = sortedFormFields.map(
           (formField: any) => ({
             ...formField.core_dynamic_field,
@@ -494,9 +504,28 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                   {field.field_type === 'SINGLE_CHOICE' && (
                     <div className="space-y-2">
                       {/* Sử dụng option_values nếu có, ngược lại sử dụng giá trị mặc định */}
-                      {(field.option_values && Array.isArray(JSON.parse(field.option_values)) 
-                        ? JSON.parse(field.option_values) 
-                        : ['1', '2', '3', '4']).map((option: any) => {
+                      {(() => {
+                        // Xử lý option_values có thể là mảng hoặc chuỗi JSON
+                        let options = ['1', '2', '3', '4'];
+                        
+                        if (field.option_values) {
+                          if (Array.isArray(field.option_values)) {
+                            // Nếu option_values là mảng đối tượng JavaScript
+                            options = field.option_values;
+                          } else if (typeof field.option_values === 'string') {
+                            // Nếu option_values là chuỗi JSON
+                            try {
+                              const parsed = JSON.parse(field.option_values);
+                              if (Array.isArray(parsed)) {
+                                options = parsed;
+                              }
+                            } catch (error) {
+                              console.error('Error parsing option_values:', error);
+                            }
+                          }
+                        }
+                        
+                        return options.map((option: any) => {
                           const value = typeof option === 'object' ? option.value : option;
                           const label = typeof option === 'object' ? option.label : `Lựa chọn ${option}`;
                           
@@ -519,16 +548,36 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                               </label>
                             </div>
                           );
-                      })}
+                        });
+                      })()}
                     </div>
                   )}
                   
                   {field.field_type === 'MULTI_CHOICE' && (
                     <div className="space-y-2">
                       {/* Sử dụng option_values nếu có, ngược lại sử dụng giá trị mặc định */}
-                      {(field.option_values && Array.isArray(JSON.parse(field.option_values)) 
-                        ? JSON.parse(field.option_values) 
-                        : ['1', '2', '3', '4']).map((option: any) => {
+                      {(() => {
+                        // Xử lý option_values có thể là mảng hoặc chuỗi JSON
+                        let options = ['1', '2', '3', '4'];
+                        
+                        if (field.option_values) {
+                          if (Array.isArray(field.option_values)) {
+                            // Nếu option_values là mảng đối tượng JavaScript
+                            options = field.option_values;
+                          } else if (typeof field.option_values === 'string') {
+                            // Nếu option_values là chuỗi JSON
+                            try {
+                              const parsed = JSON.parse(field.option_values);
+                              if (Array.isArray(parsed)) {
+                                options = parsed;
+                              }
+                            } catch (error) {
+                              console.error('Error parsing option_values for multi choice:', error);
+                            }
+                          }
+                        }
+                        
+                        return options.map((option: any) => {
                           const value = typeof option === 'object' ? option.value : option;
                           const label = typeof option === 'object' ? option.label : `Lựa chọn ${option}`;
                           
@@ -562,7 +611,8 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                               </label>
                             </div>
                           );
-                        })}
+                        });
+                      })()}
                     </div>
                   )}
                 </div>
