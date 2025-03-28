@@ -339,15 +339,6 @@ export function TransitionFormDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-2 border-b">
-          <h3 className="text-base font-medium">Hành động có sẵn:</h3>
-          <div className="mt-2 flex space-x-2">
-            <span className="px-3 py-1 border border-blue-500 text-blue-500 rounded-full text-sm">
-              {transitionName} →
-            </span>
-          </div>
-        </div>
-        
         {isLoading ? (
           <div className="py-6">
             <div className="animate-pulse space-y-4">
