@@ -608,7 +608,7 @@ export async function submitTransitionForm(
           name: $name
           transition_id: $transitionId,
           menu_record_id: $recordId,
-          submitter_id: $userId,
+          user_id: $userId,
           submission_data: $submissionData
         }
       ) {
