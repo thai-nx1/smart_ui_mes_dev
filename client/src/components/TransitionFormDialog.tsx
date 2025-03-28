@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Calendar } from 'lucide-react';
+import { Calendar, ChevronRight } from 'lucide-react';
 
 import {
   Dialog,
@@ -160,72 +160,102 @@ export function TransitionFormDialog({
     switch (field.field_type) {
       case 'TEXT':
         return (
-          <Input
-            placeholder="Nhập văn bản"
-            value={field.value as string}
-            onChange={(e) => handleValueChange(field.id, e.target.value)}
-            className="w-full"
-            required={field.is_required}
-          />
-        );
-      case 'PARAGRAPH':
-        return (
-          <Textarea
-            placeholder="Nhập đoạn văn bản dài"
-            value={field.value as string}
-            onChange={(e) => handleValueChange(field.id, e.target.value)}
-            className="w-full min-h-[100px]"
-            required={field.is_required}
-          />
-        );
-      case 'NUMBER':
-        return (
-          <Input
-            type="number"
-            placeholder="0"
-            value={field.value as number}
-            onChange={(e) => handleValueChange(field.id, Number(e.target.value))}
-            className="w-full"
-            required={field.is_required}
-          />
-        );
-      case 'DATE':
-        return (
-          <div className="flex items-center border rounded-md">
-            <Calendar className="mr-2 h-4 w-4 ml-2" />
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">TEXT</span>
+            </div>
             <Input
-              type="date"
-              placeholder="Chọn một ngày"
-              value={field.value ? new Date(field.value as number).toISOString().slice(0, 10) : ''}
-              onChange={(e) => handleValueChange(field.id, new Date(e.target.value).getTime())}
-              className="border-none"
+              placeholder="Nhập văn bản"
+              value={field.value as string}
+              onChange={(e) => handleValueChange(field.id, e.target.value)}
+              className="w-full"
               required={field.is_required}
             />
           </div>
         );
+      case 'PARAGRAPH':
+        return (
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">PARAGRAPH</span>
+            </div>
+            <Textarea
+              placeholder="Nhập đoạn văn bản dài"
+              value={field.value as string}
+              onChange={(e) => handleValueChange(field.id, e.target.value)}
+              className="w-full min-h-[100px]"
+              required={field.is_required}
+            />
+          </div>
+        );
+      case 'NUMBER':
+        return (
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">PARAGRAPH</span>
+            </div>
+            <Input
+              type="number"
+              placeholder="0"
+              value={field.value as number}
+              onChange={(e) => handleValueChange(field.id, Number(e.target.value))}
+              className="w-full"
+              required={field.is_required}
+            />
+          </div>
+        );
+      case 'DATE':
+        return (
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">DATE</span>
+            </div>
+            <div className="flex items-center border rounded-md">
+              <Calendar className="mr-2 h-4 w-4 ml-2" />
+              <Input
+                type="date"
+                placeholder="Chọn một ngày"
+                value={field.value ? new Date(field.value as number).toISOString().slice(0, 10) : ''}
+                onChange={(e) => handleValueChange(field.id, new Date(e.target.value).getTime())}
+                className="border-none"
+                required={field.is_required}
+              />
+            </div>
+          </div>
+        );
       case 'SINGLE_CHOICE':
         return (
-          <div className="space-y-2">
-            {getChoices(field.field_type).map((choice) => (
-              <div key={choice.value} className="flex items-center">
-                <input
-                  type="radio"
-                  id={`choice-${field.id}-${choice.value}`}
-                  name={`choice-group-${field.id}`}
-                  value={choice.value}
-                  checked={field.value === choice.value}
-                  onChange={() => handleValueChange(field.id, choice.value)}
-                  className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
-                  required={field.is_required}
-                />
-                <label 
-                  htmlFor={`choice-${field.id}-${choice.value}`}
-                  className="ml-2 text-sm font-medium"
-                >
-                  {choice.label}
-                </label>
-              </div>
-            ))}
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">SINGLE_CHOICE</span>
+            </div>
+            <div className="space-y-2">
+              {getChoices(field.field_type).map((choice) => (
+                <div key={choice.value} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`choice-${field.id}-${choice.value}`}
+                    name={`choice-group-${field.id}`}
+                    value={choice.value}
+                    checked={field.value === choice.value}
+                    onChange={() => handleValueChange(field.id, choice.value)}
+                    className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
+                    required={field.is_required}
+                  />
+                  <label 
+                    htmlFor={`choice-${field.id}-${choice.value}`}
+                    className="ml-2 text-sm font-medium"
+                  >
+                    {choice.label}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         );
       case 'MULTI_CHOICE':
@@ -233,43 +263,55 @@ export function TransitionFormDialog({
                               field.value ? [field.value as string] : [];
         
         return (
-          <div className="space-y-2">
-            {getChoices(field.field_type).map((choice) => (
-              <div key={choice.value} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={`multi-choice-${field.id}-${choice.value}`}
-                  value={choice.value}
-                  checked={selectedValues.includes(choice.value)}
-                  onChange={(e) => {
-                    let newValues = [...selectedValues];
-                    if (e.target.checked) {
-                      newValues.push(choice.value);
-                    } else {
-                      newValues = newValues.filter(v => v !== choice.value);
-                    }
-                    handleValueChange(field.id, newValues);
-                  }}
-                  className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                />
-                <label 
-                  htmlFor={`multi-choice-${field.id}-${choice.value}`}
-                  className="ml-2 text-sm font-medium"
-                >
-                  {choice.label}
-                </label>
-              </div>
-            ))}
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">MULTI_CHOICE</span>
+            </div>
+            <div className="space-y-2">
+              {getChoices(field.field_type).map((choice) => (
+                <div key={choice.value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`multi-choice-${field.id}-${choice.value}`}
+                    value={choice.value}
+                    checked={selectedValues.includes(choice.value)}
+                    onChange={(e) => {
+                      let newValues = [...selectedValues];
+                      if (e.target.checked) {
+                        newValues.push(choice.value);
+                      } else {
+                        newValues = newValues.filter(v => v !== choice.value);
+                      }
+                      handleValueChange(field.id, newValues);
+                    }}
+                    className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  />
+                  <label 
+                    htmlFor={`multi-choice-${field.id}-${choice.value}`}
+                    className="ml-2 text-sm font-medium"
+                  >
+                    {choice.label}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         );
       default:
         return (
-          <Input
-            value={field.value as string}
-            onChange={(e) => handleValueChange(field.id, e.target.value)}
-            className="w-full"
-            required={field.is_required}
-          />
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{field.field_type}</span>
+            </div>
+            <Input
+              value={field.value as string}
+              onChange={(e) => handleValueChange(field.id, e.target.value)}
+              className="w-full"
+              required={field.is_required}
+            />
+          </div>
         );
     }
   };
@@ -291,11 +333,20 @@ export function TransitionFormDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{transitionName}</DialogTitle>
+          <DialogTitle className="text-xl font-medium text-blue-500">Xem dữ liệu biểu mẫu</DialogTitle>
           <DialogDescription>
-            {t('transition.fillRequired', 'Vui lòng điền thông tin cần thiết để thực hiện hành động.')}
+            Chi tiết thông tin của biểu mẫu đã nộp.
           </DialogDescription>
         </DialogHeader>
+        
+        <div className="py-2 border-b">
+          <h3 className="text-base font-medium">Hành động có sẵn:</h3>
+          <div className="mt-2 flex space-x-2">
+            <span className="px-3 py-1 border border-blue-500 text-blue-500 rounded-full text-sm">
+              {transitionName} →
+            </span>
+          </div>
+        </div>
         
         {isLoading ? (
           <div className="py-6">
@@ -310,26 +361,19 @@ export function TransitionFormDialog({
           <form onSubmit={handleSubmit} className="grid gap-6 py-4">
             {formValues.map((field) => (
               <div key={field.form_field_id || `field-${field.id}-${Math.random().toString(36).substr(2, 9)}`} className="grid gap-2">
-                <div className="flex justify-between">
-                  <label htmlFor={field.id} className="text-sm font-medium leading-none">
-                    {field.name}
-                    {field.is_required && <span className="text-destructive ml-1">*</span>}
-                  </label>
-                  <span className="text-xs text-muted-foreground">{field.field_type}</span>
-                </div>
                 {renderFieldInput(field)}
               </div>
             ))}
             
-            <DialogFooter>
+            <div className="flex justify-end mt-6">
               <Button 
                 type="submit" 
                 disabled={isPending}
-                className="w-full sm:w-auto"
+                className="bg-blue-500 hover:bg-blue-600 text-white rounded-md"
               >
-                {isPending ? t('loading', 'Đang xử lý...') : t('transition.submit', 'Xác nhận')}
+                {isPending ? t('loading', 'Đang xử lý...') : t('transition.submit', 'Đồng ý')}
               </Button>
-            </DialogFooter>
+            </div>
           </form>
         )}
       </DialogContent>
