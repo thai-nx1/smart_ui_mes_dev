@@ -602,15 +602,12 @@ export async function submitTransitionForm(
   submissionData: any[]
 ): Promise<GraphQLResponse<any>> {
   const query = `
-    mutation insert_submission_form($transitionId: uuid!, $recordId: uuid!, $userId: uuid!, $name: String!, $submissionData: jsonb!) {
-      insert_submission_form(
-        args: {
-          name: $name
-          record_id: $recordId
-          workflow_transition_id: $transitionId
-          user_id: $userId
-          submission_data: $submissionData
-        }
+    mutation execute_workflow_transition($transitionId: uuid!, $recordId: uuid!, $userId: uuid!, $name: String!, $submissionData: jsonb!) {
+      execute_workflow_transition(
+        transition_id: $transitionId,
+        record_id: $recordId,
+        user_id: $userId,
+        data: $submissionData
       ) {
         id
         code
