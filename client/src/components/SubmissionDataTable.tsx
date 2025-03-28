@@ -61,7 +61,8 @@ export function SubmissionDataTable({
   const [editedData, setEditedData] = useState<FieldData[]>([]);
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentViewMode, setCurrentViewMode] = useState<ViewMode>(viewMode);
+  // Luôn sử dụng chế độ bảng
+  const currentViewMode: ViewMode = 'table';
   
   // State cho tìm kiếm và lọc
   const [searchQuery, setSearchQuery] = useState("");
@@ -380,10 +381,7 @@ export function SubmissionDataTable({
     }
   };
 
-  // Xử lý khi thay đổi chế độ hiển thị
-  const toggleViewMode = () => {
-    setCurrentViewMode(prevMode => prevMode === 'card' ? 'table' : 'card');
-  };
+  // Không cần hàm toggleViewMode vì chỉ sử dụng chế độ bảng
 
   // Lấy danh sách tất cả loại trường duy nhất từ dữ liệu
   const getUniqueFieldTypes = () => {
@@ -543,6 +541,11 @@ export function SubmissionDataTable({
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-muted/70 text-primary-foreground">
+              <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
+                <div className="flex items-center">
+                  <span>Code</span>
+                </div>
+              </th>
               {fieldNames.map((fieldName: string) => (
                 <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
                   <div className="flex items-center">
@@ -568,6 +571,16 @@ export function SubmissionDataTable({
                     rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80'
                   } hover:bg-primary/5`}
                 >
+                  {/* Cột code */}
+                  <td className="p-3 border-r border-border text-sm relative">
+                    <div className="relative">
+                      <div className="mr-6 font-mono">
+                        {submission.id ? submission.id.substring(0, 8) : '-'}
+                      </div>
+                    </div>
+                  </td>
+                  
+                  {/* Các cột dữ liệu */}
                   {fieldNames.map((fieldName: string) => {
                     const field = submission.data.find(
                       (f: FieldData) => f.name === fieldName
@@ -714,35 +727,6 @@ export function SubmissionDataTable({
           <h3 className="text-lg font-semibold text-primary">
             {t('submission.title', 'Dữ liệu đã nộp')}
           </h3>
-          
-          <div className="flex items-center gap-2 p-1 bg-background rounded-md border shadow-sm">
-            <Button 
-              variant={currentViewMode === 'card' ? 'default' : 'ghost'} 
-              size="sm" 
-              onClick={() => setCurrentViewMode('card')}
-              className={`flex items-center ${
-                currentViewMode === 'card' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'text-muted-foreground hover:text-foreground'
-              } transition-all`}
-            >
-              <LayoutGrid className="h-4 w-4 mr-2" />
-              {t('viewMode.card', 'Thẻ')}
-            </Button>
-            <Button 
-              variant={currentViewMode === 'table' ? 'default' : 'ghost'} 
-              size="sm" 
-              onClick={() => setCurrentViewMode('table')}
-              className={`flex items-center ${
-                currentViewMode === 'table' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'text-muted-foreground hover:text-foreground'
-              } transition-all`}
-            >
-              <Table className="h-4 w-4 mr-2" />
-              {t('viewMode.table', 'Bảng')}
-            </Button>
-          </div>
         </div>
 
         {/* Thanh tìm kiếm */}
@@ -886,7 +870,7 @@ export function SubmissionDataTable({
               </div>
             </div>
           ) : (
-            currentViewMode === 'card' ? renderCardView() : renderTableView()
+            renderTableView()
           )}
         </div>
       </div>
