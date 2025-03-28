@@ -245,16 +245,17 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
 /**
  * Submit form data using GraphQL mutation
  */
-export async function submitFormData(submission: FormSubmission & { workflowId?: string }): Promise<GraphQLResponse<any>> {
+export async function submitFormData(submission: FormSubmission & { workflowId?: string, menuId?: string, formId?: string }): Promise<GraphQLResponse<any>> {
   // Sử dụng mutation mới theo mẫu được cung cấp và chỉnh sửa kiểu dữ liệu
   const query = `
-    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
+    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON, $formId: String) {
       insert_menu_record(args: {
         menu_id: $menuId,
         user_id: $userId,
         organization_id: $organizationId,
         title: $title, 
-        submission_data: $submissionData
+        submission_data: $submissionData,
+        form_id: $formId
       }) {
         id
         code
@@ -296,12 +297,18 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
   
   console.log("Using menuId for submission:", menuId);
   
+  // Nếu có formId từ tham số, sử dụng nó
+  const formId = submission.formId || "bb116ed7-f781-4d42-81d1-9cdfbaeb2e5c"; // ID của form "Created"
+
+  console.log("Using formId for submission:", formId);
+
   const variables = {
     menuId: menuId,
     userId: "5c065b51-3862-4004-ae96-ca23245aa21e", // ID cố định từ ví dụ của bạn
     organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // ID cố định từ ví dụ của bạn
     title: title,
-    submissionData: submissionFields
+    submissionData: submissionFields,
+    formId: formId
   };
 
   console.log("Submitting form with data:", variables);
@@ -431,6 +438,29 @@ export async function updateSubmissionForm(submissionId: string, submissionData:
   };
 
   return executeGraphQLQuery(query, variables);
+}
+
+/**
+ * Fetch menu records by menu ID
+ */
+export async function fetchMenuRecords(menuId: string): Promise<GraphQLResponse<any>> {
+  const query = `
+    query QueryMenuRecord {
+      core_core_menu_records(
+        limit: null
+        offset: null
+        where: { menu_id: { _eq: "${menuId}" } }
+      ) {
+        id
+        title
+        data
+        created_at
+        created_by
+      }
+    }
+  `;
+
+  return executeGraphQLQuery(query);
 }
 
 /**
