@@ -181,10 +181,11 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         };
       });
       
-      // Gọi hàm callback để submit form
+      // Gọi hàm callback để submit form với dữ liệu mở rộng
       await onSubmit({
         formId: selectedFormId,
-        data: submissionData
+        data: submissionData,
+        workflowId // Truyền workflowId được cung cấp từ props
       });
       
       // Đóng dialog sau khi submit thành công

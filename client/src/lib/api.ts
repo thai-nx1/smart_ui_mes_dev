@@ -169,10 +169,10 @@ export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLRespons
  * Fetch forms by menu ID and form type (CREATE/EDIT/VIEW)
  */
 export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT' | 'VIEW'): Promise<GraphQLResponse<any>> {
-  // Tên field trong database có thể khác, chúng ta cần kiểm tra lại
+  // Sử dụng đúng tên field theo query mẫu bạn cung cấp
   const query = `
     query GetFormsByMenu($menuId: uuid!, $formType: String!) {
-      core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}}) {
+      core_core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}}) {
         id
         form_type
         form_id
