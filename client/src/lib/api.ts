@@ -607,9 +607,9 @@ export async function submitTransitionForm(
         args: {
           name: $name
           transition_id: $transitionId,
-          record_id: $recordId,
-          user_id: $userId,
-          submission_data: $submissionData
+          menu_id: $recordId,
+          submitter_id: $userId,
+          data: $submissionData
         }
       ) {
         id
