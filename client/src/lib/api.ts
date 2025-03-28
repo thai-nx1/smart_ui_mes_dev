@@ -247,14 +247,14 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
  */
 export async function submitFormData(submission: FormSubmission & { workflowId?: string, menuId?: string, formId?: string }): Promise<GraphQLResponse<any>> {
   // Sử dụng mutation mới theo mẫu được cung cấp và chỉnh sửa kiểu dữ liệu
-  // Lưu ý: API hiện tại không hỗ trợ tham số form_id. Server có thể tự xác định form_id dựa vào menu_id
+  // Lưu ý: API không chấp nhận form_id, đã bỏ tham số này
   const query = `
     mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
       insert_menu_record(args: {
         menu_id: $menuId,
         user_id: $userId,
         organization_id: $organizationId,
-        title: $title,
+        title: $title, 
         submission_data: $submissionData
       }) {
         id
@@ -308,7 +308,7 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
     organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // ID cố định từ ví dụ của bạn
     title: title,
     submissionData: submissionFields
-    // API không hỗ trợ tham số form_id
+    // Đã loại bỏ formId vì API không chấp nhận tham số này
   };
 
   console.log("Submitting form with data:", variables);
@@ -423,7 +423,7 @@ export async function updateSubmissionForm(submissionId: string, updatedData: an
     mutation UpdateMenuRecord($recordId: uuid!, $data: jsonb!) {
       update_core_core_menu_records_by_pk(
         pk_columns: { id: $recordId },
-        _set: { submission_data: $data }
+        _set: { data: $data }
       ) {
         id
         data
