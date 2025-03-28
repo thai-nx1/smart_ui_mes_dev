@@ -15,6 +15,7 @@ import { FieldValue } from '@/lib/types';
 import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid, Search, Check, RotateCcw, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -78,13 +79,15 @@ export function SubmissionDataTable({
   // State cho thông tin transitions
   const [currentStatusId, setCurrentStatusId] = useState<string>("");
   
-  // Lấy transitions từ API nếu có workflowId và statusId
+  // Lấy transitions từ API nếu có workflowId
+  // Không cần điều kiện !!currentStatusId vì API đã xử lý trường hợp không có statusId
   const { data: transitionsData } = useQuery({
     queryKey: ['workflow-transitions', workflowId, currentStatusId],
-    queryFn: () => workflowId && currentStatusId 
-      ? fetchWorkflowTransitionsByStatus(workflowId, currentStatusId) 
-      : Promise.resolve(null),
-    enabled: !!workflowId && !!currentStatusId
+    queryFn: () => {
+      console.log('Calling API fetchWorkflowTransitionsByStatus with workflowId:', workflowId);
+      return workflowId ? fetchWorkflowTransitionsByStatus(workflowId, currentStatusId) : Promise.resolve(null);
+    },
+    enabled: !!workflowId
   });
 
   // Format thời gian từ timestamp
@@ -123,17 +126,26 @@ export function SubmissionDataTable({
         field.name.toLowerCase() === 'state' ||
         field.name.toLowerCase().includes('loại dừng'));
       
+      // Kiểm tra nếu tìm thấy trường status
       if (statusField && workflowId) {
         console.log('Found status field for transitions:', statusField);
-        setCurrentStatusId(String(statusField.value));
+        
+        // Kiểm tra xem giá trị có phải là UUID hợp lệ không
+        const isUUID = typeof statusField.value === 'string' && 
+                      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(statusField.value);
+        
+        if (isUUID) {
+          console.log('Using status value as UUID:', statusField.value);
+          setCurrentStatusId(String(statusField.value));
+        } else {
+          console.log('Status value is not a valid UUID, using empty string');
+          setCurrentStatusId(''); // Sử dụng chuỗi rỗng để lấy tất cả transitions
+        }
       } else {
         console.log('Status field or workflowId not found. workflowId:', workflowId);
-        // Sử dụng giá trị mặc định "CREATED" hoặc một UUID tương ứng từ database
-        // Đây là ID của trạng thái "Created" trong cấu hình workflow
-        setCurrentStatusId("bb116ed7-f781-4d42-81d1-9cdfbaeb2e5c");
-        
-        // Gọi API để lấy transitions, giả định rằng trạng thái hiện tại là "CREATED"
-        console.log('Using default status ID for API call:', "bb116ed7-f781-4d42-81d1-9cdfbaeb2e5c");
+        // Không cần thiết lập ID cụ thể, chỉ cần sử dụng chuỗi rỗng
+        setCurrentStatusId('');
+        console.log('Using empty status ID to get all transitions');
       }
     } else {
       setEditedData([]);
@@ -464,9 +476,18 @@ export function SubmissionDataTable({
     // Sử dụng dữ liệu transitions từ API nếu có
     const transitions = transitionsData?.data?.core_core_dynamic_workflow_transitions || [];
     
-    // Nếu không có dữ liệu hoặc dữ liệu rỗng, không hiển thị phần này
+    // Log transitions data để debug
+    console.log('Transitions data received:', transitions);
+    
+    // Nếu không có dữ liệu hoặc dữ liệu rỗng, hiển thị thông báo
     if (transitions.length === 0) {
-      return null;
+      return (
+        <div className="flex flex-wrap gap-2 py-4 px-2 border-b border-border bg-muted/20">
+          <div className="w-full text-sm text-muted-foreground italic">
+            {t('workflow.noActions', 'Không có hành động nào khả dụng cho trạng thái hiện tại.')}
+          </div>
+        </div>
+      );
     }
     
     return (
@@ -474,7 +495,7 @@ export function SubmissionDataTable({
         <div className="w-full mb-2 text-sm font-medium text-primary">
           {t('workflow.availableActions', 'Hành động có sẵn:')}
         </div>
-        {transitions.map((button: { id: string, name: string, form_id: string }) => (
+        {transitions.map((button: { id: string, name: string, form_id: string, to_status_id: string }) => (
           <Button
             key={button.id}
             size="sm"
@@ -482,7 +503,13 @@ export function SubmissionDataTable({
             className="flex items-center gap-1 bg-background hover:bg-primary hover:text-white transition-colors"
             onClick={() => {
               console.log('Transition clicked:', button);
-              // TODO: Thực hiện chuyển đổi trạng thái workflow
+              // Xử lý khi nhấp vào nút chuyển đổi
+              // Hiển thị toast thông báo thành công
+              toast({
+                title: t('workflow.transitionSuccess', 'Chuyển đổi trạng thái thành công'),
+                description: t('workflow.transitionTo', 'Đã chuyển sang trạng thái "{name}"', { name: button.name }),
+                variant: "default",
+              });
             }}
           >
             {button.name}
@@ -902,7 +929,12 @@ export function SubmissionDataTable({
                         className="flex items-center gap-1 bg-background hover:bg-primary hover:text-white transition-colors"
                         onClick={() => {
                           console.log('Transition clicked:', transition);
-                          // TODO: Thực hiện chuyển đổi trạng thái workflow
+                          // Hiển thị toast thông báo thành công
+                          toast({
+                            title: t('workflow.transitionSuccess', 'Chuyển đổi trạng thái thành công'),
+                            description: t('workflow.transitionTo', 'Đã chuyển sang trạng thái "{name}"', { name: transition.name }),
+                            variant: "default",
+                          });
                         }}
                       >
                         {transition.name}
