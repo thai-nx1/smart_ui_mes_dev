@@ -252,9 +252,9 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
  * Submit form data using GraphQL mutation
  */
 export async function submitFormData(submission: FormSubmission & { workflowId?: string }): Promise<GraphQLResponse<any>> {
-  // Sử dụng mutation mới theo mẫu được cung cấp
+  // Sử dụng mutation mới theo mẫu được cung cấp và chỉnh sửa kiểu dữ liệu
   const query = `
-    mutation InsertMenuRecord($menuId: uuid!, $userId: uuid!, $organizationId: uuid!, $title: String!, $submissionData: jsonb!) {
+    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: jsonb!) {
       insert_menu_record(args: {
         menu_id: $menuId,
         user_id: $userId,
