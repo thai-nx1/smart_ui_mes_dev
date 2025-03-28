@@ -488,26 +488,45 @@ export async function fetchWorkflowTransitionsByStatus(
   workflowId: string,
   fromStatusId: string
 ): Promise<GraphQLResponse<any>> {
-  const query = `
-    query GetTransitionByStatus($workflowId: uuid!, $fromStatusId: uuid!) {
-      core_core_dynamic_workflow_transitions(
-        where: {
-          from_status_id: { _eq: $fromStatusId },
-          workflow_id: { _eq: $workflowId }
+  // Nếu không có statusId, sử dụng tham số where cho workflow_id
+  // và bỏ qua điều kiện from_status_id để lấy tất cả transitions từ workflow
+  const query = fromStatusId 
+    ? `
+      query GetTransitionByStatus($workflowId: uuid!, $fromStatusId: uuid!) {
+        core_core_dynamic_workflow_transitions(
+          where: {
+            from_status_id: { _eq: $fromStatusId },
+            workflow_id: { _eq: $workflowId }
+          }
+        ) {
+          id
+          name
+          form_id
+          to_status_id
         }
-      ) {
-        id
-        name
-        form_id
       }
-    }
-  `;
+    `
+    : `
+      query GetAllTransitionsForWorkflow($workflowId: uuid!) {
+        core_core_dynamic_workflow_transitions(
+          where: {
+            workflow_id: { _eq: $workflowId }
+          }
+        ) {
+          id
+          name
+          form_id
+          from_status_id
+          to_status_id
+        }
+      }
+    `;
 
-  const variables = {
-    workflowId,
-    fromStatusId
-  };
+  const variables = fromStatusId
+    ? { workflowId, fromStatusId }
+    : { workflowId };
 
+  console.log('Fetching transitions with variables:', variables);
   return executeGraphQLQuery(query, variables);
 }
 

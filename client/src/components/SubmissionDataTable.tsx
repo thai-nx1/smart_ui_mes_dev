@@ -128,8 +128,12 @@ export function SubmissionDataTable({
         setCurrentStatusId(String(statusField.value));
       } else {
         console.log('Status field or workflowId not found. workflowId:', workflowId);
-        // Sử dụng một giá trị status mặc định để test
-        setCurrentStatusId(''); // Reset status ID
+        // Sử dụng giá trị mặc định "CREATED" hoặc một UUID tương ứng từ database
+        // Đây là ID của trạng thái "Created" trong cấu hình workflow
+        setCurrentStatusId("bb116ed7-f781-4d42-81d1-9cdfbaeb2e5c");
+        
+        // Gọi API để lấy transitions, giả định rằng trạng thái hiện tại là "CREATED"
+        console.log('Using default status ID for API call:', "bb116ed7-f781-4d42-81d1-9cdfbaeb2e5c");
       }
     } else {
       setEditedData([]);
