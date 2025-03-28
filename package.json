@@ -61,6 +61,7 @@
     "jsqr": "^1.4.0",
     "lucide-react": "^0.453.0",
     "memorystore": "^1.6.7",
+    "mermaid": "^11.6.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "qrcode": "^1.5.4",

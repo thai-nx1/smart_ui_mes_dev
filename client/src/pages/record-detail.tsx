@@ -3,15 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useLocation } from 'wouter';
 import { MainLayout } from '@/components/MainLayout';
 import { fetchMenuRecords, fetchWorkflowTransitionsByStatus } from '@/lib/api';
+import { fetchWorkflowDetails } from '@/lib/workflow-api';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronLeft, Calendar, Check, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Calendar, Check, ChevronRight, Activity } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { TransitionFormDialog } from '@/components/TransitionFormDialog';
+import { WorkflowDiagram } from '@/components/WorkflowDiagram';
 
 type FieldValue = string | number | string[] | boolean | null;
 
@@ -31,6 +33,9 @@ export default function RecordDetailPage() {
   
   // State cho thông tin transitions
   const [currentStatusId, setCurrentStatusId] = useState<string>("");
+  
+  // State cho hiển thị biểu đồ workflow
+  const [showWorkflowDiagram, setShowWorkflowDiagram] = useState<boolean>(false);
   
   // Format thời gian từ timestamp hoặc string
   const formatDate = (timestamp: number | string) => {
@@ -70,6 +75,18 @@ export default function RecordDetailPage() {
       return result;
     },
     enabled: !!workflowId && !!currentStatusId
+  });
+  
+  // Lấy thông tin chi tiết workflow để hiển thị diagram
+  const { data: workflowData } = useQuery({
+    queryKey: ['workflow-details', workflowId],
+    queryFn: async () => {
+      console.log('Fetching workflow details with workflowId:', workflowId);
+      if (!workflowId) return { data: { core_core_dynamic_workflows_by_pk: null } };
+      const result = await fetchWorkflowDetails(workflowId);
+      return result;
+    },
+    enabled: !!workflowId && showWorkflowDiagram
   });
 
   // Tìm field tiêu đề nếu có
@@ -215,12 +232,40 @@ export default function RecordDetailPage() {
             
             {/* Hiển thị trạng thái */}
             {recordData.core_dynamic_status && (
-              <Badge variant="outline" className="bg-primary/10 text-primary font-semibold px-3 py-1 text-sm self-start md:self-center">
-                {recordData.core_dynamic_status.name || t('recordDetail.noStatus', 'Chưa có trạng thái')}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-primary/10 text-primary font-semibold px-3 py-1 text-sm self-start md:self-center">
+                  {recordData.core_dynamic_status.name || t('recordDetail.noStatus', 'Chưa có trạng thái')}
+                </Badge>
+                
+                {/* Nút hiển thị biểu đồ workflow nếu có workflowId */}
+                {workflowId && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="flex items-center gap-1"
+                    onClick={() => setShowWorkflowDiagram(true)}
+                  >
+                    <Activity className="h-4 w-4" />
+                    {t('workflow.viewDiagram', 'Xem biểu đồ workflow')}
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </CardHeader>
+        
+        {/* Hiển thị biểu đồ workflow */}
+        {showWorkflowDiagram && workflowData?.data?.core_core_dynamic_workflows_by_pk && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <WorkflowDiagram
+              workflowId={workflowId}
+              workflowName={workflowData.data.core_core_dynamic_workflows_by_pk.name || 'Workflow'}
+              transitions={workflowData.data.core_core_dynamic_workflows_by_pk.core_dynamic_workflow_transitions || []}
+              currentStatusId={currentStatusId}
+              onClose={() => setShowWorkflowDiagram(false)}
+            />
+          </div>
+        )}
         
         {/* Hiển thị action buttons workflow từ transitions */}
         {workflowId && transitionsData && transitionsData.data?.core_core_dynamic_workflow_transitions?.length > 0 && (
