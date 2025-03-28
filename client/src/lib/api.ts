@@ -248,7 +248,7 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
 export async function submitFormData(submission: FormSubmission & { workflowId?: string }): Promise<GraphQLResponse<any>> {
   // Sử dụng mutation mới theo mẫu được cung cấp và chỉnh sửa kiểu dữ liệu
   const query = `
-    mutation InsertMenuRecord($menuId: uuid!, $userId: uuid!, $organizationId: uuid!, $title: String!, $submissionData: jsonb!) {
+    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: jsonb!) {
       insert_menu_record(args: {
         menu_id: $menuId,
         user_id: $userId,
@@ -290,9 +290,11 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
     title = String(titleField.value);
   }
 
-  // Trong trường hợp workflowId thực chất là menuId, và chúng ta cần dùng menuId thay vì form_id
-  // Dựa vào ví dụ của bạn, menu_id là "7ffe9691-7f9b-430d-a945-16e0d9b173c4"
-  const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID của menu "Khiếu nại"
+  // Sử dụng menuId từ tham số của submission nếu có, nếu không sử dụng menuId mặc định
+  // Lưu ý: workflowId có thể là menuId hoặc menu.workflow_id tùy theo ngữ cảnh
+  const menuId = submission.workflowId || "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID của menu "Khiếu nại" là mặc định
+  
+  console.log("Using menuId for submission:", menuId);
   
   const variables = {
     menuId: menuId,
