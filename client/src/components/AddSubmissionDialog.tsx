@@ -29,6 +29,10 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
   const [isLoadingFields, setIsLoadingFields] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Các state mới để quản lý hiển thị các màn hình và giá trị field
+  const [step, setStep] = useState<'select_form' | 'enter_data'>('select_form');
+  const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
+  
   // Tải danh sách form khi mở dialog
   useEffect(() => {
     if (isOpen) {
@@ -184,21 +188,18 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
   // Hàm xử lý khi người dùng chọn một form
   const handleFormSelect = (formId: string) => {
     setSelectedFormId(formId);
-  };
-  
-  // Hàm xử lý khi người dùng submit form
-  const handleCreateSubmission = async () => {
-    if (!selectedFormId) return;
     
-    setIsSubmitting(true);
-    try {
-      // Tạo dữ liệu submission từ danh sách fields
-      const submissionData: Record<string, FieldSubmission> = {};
+    // Khởi tạo giá trị mặc định cho các field của form đã chọn
+    const selectedForm = forms.find(form => form.id === formId) as any;
+    if (selectedForm && selectedForm.core_dynamic_form_fields) {
+      const initialValues: Record<string, any> = {};
+      const formFields = selectedForm.core_dynamic_form_fields.map(
+        (formField: any) => formField.core_dynamic_field
+      );
       
-      fields.forEach(field => {
+      formFields.forEach((field: Field) => {
         // Tạo giá trị mặc định dựa trên loại field
         let defaultValue: any = null;
-        
         switch (field.field_type) {
           case 'TEXT':
           case 'PARAGRAPH':
@@ -220,10 +221,50 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
             defaultValue = null;
         }
         
+        initialValues[field.id] = defaultValue;
+      });
+      
+      setFieldValues(initialValues);
+    }
+  };
+  
+  // Hàm xử lý khi người dùng chuyển sang bước nhập dữ liệu
+  const handleNextStep = () => {
+    if (selectedFormId && fields.length > 0) {
+      setStep('enter_data');
+    }
+  };
+  
+  // Hàm xử lý khi người dùng quay lại bước chọn form
+  const handleBackStep = () => {
+    setStep('select_form');
+  };
+  
+  // Hàm xử lý khi người dùng thay đổi giá trị của field
+  const handleFieldValueChange = (fieldId: string, value: any) => {
+    setFieldValues(prev => ({
+      ...prev,
+      [fieldId]: value
+    }));
+  };
+  
+  // Hàm xử lý khi người dùng submit form
+  const handleCreateSubmission = async () => {
+    if (!selectedFormId) return;
+    
+    setIsSubmitting(true);
+    try {
+      // Tạo dữ liệu submission từ danh sách fields và giá trị đã nhập
+      const submissionData: Record<string, FieldSubmission> = {};
+      
+      fields.forEach(field => {
+        // Sử dụng giá trị đã nhập hoặc giá trị mặc định
+        const fieldValue = fieldValues[field.id] !== undefined ? fieldValues[field.id] : null;
+        
         // Thêm field vào dữ liệu submission
         submissionData[field.id] = {
           name: field.name,
-          value: defaultValue,
+          value: fieldValue,
           field_type: field.field_type
         };
       });
@@ -238,6 +279,8 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
       // Đóng dialog sau khi submit thành công
       setIsOpen(false);
       setSelectedFormId(null);
+      setStep('select_form');
+      setFieldValues({});
     } catch (error) {
       console.error('Error creating submission:', error);
     } finally {
@@ -251,6 +294,10 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
     if (!open) {
       setSelectedFormId(null);
       setFields([]);
+      setStep('select_form');
+      setFieldValues({});
+      setIsLoadingFields(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -266,124 +313,278 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
       <DialogContent className="sm:max-w-[600px] p-0 border-none shadow-lg rounded-lg overflow-hidden">
         <DialogHeader className="bg-muted/30 border-b p-6">
           <DialogTitle className="text-xl font-bold text-primary">
-            {t('submission.createNew', 'Tạo biểu mẫu mới')}
+            {step === 'select_form' ? 
+              t('submission.createNew', 'Tạo biểu mẫu mới') : 
+              t('submission.enterData', 'Nhập dữ liệu')
+            }
           </DialogTitle>
           <DialogDescription className="text-muted-foreground mt-1">
-            {t('submission.selectFormDescription', 'Chọn loại biểu mẫu bạn muốn tạo.')}
+            {step === 'select_form' ? 
+              t('submission.selectFormDescription', 'Chọn loại biểu mẫu bạn muốn tạo.') : 
+              t('submission.enterDataDescription', 'Vui lòng nhập thông tin vào biểu mẫu.')
+            }
           </DialogDescription>
         </DialogHeader>
         
-        <div className="p-6">
-          {isLoadingForms ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="relative w-16 h-16">
-                <Loader2 className="h-16 w-16 animate-spin text-primary/30 absolute" />
-                <Loader2 className="h-16 w-16 animate-spin text-primary absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
-              </div>
-              <span className="mt-4 text-muted-foreground font-medium">
-                {t('common.loading', 'Đang tải...')}
-              </span>
-            </div>
-          ) : (
-            <>
-              <h3 className="mb-4 text-sm font-medium text-foreground flex items-center">
-                <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></span>
-                {t('submission.availableForms', 'Các biểu mẫu có sẵn:')}
-              </h3>
-              
-              <div className="grid grid-cols-1 gap-3 max-h-[350px] overflow-y-auto pr-2 scroll-smooth">
-                {forms.length > 0 ? (
-                  forms.map((form) => (
-                    <div 
-                      key={form.id}
-                      className={`group p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
-                        selectedFormId === form.id 
-                          ? 'bg-primary/10 border-primary shadow-sm' 
-                          : 'hover:bg-background/80 hover:border-primary/20 hover:shadow-sm'
-                      }`}
-                      onClick={() => handleFormSelect(form.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <h4 className={`font-medium ${selectedFormId === form.id ? 'text-primary' : ''}`}>
-                          {form.name}
-                        </h4>
-                        {selectedFormId === form.id ? (
-                          <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center">
-                            <Check className="h-4 w-4" />
-                          </div>
-                        ) : (
-                          <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 group-hover:border-primary/40 transition-colors"></div>
-                        )}
-                      </div>
-                      {form.description && (
-                        <p className="text-sm text-muted-foreground mt-1.5">{form.description}</p>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-10 px-4 border border-dashed rounded-lg">
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="36" 
-                      height="36" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="1" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      className="mx-auto mb-4 text-muted-foreground/50"
-                    >
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <path d="M14 2v6h6"></path>
-                      <path d="M5 12h14"></path>
-                      <path d="M5 18h8"></path>
-                    </svg>
-                    <p className="text-muted-foreground font-medium">
-                      {t('submission.noFormsAvailable', 'Không có biểu mẫu nào.')}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-          
-          {isLoadingFields && (
-            <div className="flex items-center justify-center py-4 mt-4 border-t">
-              <div className="relative">
-                <Loader2 className="h-5 w-5 animate-spin text-primary/30 absolute" />
-                <Loader2 className="h-5 w-5 animate-spin text-primary absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
-              </div>
-              <span className="ml-8 text-sm text-muted-foreground">
-                {t('submission.loadingFormFields', 'Đang tải thông tin biểu mẫu...')}
-              </span>
-            </div>
-          )}
-        </div>
-        
-        <DialogFooter className="border-t p-4 flex-row justify-between gap-2">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsOpen(false)}
-            className="border-gray-300 hover:bg-background flex items-center gap-1"
-          >
-            <span>{t('actions.cancel', 'Hủy')}</span>
-          </Button>
-          <Button
-            onClick={handleCreateSubmission}
-            disabled={!selectedFormId || isLoadingFields || isSubmitting}
-            className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
-          >
-            {isSubmitting ? (
-              <div className="relative">
-                <Loader2 className="h-4 w-4 animate-spin text-white/30 absolute" />
-                <Loader2 className="h-4 w-4 animate-spin text-white absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+        {/* Bước 1: Chọn loại form */}
+        {step === 'select_form' && (
+          <div className="p-6">
+            {isLoadingForms ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="relative w-16 h-16">
+                  <Loader2 className="h-16 w-16 animate-spin text-primary/30 absolute" />
+                  <Loader2 className="h-16 w-16 animate-spin text-primary absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+                </div>
+                <span className="mt-4 text-muted-foreground font-medium">
+                  {t('common.loading', 'Đang tải...')}
+                </span>
               </div>
             ) : (
-              <PlusCircle className="h-4 w-4" />
+              <>
+                <h3 className="mb-4 text-sm font-medium text-foreground flex items-center">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2"></span>
+                  {t('submission.availableForms', 'Các biểu mẫu có sẵn:')}
+                </h3>
+                
+                <div className="grid grid-cols-1 gap-3 max-h-[350px] overflow-y-auto pr-2 scroll-smooth">
+                  {forms.length > 0 ? (
+                    forms.map((form) => (
+                      <div 
+                        key={form.id}
+                        className={`group p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
+                          selectedFormId === form.id 
+                            ? 'bg-primary/10 border-primary shadow-sm' 
+                            : 'hover:bg-background/80 hover:border-primary/20 hover:shadow-sm'
+                        }`}
+                        onClick={() => handleFormSelect(form.id)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <h4 className={`font-medium ${selectedFormId === form.id ? 'text-primary' : ''}`}>
+                            {form.name}
+                          </h4>
+                          {selectedFormId === form.id ? (
+                            <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center">
+                              <Check className="h-4 w-4" />
+                            </div>
+                          ) : (
+                            <div className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 group-hover:border-primary/40 transition-colors"></div>
+                          )}
+                        </div>
+                        {form.description && (
+                          <p className="text-sm text-muted-foreground mt-1.5">{form.description}</p>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10 px-4 border border-dashed rounded-lg">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="36" 
+                        height="36" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        className="mx-auto mb-4 text-muted-foreground/50"
+                      >
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <path d="M14 2v6h6"></path>
+                        <path d="M5 12h14"></path>
+                        <path d="M5 18h8"></path>
+                      </svg>
+                      <p className="text-muted-foreground font-medium">
+                        {t('submission.noFormsAvailable', 'Không có biểu mẫu nào.')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
-            <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
-          </Button>
+            
+            {isLoadingFields && (
+              <div className="flex items-center justify-center py-4 mt-4 border-t">
+                <div className="relative">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary/30 absolute" />
+                  <Loader2 className="h-5 w-5 animate-spin text-primary absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+                </div>
+                <span className="ml-8 text-sm text-muted-foreground">
+                  {t('submission.loadingFormFields', 'Đang tải thông tin biểu mẫu...')}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Bước 2: Nhập dữ liệu cho form */}
+        {step === 'enter_data' && (
+          <div className="p-6">
+            <div className="space-y-6 max-h-[450px] overflow-y-auto pr-2 scroll-smooth">
+              {fields.map((field) => (
+                <div key={field.id} className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label htmlFor={field.id} className="text-sm font-medium text-foreground">
+                      {field.name}
+                      {field.description && (
+                        <span className="ml-2 text-xs text-muted-foreground">({field.description})</span>
+                      )}
+                    </label>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                      {field.field_type}
+                    </span>
+                  </div>
+                  
+                  {/* Render input based on field type */}
+                  {field.field_type === 'TEXT' && (
+                    <input
+                      id={field.id}
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                      value={fieldValues[field.id] || ''}
+                      onChange={(e) => handleFieldValueChange(field.id, e.target.value)}
+                    />
+                  )}
+                  
+                  {field.field_type === 'PARAGRAPH' && (
+                    <textarea
+                      id={field.id}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary min-h-[100px]"
+                      value={fieldValues[field.id] || ''}
+                      onChange={(e) => handleFieldValueChange(field.id, e.target.value)}
+                    />
+                  )}
+                  
+                  {field.field_type === 'NUMBER' && (
+                    <input
+                      id={field.id}
+                      type="number"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                      value={fieldValues[field.id] || 0}
+                      onChange={(e) => handleFieldValueChange(field.id, Number(e.target.value))}
+                    />
+                  )}
+                  
+                  {field.field_type === 'DATE' && (
+                    <input
+                      id={field.id}
+                      type="date"
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                      value={fieldValues[field.id] ? new Date(fieldValues[field.id]).toISOString().slice(0, 10) : ''}
+                      onChange={(e) => handleFieldValueChange(field.id, new Date(e.target.value).getTime())}
+                    />
+                  )}
+                  
+                  {field.field_type === 'SINGLE_CHOICE' && (
+                    <div className="space-y-2">
+                      {['1', '2', '3', '4'].map((value) => (
+                        <div key={value} className="flex items-center">
+                          <input
+                            id={`${field.id}-${value}`}
+                            type="radio"
+                            name={`choice-group-${field.id}`}
+                            value={value}
+                            checked={fieldValues[field.id] === value}
+                            onChange={() => handleFieldValueChange(field.id, value)}
+                            className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
+                          />
+                          <label 
+                            htmlFor={`${field.id}-${value}`}
+                            className="ml-2 text-sm font-medium"
+                          >
+                            {`Lựa chọn ${value}`}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'MULTI_CHOICE' && (
+                    <div className="space-y-2">
+                      {['1', '2', '3', '4'].map((value) => {
+                        const selectedValues = Array.isArray(fieldValues[field.id]) 
+                          ? fieldValues[field.id] 
+                          : fieldValues[field.id] ? [fieldValues[field.id]] : [];
+                        
+                        return (
+                          <div key={value} className="flex items-center">
+                            <input
+                              id={`multi-${field.id}-${value}`}
+                              type="checkbox"
+                              value={value}
+                              checked={selectedValues.includes(value)}
+                              onChange={(e) => {
+                                let newValues = [...selectedValues];
+                                if (e.target.checked) {
+                                  newValues.push(value);
+                                } else {
+                                  newValues = newValues.filter(v => v !== value);
+                                }
+                                handleFieldValueChange(field.id, newValues);
+                              }}
+                              className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                            />
+                            <label 
+                              htmlFor={`multi-${field.id}-${value}`}
+                              className="ml-2 text-sm font-medium"
+                            >
+                              {`Lựa chọn ${value}`}
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <DialogFooter className="border-t p-4 flex-row justify-between gap-2">
+          {step === 'select_form' ? (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsOpen(false)}
+                className="border-gray-300 hover:bg-background flex items-center gap-1"
+              >
+                <span>{t('actions.cancel', 'Hủy')}</span>
+              </Button>
+              <Button
+                onClick={handleNextStep}
+                disabled={!selectedFormId || isLoadingFields}
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
+              >
+                <span>{t('actions.next', 'Tiếp theo')}</span>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={handleBackStep}
+                className="border-gray-300 hover:bg-background flex items-center gap-1"
+              >
+                <span>{t('actions.back', 'Quay lại')}</span>
+              </Button>
+              <Button
+                onClick={handleCreateSubmission}
+                disabled={isSubmitting}
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
+              >
+                {isSubmitting ? (
+                  <div className="relative">
+                    <Loader2 className="h-4 w-4 animate-spin text-white/30 absolute" />
+                    <Loader2 className="h-4 w-4 animate-spin text-white absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+                  </div>
+                ) : (
+                  <PlusCircle className="h-4 w-4" />
+                )}
+                <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
