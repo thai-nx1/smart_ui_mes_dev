@@ -30,13 +30,14 @@ export default function SubmissionPage() {
   // Tìm submenu từ workflowId
   const currentSubmenu = menusData?.find((menu: Menu) => menu.workflow_id === workflowId);
   const parentMenu = menusData?.find((menu: Menu) => menu.id === currentSubmenu?.parent_id);
-  const menuIdToUse = currentSubmenu?.id || "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID mặc định
+  // ID mặc định - danh sách menu workflow ID 6b1988ea-c4c5-4810-815d-1de6b06a9392
+  const menuIdToUse = currentSubmenu?.id || "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
 
   // Sử dụng API QueryMenuRecord thay cho fetchSubmissionForms
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/menu-records', menuIdToUse],
     queryFn: async () => {
-      const response = await fetchMenuRecords(menuIdToUse);
+      const response = await fetchMenuRecords(menuIdToUse, 100, 0); // limit=100, offset=0
       return response.data.core_core_menu_records;
     },
     enabled: !!menuIdToUse

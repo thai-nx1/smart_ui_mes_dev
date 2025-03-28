@@ -445,13 +445,17 @@ export async function updateSubmissionForm(submissionId: string, updatedData: an
 /**
  * Fetch menu records by menu ID
  */
-export async function fetchMenuRecords(menuId: string): Promise<GraphQLResponse<any>> {
+export async function fetchMenuRecords(
+  menuId: string, 
+  limit: number | null = null, 
+  offset: number | null = null
+): Promise<GraphQLResponse<any>> {
   const query = `
-    query QueryMenuRecord {
+    query QueryMenuRecord($menuId: uuid!, $limit: Int, $offset: Int) {
       core_core_menu_records(
-        limit: null
-        offset: null
-        where: { menu_id: { _eq: "${menuId}" } }
+        limit: $limit
+        offset: $offset
+        where: { menu_id: { _eq: $menuId } }
       ) {
         id
         title
@@ -462,7 +466,13 @@ export async function fetchMenuRecords(menuId: string): Promise<GraphQLResponse<
     }
   `;
 
-  return executeGraphQLQuery(query);
+  const variables = {
+    menuId,
+    limit,
+    offset
+  };
+
+  return executeGraphQLQuery(query, variables);
 }
 
 /**
