@@ -111,55 +111,31 @@ export function SubmissionDataTable({
     setIsEditing(false);
   };
 
-  // Xử lý khi nhấn nút xem tất cả
+  // Xử lý khi nhấn nút xem tất cả - Chuyển hướng đến trang chi tiết
   const handleView = (submission: any) => {
-    setSelectedSubmission(submission);
     console.log('Viewing submission:', submission);
+    
+    // Ghi log thông tin submission trước khi chuyển hướng
     if (Array.isArray(submission.data)) {
-      setEditedData([...submission.data]);
       console.log('All fields in submission data:', submission.data.map((f: FieldData) => `${f.name} (${f.field_type}): ${JSON.stringify(f.value)}`));
       
-      // Sử dụng core_dynamic_status.id từ API nếu có
+      // Lưu statusId nếu có để sử dụng sau này
       if (submission.core_dynamic_status && submission.core_dynamic_status.id) {
         console.log('Using status ID from core_dynamic_status:', submission.core_dynamic_status.id);
         setCurrentStatusId(submission.core_dynamic_status.id);
-      } else {
-        // Fallback: Tìm trạng thái hiện tại trong dữ liệu submission
-        const statusField = submission.data.find((field: FieldData) => 
-          field.name.toLowerCase().includes('trạng thái') || 
-          field.name.toLowerCase() === 'status' ||
-          field.name.toLowerCase() === 'trang_thai' ||
-          field.name.toLowerCase() === 'state' ||
-          field.name.toLowerCase().includes('loại dừng'));
-        
-        // Kiểm tra nếu tìm thấy trường status
-        if (statusField && workflowId) {
-          console.log('Found status field for transitions:', statusField);
-          
-          // Kiểm tra xem giá trị có phải là UUID hợp lệ không
-          const isUUID = typeof statusField.value === 'string' && 
-                        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(statusField.value);
-          
-          if (isUUID) {
-            console.log('Using status value as UUID:', statusField.value);
-            setCurrentStatusId(String(statusField.value));
-          } else {
-            console.log('Status value is not a valid UUID, using empty string to get initial transitions');
-            setCurrentStatusId(''); // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo
-          }
-        } else {
-          console.log('Status field or workflowId not found. workflowId:', workflowId);
-          // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo (from_status_id is null)
-          setCurrentStatusId('');
-          console.log('Using empty status ID to get initial transitions (from_status_id is null)');
-        }
       }
-    } else {
-      setEditedData([]);
-      setCurrentStatusId(''); // Reset status ID
     }
-    setDialogOpen(true);
-    setIsEditing(false);
+    
+    // Xác định URL điều hướng đến trang chi tiết
+    let redirectUrl = `/record/${menuId}/${submission.id}`;
+    
+    // Nếu có workflowId, thêm vào URL
+    if (workflowId) {
+      redirectUrl += `/workflow/${workflowId}`;
+    }
+    
+    // Chuyển hướng đến trang chi tiết
+    window.location.href = redirectUrl;
   };
   
   // Xử lý khi nhấn vào một trường cụ thể để chỉnh sửa
