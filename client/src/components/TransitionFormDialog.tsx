@@ -48,11 +48,41 @@ export function TransitionFormDialog({
   const [formValues, setFormValues] = useState<FormField[]>([]);
   
   // Truy vấn API để lấy form fields cho transition
-  const { data: formData, isLoading } = useQuery({
+  const { data: formData, isLoading, refetch } = useQuery({
     queryKey: ['transition-form', transitionId],
     queryFn: () => fetchTransitionForm(transitionId),
     enabled: isOpen && !!transitionId,
   });
+  
+  // Hàm để load form fields khi bấm vào nút transition
+  const fetchAndSetFormFields = async (transitionId: string) => {
+    try {
+      const result = await fetchTransitionForm(transitionId);
+      
+      if (result?.data?.core_core_dynamic_workflow_transitions_by_pk?.core_dynamic_form?.core_dynamic_form_fields) {
+        const fields = result.data.core_core_dynamic_workflow_transitions_by_pk.core_dynamic_form.core_dynamic_form_fields;
+        
+        // Map các field từ API sang định dạng formValues
+        const initialValues = fields.map((field: any) => ({
+          id: field.core_dynamic_field.id,
+          form_field_id: field.id,
+          name: field.core_dynamic_field.name,
+          field_type: field.core_dynamic_field.field_type,
+          value: getDefaultValueByType(field.core_dynamic_field.field_type),
+          is_required: field.is_required
+        }));
+        
+        setFormValues(initialValues);
+      }
+    } catch (error) {
+      console.error('Error fetching form fields:', error);
+      toast({
+        title: t('transition.error', 'Lỗi'),
+        description: error instanceof Error ? error.message : String(error),
+        variant: 'destructive',
+      });
+    }
+  };
 
   // Mutation để gửi dữ liệu form
   const { mutate, isPending } = useMutation({
@@ -195,7 +225,7 @@ export function TransitionFormDialog({
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-blue-500">{field.name}</span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">PARAGRAPH</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">NUMBER</span>
             </div>
             <Input
               type="number"
@@ -338,6 +368,21 @@ export function TransitionFormDialog({
             Chi tiết thông tin của biểu mẫu đã nộp.
           </DialogDescription>
         </DialogHeader>
+        
+        <div className="py-2 border-b">
+          <h3 className="text-base font-medium">Hành động có sẵn:</h3>
+          <div className="mt-2 flex space-x-2">
+            <span 
+              className="px-3 py-1 border border-blue-500 text-blue-500 rounded-full text-sm cursor-pointer hover:bg-blue-50"
+              onClick={() => {
+                // Tự động chọn transition hiện tại để hiện form
+                fetchAndSetFormFields(transitionId);
+              }}
+            >
+              {transitionName} →
+            </span>
+          </div>
+        </div>
         
         {isLoading ? (
           <div className="py-6">
