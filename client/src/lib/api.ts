@@ -606,7 +606,7 @@ export async function submitTransitionForm(
       insert_submission_form(
         args: {
           name: $name,
-          workflow_transition_id: $transitionId,
+          transition_id: $transitionId,
           record_id: $recordId,
           user_id: $userId,
           submission_data: $submissionData
