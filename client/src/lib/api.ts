@@ -252,31 +252,28 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
  * Submit form data using GraphQL mutation
  */
 export async function submitFormData(submission: FormSubmission & { workflowId?: string }): Promise<GraphQLResponse<any>> {
-  // Cấu trúc mutation theo mẫu được cung cấp
+  // Sử dụng mutation mới theo mẫu được cung cấp
   const query = `
-    mutation SubmissionForm($formId: uuid!, $userId: uuid!, $organizationId: uuid!, $submissionData: jsonb!, $workflowId: uuid!) {
-      insert_core_core_submission_forms(objects: {
-        form_id: $formId, 
-        user_id: $userId, 
-        organization_id: $organizationId, 
-        submission_data: $submissionData, 
-        workflow_id: $workflowId
+    mutation InsertMenuRecord($menuId: uuid!, $userId: uuid!, $organizationId: uuid!, $title: String!, $submissionData: jsonb!) {
+      insert_menu_record(args: {
+        menu_id: $menuId,
+        user_id: $userId,
+        organization_id: $organizationId,
+        title: $title, 
+        submission_data: $submissionData
       }) {
-        affected_rows
-        returning {
-          id
-          code
-          form_id
-          organization_id
-          user_id
-          workflow_id
-          submission_data
-        }
+        id
+        code
+        menu_id
+        organization_id
+        user_id
+        workflow_id
+        data
       }
     }
   `;
 
-  // Biến đổi dữ liệu cho phù hợp với định dạng mutation
+  // Biến đổi dữ liệu cho phù hợp với định dạng mutation mới
   const submissionFields = Object.entries(submission.data).map(([fieldId, fieldData]) => {
     // fieldData giờ đây là một đối tượng có chứa value, name, và field_type
     return {
@@ -287,12 +284,28 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
     };
   });
 
+  // Tạo tiêu đề từ dữ liệu đã nhập hoặc sử dụng tiêu đề mặc định
+  // Tìm field có tên hoặc field_type là TEXT để dùng làm tiêu đề
+  let title = "Khiếu nại mới";
+  const titleField = Object.values(submission.data).find(field => 
+    field.name.toLowerCase().includes("tiêu đề") || 
+    field.name.toLowerCase().includes("title")
+  );
+  
+  if (titleField && titleField.value) {
+    title = String(titleField.value);
+  }
+
+  // Trong trường hợp workflowId thực chất là menuId, và chúng ta cần dùng menuId thay vì form_id
+  // Dựa vào ví dụ của bạn, menu_id là "7ffe9691-7f9b-430d-a945-16e0d9b173c4"
+  const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID của menu "Khiếu nại"
+  
   const variables = {
-    formId: submission.formId,
-    userId: DEFAULT_USER_ID, // Sử dụng ID cố định từ constants
-    organizationId: DEFAULT_ORGANIZATION_ID, // Sử dụng ID cố định từ constants
-    submissionData: submissionFields,
-    workflowId: submission.workflowId || "add1fe74-3c9a-4b4c-a43a-b9a1d4c5c5b2" // Sử dụng ID từ tham số hoặc ID mặc định
+    menuId: menuId,
+    userId: "5c065b51-3862-4004-ae96-ca23245aa21e", // ID cố định từ ví dụ của bạn
+    organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // ID cố định từ ví dụ của bạn
+    title: title,
+    submissionData: submissionFields
   };
 
   console.log("Submitting form with data:", variables);
