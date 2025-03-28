@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { FieldValue } from '@/lib/types';
-import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid, Search, Check, RotateCcw } from 'lucide-react';
+import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid, Search, Check, RotateCcw, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -24,7 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem
 } from '@/components/ui/dropdown-menu';
-import { fetchMenuViewForm } from '@/lib/api';
+import { fetchMenuViewForm, fetchWorkflowTransitionsByStatus } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 
 interface FieldData {
@@ -42,14 +42,16 @@ interface SubmissionDataTableProps {
   readOnly?: boolean;
   viewMode?: ViewMode;
   menuId?: string; // ID của menu để lấy thông tin form
+  workflowId?: string; // ID của workflow để lấy transitions
 }
 
 export function SubmissionDataTable({ 
   data, 
   onSave, 
-  readOnly = false, 
+  readOnly = true, // Mặc định là chỉ xem
   viewMode = 'card',
-  menuId
+  menuId,
+  workflowId
 }: SubmissionDataTableProps) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
@@ -69,6 +71,18 @@ export function SubmissionDataTable({
     queryKey: ['menu-view-form', menuId],
     queryFn: () => menuId ? fetchMenuViewForm(menuId) : Promise.resolve(null),
     enabled: !!menuId
+  });
+  
+  // State cho thông tin transitions
+  const [currentStatusId, setCurrentStatusId] = useState<string>("");
+  
+  // Lấy transitions từ API nếu có workflowId và statusId
+  const { data: transitionsData } = useQuery({
+    queryKey: ['workflow-transitions', workflowId, currentStatusId],
+    queryFn: () => workflowId && currentStatusId 
+      ? fetchWorkflowTransitionsByStatus(workflowId, currentStatusId) 
+      : Promise.resolve(null),
+    enabled: !!workflowId && !!currentStatusId
   });
 
   // Format thời gian từ timestamp
@@ -95,6 +109,15 @@ export function SubmissionDataTable({
     setSelectedSubmission(submission);
     if (Array.isArray(submission.data)) {
       setEditedData([...submission.data]);
+      
+      // Tìm trạng thái hiện tại trong dữ liệu submission nếu có
+      const statusField = submission.data.find((field: FieldData) => 
+        field.name.toLowerCase().includes('trạng thái') || 
+        field.name.toLowerCase().includes('status'));
+      
+      if (statusField) {
+        setCurrentStatusId(String(statusField.value));
+      }
     } else {
       setEditedData([]);
     }
@@ -417,6 +440,40 @@ export function SubmissionDataTable({
             : String(value);
     }
   };
+  
+  // Hiển thị các nút action (transitions) từ workflow
+  const renderActionButtons = () => {
+    // Sử dụng dữ liệu transitions từ API nếu có
+    const transitions = transitionsData?.data?.core_core_dynamic_workflow_transitions || [];
+    
+    // Nếu không có dữ liệu hoặc dữ liệu rỗng, không hiển thị phần này
+    if (transitions.length === 0) {
+      return null;
+    }
+    
+    return (
+      <div className="flex flex-wrap gap-2 py-4 px-2 border-b border-border bg-muted/20">
+        <div className="w-full mb-2 text-sm font-medium text-primary">
+          {t('workflow.availableActions', 'Hành động có sẵn:')}
+        </div>
+        {transitions.map((button: { id: string, name: string, form_id: string }) => (
+          <Button
+            key={button.id}
+            size="sm"
+            variant="outline"
+            className="flex items-center gap-1 bg-background hover:bg-primary hover:text-white transition-colors"
+            onClick={() => {
+              console.log('Transition clicked:', button);
+              // TODO: Thực hiện chuyển đổi trạng thái workflow
+            }}
+          >
+            {button.name}
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        ))}
+      </div>
+    );
+  };
 
   // Render chế độ xem dạng bảng
   const renderTableView = () => {
@@ -702,6 +759,9 @@ export function SubmissionDataTable({
             </div>
           )}
         </div>
+        
+        {/* Hiển thị các action buttons */}
+        {renderActionButtons()}
         
         <div className="p-4">
           {data.length === 0 ? (

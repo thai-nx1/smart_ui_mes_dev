@@ -482,6 +482,31 @@ export async function fetchMenuRecords(
 }
 
 /**
+ * Fetch workflow transitions by status
+ */
+export async function fetchWorkflowTransitionsByStatus(
+  workflowId: string,
+  fromStatusId: string
+): Promise<GraphQLResponse<any>> {
+  const query = `
+    query GetTransitionByStatus {
+      core_core_dynamic_workflow_transitions(
+        where: {
+          from_status_id: { _eq: "${fromStatusId}" },
+          workflow_id: { _eq: "${workflowId}" }
+        }
+      ) {
+        id
+        name
+        form_id
+      }
+    }
+  `;
+
+  return executeGraphQLQuery(query);
+}
+
+/**
  * Fetch menu view form fields for column headers
  */
 export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse<any>> {
