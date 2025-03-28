@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'wouter';
 import { MainLayout } from '@/components/MainLayout';
-import { fetchSubmissionForms, updateSubmissionForm, submitFormData, fetchAllMenus } from '@/lib/api';
+import { fetchMenuRecords, updateSubmissionForm, submitFormData, fetchAllMenus } from '@/lib/api';
 import { SubmissionForm, FormSubmission, Menu } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,14 +18,28 @@ export default function SubmissionPage() {
   const params = useParams<{ workflowId: string }>();
   const workflowId = params.workflowId;
   
-  // Fetch submission forms for the specified workflowId
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/submission-forms', workflowId],
+  // Truy vấn để lấy tất cả các menu để tìm menu phù hợp
+  const { data: menusData } = useQuery({
+    queryKey: ['/api/all-menus'],
     queryFn: async () => {
-      const response = await fetchSubmissionForms(workflowId);
-      return response.data.core_core_submission_forms;
+      const response = await fetchAllMenus();
+      return response.data.core_core_dynamic_menus;
+    }
+  });
+
+  // Tìm submenu từ workflowId
+  const currentSubmenu = menusData?.find((menu: Menu) => menu.workflow_id === workflowId);
+  const parentMenu = menusData?.find((menu: Menu) => menu.id === currentSubmenu?.parent_id);
+  const menuIdToUse = currentSubmenu?.id || "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID mặc định
+
+  // Sử dụng API QueryMenuRecord thay cho fetchSubmissionForms
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['/api/menu-records', menuIdToUse],
+    queryFn: async () => {
+      const response = await fetchMenuRecords(menuIdToUse);
+      return response.data.core_core_menu_records;
     },
-    enabled: !!workflowId
+    enabled: !!menuIdToUse
   });
 
   // Mutation để cập nhật dữ liệu submission form
@@ -34,7 +48,7 @@ export default function SubmissionPage() {
       return updateSubmissionForm(submissionId, submissionData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/submission-forms', workflowId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-records', menuIdToUse] });
       toast({
         title: t('submission.updateSuccess', 'Cập nhật thành công'),
         description: t('submission.updateSuccessMessage', 'Dữ liệu biểu mẫu đã được cập nhật thành công.'),
@@ -56,7 +70,7 @@ export default function SubmissionPage() {
       return submitFormData(formData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/submission-forms', workflowId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-records', menuIdToUse] });
       toast({
         title: t('submission.createSuccess', 'Tạo mới thành công'),
         description: t('submission.createSuccessMessage', 'Biểu mẫu mới đã được tạo thành công.'),
@@ -82,38 +96,24 @@ export default function SubmissionPage() {
     }
   };
 
-  // Truy vấn để lấy tất cả các menu để tìm menu phù hợp
-  const { data: allMenusData } = useQuery({
-    queryKey: ['/api/all-menus'],
-    queryFn: async () => {
-      const response = await fetchAllMenus();
-      return response.data.core_core_dynamic_menus;
-    }
-  });
-
   // Xử lý khi tạo mới submission form
   const handleCreateSubmission = async (newSubmission: FormSubmission) => {
     try {
-      // Tìm menu (submenu) có workflow_id trùng với workflowId hiện tại
-      const currentSubmenu = allMenusData?.find((menu: Menu) => menu.workflow_id === workflowId);
-      const parentMenu = allMenusData?.find((menu: Menu) => menu.id === currentSubmenu?.parent_id);
-      
-      // Ưu tiên sử dụng ID của submenu nếu có
-      // Nếu không tìm thấy bất kỳ submenu nào phù hợp, sử dụng ID được cung cấp bởi API
-      const menuIdToUse = currentSubmenu?.id || parentMenu?.id || "aca06cb6-7dfa-4bda-89a8-42d8f3c18ec8";
+      // Sử dụng submenu ID đã được tìm thấy ở trên
+      const menuIdForSubmission = currentSubmenu?.id || parentMenu?.id || "aca06cb6-7dfa-4bda-89a8-42d8f3c18ec8";
       
       console.log("Found menu/submenu for workflow:", { 
         workflowId,
         submenuId: currentSubmenu?.id,
         parentMenuId: parentMenu?.id,
-        menuIdToUse
+        menuIdToUse: menuIdForSubmission
       });
       
       // Thêm workflowId và menuId vào dữ liệu submission
       await createSubmissionMutation.mutateAsync({
         ...newSubmission,
         workflowId,
-        menuId: menuIdToUse
+        menuId: menuIdForSubmission
       });
     } catch (error) {
       console.error('Error creating submission:', error);
@@ -194,10 +194,10 @@ export default function SubmissionPage() {
               data={data}
               onSave={async (editedData) => {
                 // Lấy submission ID hiện tại
-                const currentSubmission = data.find(s => 
+                const currentSubmission = data.find((s: any) => 
                   Array.isArray(s.submission_data) && 
                   editedData.length > 0 && 
-                  s.submission_data.some(f => f.id === editedData[0].id)
+                  s.submission_data.some((f: any) => f.id === editedData[0].id)
                 );
                 
                 if (currentSubmission) {
