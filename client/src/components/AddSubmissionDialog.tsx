@@ -63,9 +63,11 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         const response = await fetchMenuForms(menuId, 'CREATE');
         console.log("Menu forms response:", response);
         
-        if (response.data && response.data.core_dynamic_menu_forms) {
-          // Chuyển đổi dữ liệu để phù hợp với cấu trúc form đang dùng
-          const menuForms = response.data.core_dynamic_menu_forms.map((menuForm: any) => ({
+        console.log("Full response from menu forms API:", response);
+        
+        if (response.data && response.data.core_core_dynamic_menu_forms) {
+          // Đường dẫn đúng là core_core_dynamic_menu_forms, không phải core_dynamic_menu_forms
+          const menuForms = response.data.core_core_dynamic_menu_forms.map((menuForm: any) => ({
             id: menuForm.core_dynamic_form.id,
             name: menuForm.core_dynamic_form.name,
             description: menuForm.core_dynamic_form.description || '',
@@ -86,8 +88,10 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
         console.log("No workflowId provided, using default menu ID:", menuId);
         const response = await fetchMenuForms(menuId, 'CREATE');
-        if (response.data && response.data.core_dynamic_menu_forms) {
-          const menuForms = response.data.core_dynamic_menu_forms.map((menuForm: any) => ({
+        console.log("Full response for default menu:", response);
+        
+        if (response.data && response.data.core_core_dynamic_menu_forms) {
+          const menuForms = response.data.core_core_dynamic_menu_forms.map((menuForm: any) => ({
             id: menuForm.core_dynamic_form.id,
             name: menuForm.core_dynamic_form.name,
             description: menuForm.core_dynamic_form.description || '',
