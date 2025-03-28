@@ -488,6 +488,14 @@ export async function fetchWorkflowTransitionsByStatus(
   workflowId: string,
   fromStatusId: string
 ): Promise<GraphQLResponse<any>> {
+  console.log('Calling API fetchWorkflowTransitionsByStatus with workflowId:', workflowId);
+  console.log('Menu information:', {
+    menuIdFromQuery: workflowId,
+    currentSubmenuId: workflowId,
+    menuIdToUse: workflowId,
+    workflowId: workflowId
+  });
+  
   // Xử lý 2 trường hợp cho query:
   // 1. Nếu có fromStatusId: lấy các transitions từ status này
   // 2. Nếu không có fromStatusId: lấy các transitions có from_status_id là null (trạng thái khởi tạo)
@@ -503,12 +511,13 @@ export async function fetchWorkflowTransitionsByStatus(
           id
           name
           form_id
+          from_status_id
           to_status_id
         }
       }
     `
     : `
-      query GetInitialTransitionsForWorkflow($workflowId: uuid!) {
+      query GetAllTransitionsForWorkflow($workflowId: uuid!) {
         core_core_dynamic_workflow_transitions(
           where: {
             from_status_id: { _is_null: true },

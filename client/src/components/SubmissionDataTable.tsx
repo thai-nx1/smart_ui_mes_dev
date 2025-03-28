@@ -915,7 +915,7 @@ export function SubmissionDataTable({
           {/* Hiển thị action buttons workflow từ transitions */}
           {!isEditing && workflowId && (
             <>
-              {transitionsData?.data?.core_core_dynamic_workflow_transitions?.length > 0 && (
+              {transitionsData?.data?.core_core_dynamic_workflow_transitions?.length > 0 ? (
                 <div className="flex flex-wrap gap-2 py-3 px-4 border-b border-border bg-muted/20">
                   <div className="w-full mb-1 text-sm font-medium text-primary">
                     {t('workflow.availableActions', 'Hành động có sẵn:')}
@@ -941,6 +941,12 @@ export function SubmissionDataTable({
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2 py-3 px-4 border-b border-border bg-muted/20">
+                  <div className="w-full text-sm text-muted-foreground italic">
+                    {t('workflow.loading', 'Đang tải các hành động cho trạng thái...')}
                   </div>
                 </div>
               )}
