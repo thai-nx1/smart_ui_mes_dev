@@ -24,6 +24,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem
 } from '@/components/ui/dropdown-menu';
+import { fetchMenuViewForm } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
 
 interface FieldData {
   id: string;
@@ -39,13 +41,15 @@ interface SubmissionDataTableProps {
   onSave?: (data: FieldData[]) => Promise<boolean | void>;
   readOnly?: boolean;
   viewMode?: ViewMode;
+  menuId?: string; // ID của menu để lấy thông tin form
 }
 
 export function SubmissionDataTable({ 
   data, 
   onSave, 
   readOnly = false, 
-  viewMode = 'card' 
+  viewMode = 'card',
+  menuId
 }: SubmissionDataTableProps) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
@@ -59,6 +63,13 @@ export function SubmissionDataTable({
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [dataChanged, setDataChanged] = useState(false);
+  
+  // Lấy thông tin form từ API nếu có menuId
+  const { data: formData } = useQuery({
+    queryKey: ['menu-view-form', menuId],
+    queryFn: () => menuId ? fetchMenuViewForm(menuId) : Promise.resolve(null),
+    enabled: !!menuId
+  });
 
   // Format thời gian từ timestamp
   const formatDate = (timestamp: number) => {

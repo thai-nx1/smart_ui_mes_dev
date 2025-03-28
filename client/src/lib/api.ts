@@ -482,6 +482,49 @@ export async function fetchMenuRecords(
 }
 
 /**
+ * Fetch menu view form fields for column headers
+ */
+export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse<any>> {
+  const query = `
+    query FetchMenuViewForm($menuId: uuid!) {
+      core_core_dynamic_menu_forms(
+        where: {menu_id: {_eq: $menuId}, form_type: {_eq: "VIEW"}}
+      ) {
+        id
+        form_type
+        form_id
+        menu_id
+        core_dynamic_form {
+          id
+          name
+          code
+          core_dynamic_form_fields {
+            id
+            is_required
+            position
+            core_dynamic_field {
+              id
+              code
+              field_type
+              configuration
+              description
+              name
+              status
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    menuId
+  };
+
+  return executeGraphQLQuery(query, variables);
+}
+
+/**
  * API request helper
  */
 export async function apiRequest(
