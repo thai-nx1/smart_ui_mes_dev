@@ -109,19 +109,26 @@ export function SubmissionDataTable({
   // Xử lý khi nhấn nút xem tất cả
   const handleView = (submission: any) => {
     setSelectedSubmission(submission);
+    console.log('Viewing submission:', submission);
     if (Array.isArray(submission.data)) {
       setEditedData([...submission.data]);
+      console.log('All fields in submission data:', submission.data.map((f: FieldData) => `${f.name} (${f.field_type}): ${JSON.stringify(f.value)}`));
       
-      // Tìm trạng thái hiện tại trong dữ liệu submission nếu có
+      // Tìm trạng thái hiện tại trong dữ liệu submission
+      // Mở rộng tìm kiếm với nhiều tên khả dĩ cho trường status
       const statusField = submission.data.find((field: FieldData) => 
         field.name.toLowerCase().includes('trạng thái') || 
-        field.name.toLowerCase().includes('status'));
+        field.name.toLowerCase() === 'status' ||
+        field.name.toLowerCase() === 'trang_thai' ||
+        field.name.toLowerCase() === 'state' ||
+        field.name.toLowerCase().includes('loại dừng'));
       
       if (statusField && workflowId) {
         console.log('Found status field for transitions:', statusField);
         setCurrentStatusId(String(statusField.value));
       } else {
-        console.log('Status field or workflowId not found');
+        console.log('Status field or workflowId not found. workflowId:', workflowId);
+        // Sử dụng một giá trị status mặc định để test
         setCurrentStatusId(''); // Reset status ID
       }
     } else {
@@ -883,7 +890,7 @@ export function SubmissionDataTable({
                     {t('workflow.availableActions', 'Hành động có sẵn:')}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {transitionsData.data.core_core_dynamic_workflow_transitions.map((transition: any) => (
+                    {transitionsData?.data?.core_core_dynamic_workflow_transitions?.map((transition: any) => (
                       <Button
                         key={transition.id}
                         size="sm"
