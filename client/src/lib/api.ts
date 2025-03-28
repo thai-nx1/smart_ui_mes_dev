@@ -358,6 +358,13 @@ export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
         name
         parent_id
         workflow_id
+        core_dynamic_child_menus {
+          id
+          code
+          name
+          workflow_id
+          __typename
+        }
         __typename
       }
     }

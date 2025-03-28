@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2, Check } from 'lucide-react';
-import { fetchForms, fetchFormFields, fetchMenuForms } from '@/lib/api';
+import { fetchForms, fetchFormFields, fetchMenuForms, fetchAllMenus } from '@/lib/api';
 import { Form, Field, FormField, FieldSubmission, FormSubmission } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
 
@@ -55,8 +55,42 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         // workflowId: 6b1988ea-c4c5-4810-815d-1de6b06a9392 là workflow_id của menu "Khiếu nại"
         // Menu "Khiếu nại" có ID: 7ffe9691-7f9b-430d-a945-16e0d9b173c4
 
-        // Sử dụng cái ID của menu chứ không phải workflow_id
-        const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4"; // ID của menu "Khiếu nại"
+        // Tìm menuId dựa trên workflowId
+        const findMenuIdByWorkflowId = async (wfId: string) => {
+          try {
+            const allMenusResponse = await fetchAllMenus();
+            const allMenus = allMenusResponse.data.core_core_dynamic_menus;
+            
+            // Tìm menu với workflow_id trùng khớp
+            const currentMenu = allMenus.find((menu: any) => menu.workflow_id === wfId);
+            
+            if (currentMenu) {
+              console.log("Found menu for workflow:", currentMenu.id);
+              return currentMenu.id;
+            }
+            
+            // Tìm submenu
+            for (const menu of allMenus) {
+              if (menu.core_dynamic_child_menus) {
+                const childMenu = menu.core_dynamic_child_menus.find(
+                  (child: any) => child.workflow_id === wfId
+                );
+                if (childMenu) {
+                  console.log("Found child menu for workflow:", childMenu.id);
+                  return childMenu.id;
+                }
+              }
+            }
+            
+            // Mặc định nếu không tìm thấy
+            return "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+          } catch (err) {
+            console.error("Error finding menu by workflow:", err);
+            return "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+          }
+        };
+        
+        const menuId = await findMenuIdByWorkflowId(workflowId);
         
         // Lấy form với loại CREATE
         console.log("Fetching forms for menu ID:", menuId);
