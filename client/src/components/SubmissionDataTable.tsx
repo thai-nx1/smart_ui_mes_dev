@@ -546,6 +546,11 @@ export function SubmissionDataTable({
                   <span>Code</span>
                 </div>
               </th>
+              <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
+                <div className="flex items-center">
+                  <span>Trạng thái</span>
+                </div>
+              </th>
               {fieldNames.map((fieldName: string) => (
                 <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
                   <div className="flex items-center">
@@ -575,7 +580,20 @@ export function SubmissionDataTable({
                   <td className="p-3 border-r border-border text-sm relative">
                     <div className="relative">
                       <div className="mr-6 font-mono">
-                        {submission.id ? submission.id.substring(0, 8) : '-'}
+                        {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
+                      </div>
+                    </div>
+                  </td>
+                  
+                  {/* Cột trạng thái */}
+                  <td className="p-3 border-r border-border text-sm relative">
+                    <div className="relative">
+                      <div className="mr-6">
+                        {submission.core_dynamic_status ? (
+                          <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                            {submission.core_dynamic_status.name || '-'}
+                          </span>
+                        ) : '-'}
                       </div>
                     </div>
                   </td>

@@ -464,10 +464,21 @@ export async function fetchMenuRecords(
         where: { menu_id: { _eq: $menuId } }
       ) {
         id
+        code
         title
         data
         created_at
         created_by
+        core_dynamic_status {
+          id
+          code
+          name
+        }
+        core_user {
+          id
+          username
+          email
+        }
       }
     }
   `;
