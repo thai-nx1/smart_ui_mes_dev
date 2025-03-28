@@ -475,13 +475,10 @@ export function SubmissionDataTable({
     }
   };
   
-  // Hiển thị các nút action (transitions) từ workflow
+  // Hiển thị các nút action (transitions) từ workflow - đã bị ẩn khỏi trang chính
   const renderActionButtons = () => {
-    // Sử dụng dữ liệu transitions từ API nếu có
-    const transitions = transitionsData?.data?.core_core_dynamic_workflow_transitions || [];
-    
-    // Log transitions data để debug
-    console.log('Transitions data received:', transitions);
+    // Không hiển thị các nút hành động ở trang chính
+    return null;
     
     // Hiển thị trạng thái hiện tại nếu có
     const currentStatus = selectedSubmission?.core_dynamic_status?.name || '';
@@ -497,7 +494,7 @@ export function SubmissionDataTable({
     );
     
     // Nếu không có transitions, chỉ hiển thị trạng thái hiện tại và thông báo
-    if (transitions.length === 0) {
+    if ((transitionsData?.data?.core_core_dynamic_workflow_transitions || []).length === 0) {
       return (
         <div className="flex flex-col gap-2 py-4 px-2 border-b border-border bg-muted/20">
           {statusSection}
@@ -515,7 +512,7 @@ export function SubmissionDataTable({
           {t('workflow.availableActions', 'Hành động có sẵn:')}
         </div>
         <div className="flex flex-wrap gap-2">
-          {transitions.map((transition: { id: string, name: string, form_id: string, to_status_id: string }) => (
+          {(transitionsData?.data?.core_core_dynamic_workflow_transitions || []).map((transition: { id: string, name: string, form_id: string, to_status_id: string }) => (
             <TransitionFormDialog
               key={transition.id}
               transitionId={transition.id}
@@ -949,24 +946,26 @@ export function SubmissionDataTable({
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {transitionsData?.data?.core_core_dynamic_workflow_transitions?.map((transition: any) => (
-                      <Button
+                      <TransitionFormDialog
                         key={transition.id}
-                        size="sm"
-                        variant="outline"
-                        className="flex items-center gap-1 bg-background hover:bg-primary hover:text-white transition-colors"
-                        onClick={() => {
-                          console.log('Transition clicked:', transition);
-                          // Hiển thị toast thông báo thành công
-                          toast({
-                            title: t('workflow.transitionSuccess', 'Chuyển đổi trạng thái thành công'),
-                            description: t('workflow.transitionTo', 'Đã chuyển sang trạng thái "{name}"', { name: transition.name }),
-                            variant: "default",
-                          });
+                        transitionId={transition.id}
+                        recordId={selectedSubmission?.id || ''}
+                        transitionName={transition.name}
+                        onSubmit={() => {
+                          // Đóng dialog sau khi thực hiện transition
+                          setDialogOpen(false);
                         }}
-                      >
-                        {transition.name}
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
+                        trigger={
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex items-center gap-1 bg-background hover:bg-primary hover:text-white transition-colors"
+                          >
+                            {transition.name}
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
                     ))}
                   </div>
                 </div>
