@@ -489,11 +489,11 @@ export async function fetchWorkflowTransitionsByStatus(
   fromStatusId: string
 ): Promise<GraphQLResponse<any>> {
   const query = `
-    query GetTransitionByStatus {
+    query GetTransitionByStatus($workflowId: uuid!, $fromStatusId: uuid!) {
       core_core_dynamic_workflow_transitions(
         where: {
-          from_status_id: { _eq: "${fromStatusId}" },
-          workflow_id: { _eq: "${workflowId}" }
+          from_status_id: { _eq: $fromStatusId },
+          workflow_id: { _eq: $workflowId }
         }
       ) {
         id
@@ -503,7 +503,12 @@ export async function fetchWorkflowTransitionsByStatus(
     }
   `;
 
-  return executeGraphQLQuery(query);
+  const variables = {
+    workflowId,
+    fromStatusId
+  };
+
+  return executeGraphQLQuery(query, variables);
 }
 
 /**
