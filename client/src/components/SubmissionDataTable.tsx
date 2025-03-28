@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { fetchMenuViewForm, fetchWorkflowTransitionsByStatus } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
+import { TransitionFormDialog } from '@/components/TransitionFormDialog';
 
 interface FieldData {
   id: string;
@@ -482,10 +483,24 @@ export function SubmissionDataTable({
     // Log transitions data để debug
     console.log('Transitions data received:', transitions);
     
-    // Nếu không có dữ liệu hoặc dữ liệu rỗng, hiển thị thông báo
+    // Hiển thị trạng thái hiện tại nếu có
+    const currentStatus = selectedSubmission?.core_dynamic_status?.name || '';
+    const statusSection = (
+      <div className="mb-4">
+        <p className="text-sm font-medium text-muted-foreground mb-2">
+          {t('workflow.currentStatus', 'Trạng thái hiện tại:')}
+        </p>
+        <div className="px-3 py-1.5 bg-primary/10 text-primary rounded-full inline-block text-sm font-medium">
+          {currentStatus || t('workflow.noStatus', 'Chưa có trạng thái')}
+        </div>
+      </div>
+    );
+    
+    // Nếu không có transitions, chỉ hiển thị trạng thái hiện tại và thông báo
     if (transitions.length === 0) {
       return (
-        <div className="flex flex-wrap gap-2 py-4 px-2 border-b border-border bg-muted/20">
+        <div className="flex flex-col gap-2 py-4 px-2 border-b border-border bg-muted/20">
+          {statusSection}
           <div className="w-full text-sm text-muted-foreground italic">
             {t('workflow.noActions', 'Không có hành động nào khả dụng cho trạng thái hiện tại.')}
           </div>
@@ -494,31 +509,36 @@ export function SubmissionDataTable({
     }
     
     return (
-      <div className="flex flex-wrap gap-2 py-4 px-2 border-b border-border bg-muted/20">
+      <div className="flex flex-col gap-2 py-4 px-2 border-b border-border bg-muted/20">
+        {statusSection}
         <div className="w-full mb-2 text-sm font-medium text-primary">
           {t('workflow.availableActions', 'Hành động có sẵn:')}
         </div>
-        {transitions.map((button: { id: string, name: string, form_id: string, to_status_id: string }) => (
-          <Button
-            key={button.id}
-            size="sm"
-            variant="outline"
-            className="flex items-center gap-1 bg-background hover:bg-primary hover:text-white transition-colors"
-            onClick={() => {
-              console.log('Transition clicked:', button);
-              // Xử lý khi nhấp vào nút chuyển đổi
-              // Hiển thị toast thông báo thành công
-              toast({
-                title: t('workflow.transitionSuccess', 'Chuyển đổi trạng thái thành công'),
-                description: t('workflow.transitionTo', 'Đã chuyển sang trạng thái "{name}"', { name: button.name }),
-                variant: "default",
-              });
-            }}
-          >
-            {button.name}
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        ))}
+        <div className="flex flex-wrap gap-2">
+          {transitions.map((transition: { id: string, name: string, form_id: string, to_status_id: string }) => (
+            <TransitionFormDialog
+              key={transition.id}
+              transitionId={transition.id}
+              recordId={selectedSubmission?.id || ''}
+              transitionName={transition.name}
+              onSubmit={() => {
+                // Đóng dialog và reload dữ liệu sau khi thực hiện transition
+                setDialogOpen(false);
+                // Reload data nếu cần
+              }}
+              trigger={
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex items-center gap-1 bg-background hover:bg-primary hover:text-white transition-colors"
+                >
+                  {transition.name}
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              }
+            />
+          ))}
+        </div>
       </div>
     );
   };

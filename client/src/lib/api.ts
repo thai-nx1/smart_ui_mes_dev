@@ -553,6 +553,84 @@ export async function fetchWorkflowTransitionsByStatus(
 }
 
 /**
+ * Fetch form by transition ID
+ */
+export async function fetchTransitionForm(transitionId: string): Promise<GraphQLResponse<any>> {
+  const query = `
+    query MyQuery2($transitionId: uuid!) {
+      core_core_dynamic_workflow_transitions_by_pk(id: $transitionId) {
+        id
+        name
+        organization_id
+        workflow_id
+        core_dynamic_form {
+          id
+          name
+          status
+          code
+          core_dynamic_form_fields {
+            id
+            is_required
+            position
+            core_dynamic_field {
+              id
+              code
+              field_type
+              configuration
+              description
+              name
+              status
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = { transitionId };
+  return executeGraphQLQuery(query, variables);
+}
+
+/**
+ * Submit transition form data
+ */
+export async function submitTransitionForm(
+  transitionId: string,
+  recordId: string,
+  userId: string,
+  name: string,
+  submissionData: any[]
+): Promise<GraphQLResponse<any>> {
+  const query = `
+    mutation insert_submission_form($transitionId: uuid!, $recordId: uuid!, $userId: uuid!, $name: String!, $submissionData: jsonb!) {
+      insert_submission_form(
+        args: {
+          name: $name
+          record_id: $recordId
+          transition_id: $transitionId
+          user_id: $userId
+          submission_data: $submissionData
+        }
+      ) {
+        id
+        code
+        submission_data
+      }
+    }
+  `;
+
+  const variables = {
+    transitionId,
+    recordId,
+    userId,
+    name,
+    submissionData
+  };
+  
+  return executeGraphQLQuery(query, variables);
+}
+
+/**
  * Fetch menu view form fields for column headers
  */
 export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse<any>> {
