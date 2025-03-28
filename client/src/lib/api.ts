@@ -488,8 +488,9 @@ export async function fetchWorkflowTransitionsByStatus(
   workflowId: string,
   fromStatusId: string
 ): Promise<GraphQLResponse<any>> {
-  // Nếu không có statusId, sử dụng tham số where cho workflow_id
-  // và bỏ qua điều kiện from_status_id để lấy tất cả transitions từ workflow
+  // Xử lý 2 trường hợp cho query:
+  // 1. Nếu có fromStatusId: lấy các transitions từ status này
+  // 2. Nếu không có fromStatusId: lấy các transitions có from_status_id là null (trạng thái khởi tạo)
   const query = fromStatusId 
     ? `
       query GetTransitionByStatus($workflowId: uuid!, $fromStatusId: uuid!) {
@@ -507,9 +508,10 @@ export async function fetchWorkflowTransitionsByStatus(
       }
     `
     : `
-      query GetAllTransitionsForWorkflow($workflowId: uuid!) {
+      query GetInitialTransitionsForWorkflow($workflowId: uuid!) {
         core_core_dynamic_workflow_transitions(
           where: {
+            from_status_id: { _is_null: true },
             workflow_id: { _eq: $workflowId }
           }
         ) {

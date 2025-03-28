@@ -138,14 +138,14 @@ export function SubmissionDataTable({
           console.log('Using status value as UUID:', statusField.value);
           setCurrentStatusId(String(statusField.value));
         } else {
-          console.log('Status value is not a valid UUID, using empty string');
-          setCurrentStatusId(''); // Sử dụng chuỗi rỗng để lấy tất cả transitions
+          console.log('Status value is not a valid UUID, using empty string to get initial transitions');
+          setCurrentStatusId(''); // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo
         }
       } else {
         console.log('Status field or workflowId not found. workflowId:', workflowId);
-        // Không cần thiết lập ID cụ thể, chỉ cần sử dụng chuỗi rỗng
+        // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo (from_status_id is null)
         setCurrentStatusId('');
-        console.log('Using empty status ID to get all transitions');
+        console.log('Using empty status ID to get initial transitions (from_status_id is null)');
       }
     } else {
       setEditedData([]);
