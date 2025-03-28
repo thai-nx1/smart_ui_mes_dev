@@ -200,12 +200,10 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
     }
   `;
 
-  // Thêm organization_id và user_id vào variables
+  // Chỉ sử dụng các tham số cần thiết theo yêu cầu
   const variables = {
     menuId,
-    formType,
-    organization_id: "7459aaa3-b2f8-481e-87d6-f4b4d69a7d0e", // ID mặc định
-    user_id: "3fa85f64-5717-4562-b3fc-2c963f66afa6" // ID mặc định
+    formType
   };
 
   console.log("Fetching menu forms with:", variables);
