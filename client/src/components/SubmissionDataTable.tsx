@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,8 +12,18 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { FieldValue } from '@/lib/types';
-import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid } from 'lucide-react';
+import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid, Search, Check, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Badge } from '@/components/ui/badge';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem
+} from '@/components/ui/dropdown-menu';
 
 interface FieldData {
   id: string;
@@ -38,6 +48,11 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentViewMode, setCurrentViewMode] = useState<ViewMode>(viewMode);
+  
+  // State cho tìm kiếm và lọc
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Format thời gian từ timestamp
   const formatDate = (timestamp: number) => {
@@ -297,6 +312,61 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
     });
     return Array.from(fieldTypes);
   };
+  
+  // Lọc dữ liệu dựa trên truy vấn tìm kiếm và bộ lọc
+  const filteredData = useMemo(() => {
+    if (!searchQuery.trim() && activeFilters.length === 0) {
+      return data;
+    }
+    
+    return data.filter(submission => {
+      if (!Array.isArray(submission.submission_data)) {
+        return false;
+      }
+      
+      // Lọc theo bộ lọc hoạt động
+      if (activeFilters.length > 0) {
+        const hasAllActiveFilters = activeFilters.every(filterName => {
+          return submission.submission_data.some((field: FieldData) => field.name === filterName);
+        });
+        
+        if (!hasAllActiveFilters) {
+          return false;
+        }
+      }
+      
+      // Lọc theo truy vấn tìm kiếm
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        
+        // Tìm trong tất cả các trường
+        return submission.submission_data.some((field: FieldData) => {
+          const fieldValue = field.value;
+          
+          if (fieldValue === null || fieldValue === undefined) {
+            return false;
+          }
+          
+          // Kiểm tra giá trị dựa vào loại dữ liệu
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(query);
+          } else if (typeof fieldValue === 'number') {
+            return fieldValue.toString().includes(query);
+          } else if (Array.isArray(fieldValue)) {
+            return fieldValue.some(item => 
+              item !== null && 
+              item !== undefined && 
+              item.toString().toLowerCase().includes(query)
+            );
+          }
+          
+          return false;
+        });
+      }
+      
+      return true;
+    });
+  }, [data, searchQuery, activeFilters]);
 
   // Hiển thị giá trị của trường
   const renderFieldValue = (value: FieldValue, fieldType: string) => {
@@ -340,7 +410,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
             </tr>
           </thead>
           <tbody className="divide-y divide-border bg-card">
-            {data.map((submission, rowIndex) => {
+            {filteredData.map((submission, rowIndex) => {
               if (!Array.isArray(submission.submission_data)) return null;
               
               return (
@@ -415,7 +485,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   const renderCardView = () => {
     return (
       <div className="space-y-6">
-        {data.map((submission) => (
+        {filteredData.map((submission) => (
           <div 
             key={submission.id} 
             className="group mb-6 p-5 border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 bg-card"
@@ -527,6 +597,80 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
           </div>
         </div>
 
+        {/* Thanh tìm kiếm */}
+        <div className="px-4 py-3 border-b border-border/80 bg-background/70">
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <div className={`relative flex-1 w-full sm:max-w-xs transition-all duration-200 ${isSearchFocused ? 'sm:max-w-sm' : ''}`}>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder={t('search.placeholder', 'Tìm kiếm trong dữ liệu...')}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="w-full pl-9 bg-background border-muted pr-10 focus-visible:ring-1 focus-visible:ring-primary"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              {getUniqueFieldTypes().slice(0, 4).map(fieldName => (
+                <Button 
+                  key={fieldName}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setActiveFilters(prev => 
+                      prev.includes(fieldName) 
+                        ? prev.filter(f => f !== fieldName)
+                        : [...prev, fieldName]
+                    );
+                  }}
+                  className={`text-xs border-border hover:bg-primary/5 transition-colors ${
+                    activeFilters.includes(fieldName) 
+                      ? 'bg-primary/10 text-primary border-primary/30' 
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {fieldName}
+                  {activeFilters.includes(fieldName) && (
+                    <Check className="ml-1 h-3 w-3" />
+                  )}
+                </Button>
+              ))}
+              
+              {activeFilters.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveFilters([])}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {t('filters.clear', 'Xóa bộ lọc')}
+                </Button>
+              )}
+            </div>
+          </div>
+          
+          {/* Hiển thị kết quả tìm kiếm */}
+          {searchQuery.trim() && (
+            <div className="mt-2 text-sm text-muted-foreground">
+              {t('search.results', 'Hiển thị {count} kết quả cho "{query}"', { 
+                count: filteredData.length,
+                query: searchQuery.trim()
+              })}
+            </div>
+          )}
+        </div>
+        
         <div className="p-4">
           {data.length === 0 ? (
             <div className="py-20 px-4 text-center bg-background/50 rounded-lg border border-dashed">
@@ -554,6 +698,40 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
                 <p className="text-sm text-muted-foreground/70">
                   {t('submission.noDataDescription', 'Các biểu mẫu đã nộp sẽ hiển thị ở đây.')}
                 </p>
+              </div>
+            </div>
+          ) : filteredData.length === 0 && (searchQuery || activeFilters.length > 0) ? (
+            <div className="py-16 px-4 text-center bg-background/50 rounded-lg border border-dashed">
+              <div className="mx-auto max-w-md">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="42" 
+                  height="42" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="1" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="mx-auto mb-4 text-muted-foreground/50"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <p className="text-muted-foreground font-medium mb-2">
+                  {t('search.noResults', 'Không tìm thấy kết quả nào')}
+                </p>
+                <p className="text-sm text-muted-foreground/70">
+                  {t('search.noResultsDescription', 'Thử thay đổi từ khóa tìm kiếm hoặc xóa bộ lọc để xem tất cả dữ liệu.')}
+                </p>
+                <Button 
+                  variant="outline"
+                  onClick={() => { setSearchQuery(''); setActiveFilters([]); }}
+                  className="mt-4 border-primary/20 hover:border-primary hover:bg-primary/10 transition-colors"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  {t('search.resetFilters', 'Xóa tất cả bộ lọc')}
+                </Button>
               </div>
             </div>
           ) : (
