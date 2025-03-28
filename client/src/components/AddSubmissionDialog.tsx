@@ -78,17 +78,26 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
           setForms(menuForms);
         } else {
           console.log("No forms data returned or incorrect structure:", response.data);
-          // Fallback về API cũ nếu không có dữ liệu từ API mới
-          const fallbackResponse = await fetchForms(20, 0);
-          if (fallbackResponse.data) {
-            setForms(fallbackResponse.data.core_core_dynamic_forms);
-          }
+          // Không sử dụng fetchForms nữa theo yêu cầu
+          setForms([]);
         }
       } else {
-        // Fallback về API cũ nếu không có workflowId
-        const response = await fetchForms(20, 0);
-        if (response.data) {
-          setForms(response.data.core_core_dynamic_forms);
+        // Nếu không có workflowId, sử dụng ID mặc định của menu "Khiếu nại"
+        const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+        console.log("No workflowId provided, using default menu ID:", menuId);
+        const response = await fetchMenuForms(menuId, 'CREATE');
+        if (response.data && response.data.core_dynamic_menu_forms) {
+          const menuForms = response.data.core_dynamic_menu_forms.map((menuForm: any) => ({
+            id: menuForm.core_dynamic_form.id,
+            name: menuForm.core_dynamic_form.name,
+            description: menuForm.core_dynamic_form.description || '',
+            status: 'ACTIVE',
+            __typename: 'core_core_dynamic_forms',
+            core_dynamic_form_fields: menuForm.core_dynamic_form.core_dynamic_form_fields
+          }));
+          setForms(menuForms);
+        } else {
+          setForms([]);
         }
       }
     } catch (error) {

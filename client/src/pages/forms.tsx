@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Form, Field, FieldType } from '@/lib/types';
-import { fetchForms, fetchFormFields, executeGraphQLQuery } from '@/lib/api';
+import { fetchMenuForms, fetchFormFields, executeGraphQLQuery } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
@@ -38,8 +38,24 @@ export default function FormsPage() {
   } = useQuery({
     queryKey: ['/api/forms'],
     queryFn: async () => {
-      const response = await fetchForms();
-      return response.data.core_core_dynamic_forms;
+      // Sử dụng menuId cố định của menu "Khiếu nại" để lấy form
+      const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+      const response = await fetchMenuForms(menuId, 'CREATE');
+      
+      if (response.data && response.data.core_core_dynamic_menu_forms) {
+        // Chuyển đổi dữ liệu để phù hợp với cấu trúc form đang dùng
+        return response.data.core_core_dynamic_menu_forms.map((menuForm: any) => ({
+          id: menuForm.core_dynamic_form.id,
+          name: menuForm.core_dynamic_form.name,
+          description: menuForm.core_dynamic_form.description || '',
+          status: 'ACTIVE',
+          __typename: 'core_core_dynamic_forms',
+          // Lưu lại thông tin field
+          core_dynamic_form_fields: menuForm.core_dynamic_form.core_dynamic_form_fields
+        }));
+      }
+      
+      return [];
     }
   });
 

@@ -148,21 +148,15 @@ export async function fetchFieldDetails(fieldId: string): Promise<GraphQLRespons
 
 /**
  * Fetch all forms - Deprecated, use fetchMenuForms instead
+ * This function is now disabled as per user request
  */
 export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLResponse<FormsListResponse>> {
-  const query = `
-    query GetForms($limit: Int, $offset: Int) {
-      core_core_dynamic_forms(limit: $limit, offset: $offset) {
-        id
-        name
-        description
-        status
-        __typename
-      }
+  console.warn('fetchForms is deprecated and disabled. Use fetchMenuForms instead.');
+  return Promise.resolve({
+    data: {
+      core_core_dynamic_forms: []
     }
-  `;
-
-  return executeGraphQLQuery<GraphQLResponse<FormsListResponse>>(query, { limit, offset });
+  } as GraphQLResponse<FormsListResponse>);
 }
 
 /**
