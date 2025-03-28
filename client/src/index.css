@@ -3,7 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --primary-color: #7c4dff;
+  /* Oxii Design System colors */
+  --oxii-primary: #00B1D2;
+  --oxii-primary-80: rgba(0, 177, 210, 0.8);
+  --oxii-primary-60: rgba(0, 177, 210, 0.6);
+  --oxii-primary-40: rgba(0, 177, 210, 0.4);
+  --oxii-primary-20: rgba(0, 177, 210, 0.2);
+  --oxii-primary-10: rgba(0, 177, 210, 0.1);
+  --oxii-primary-dark: #008FAA;
+  --oxii-primary-light: #66D6ED;
+  
+  --oxii-secondary: #03DAC6;
+  --oxii-secondary-variant: #018786;
+  --oxii-error: #B00020;
+  --oxii-surface: #FFFFFF;
+  --oxii-background: #F8F9FA;
+  
   --border-radius: 0.5rem;
   
   /* Light mode */
@@ -13,19 +28,19 @@
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  --primary: 262.1 83.3% 57.8%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  --primary: 190 100% 42%;  /* #00B1D2 in HSL */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 174 97% 44%;  /* #03DAC6 in HSL */
+  --secondary-foreground: 0 0% 0%;
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
   --accent: 210 40% 96.1%;
   --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
+  --destructive: 346 87% 36%; /* #B00020 in HSL */
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --ring: 262.1 83.3% 57.8%;
+  --ring: 190 100% 42%;
   --radius: var(--border-radius);
 }
 
@@ -36,49 +51,66 @@
   --card-foreground: 210 40% 98%;
   --popover: 222.2 84% 4.9%;
   --popover-foreground: 210 40% 98%;
-  --primary: 262.1 83.3% 57.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
+  --primary: 190 100% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 174 97% 44%;
+  --secondary-foreground: 0 0% 0%;
   --muted: 217.2 32.6% 17.5%;
   --muted-foreground: 215 20.2% 65.1%;
   --accent: 217.2 32.6% 17.5%;
   --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 346 87% 36%;
   --destructive-foreground: 210 40% 98%;
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
-  --ring: 262.1 83.3% 57.8%;
+  --ring: 190 100% 42%;
 }
 
-/* Vibrant Theme Style */
+/* Vibrant Theme Style - Oxii Design System inspired */
 .theme-vibrant {
-  --primary: var(--primary-color);
-  --background: 0 0% 95%;
+  --background: 0 0% 97.6%;
   --foreground: 222.2 84% 4.9%;
-  --secondary: 210 30% 90.1%;
-  --accent: 228 40% 90.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --primary: 190 100% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 174 97% 44%;
+  --secondary-foreground: 0 0% 0%;
+  --accent: 180 50% 97%;
+  --accent-foreground: 190 100% 32%;
+  --ring: var(--oxii-primary);
 }
 
 .dark.theme-vibrant {
-  --background: 222.2 40% 15%;
+  --background: 222.2 47% 12%;
   --foreground: 210 40% 98%;
-  --secondary: 217.2 32.6% 22.5%;
-  --accent: 217.2 50% 22.5%;
+  --card: 222.2 47% 8%;
+  --card-foreground: 210 40% 98%;
+  --primary: 190 100% 42%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 174 97% 44%;
+  --secondary-foreground: 0 0% 0%;
+  --accent: 190 70% 20%;
+  --accent-foreground: 210 40% 98%;
+  --ring: var(--oxii-primary);
 }
 
 /* Tint Theme Style */
 .theme-tint {
-  --primary: var(--primary-color);
+  --primary: 190 100% 42%;
   --background: 0 0% 100%;
-  --secondary: hsl(var(--primary) / 0.1);
-  --accent: hsl(var(--primary) / 0.08);
+  --card: 190 30% 98%;
+  --secondary: 174 97% 44%;
+  --accent: 190 30% 96%;
+  --ring: var(--oxii-primary);
 }
 
 .dark.theme-tint {
   --background: 222.2 84% 4.9%;
-  --secondary: hsl(var(--primary) / 0.2);
-  --accent: hsl(var(--primary) / 0.15);
+  --card: 190 30% 10%;
+  --secondary: 174 97% 44%;
+  --accent: 190 30% 15%;
+  --ring: var(--oxii-primary);
 }
 
 @layer base {
@@ -106,10 +138,75 @@
   .animate-qrScanLine {
     animation: qrScanLine 2s linear infinite;
   }
+  
+  /* Material Design style animations */
+  @keyframes ripple {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+  
+  /* Material Design inputs */
+  .oxii-input-animated {
+    @apply relative transition-all duration-300;
+  }
+  
+  .oxii-input-animated label {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none transition-all duration-200;
+  }
+  
+  .oxii-input-animated input:focus ~ label,
+  .oxii-input-animated input:not(:placeholder-shown) ~ label {
+    @apply text-xs top-0 -translate-y-1/2 text-primary;
+  }
+  
+  /* Material Design ripple effect */
+  .oxii-ripple {
+    @apply relative overflow-hidden;
+  }
+  
+  .oxii-ripple::after {
+    content: '';
+    @apply absolute w-5 h-5 rounded-full bg-primary/20 scale-0 opacity-100 pointer-events-none;
+    transform-origin: center;
+    animation: ripple 0.6s ease-out;
+  }
+  
+  /* Material Design cards */
+  .oxii-card-hover {
+    @apply transition-all duration-300 hover:shadow-lg;
+  }
+  
+  /* Material Design smooth transitions */
+  .oxii-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
 }
 
 @layer utilities {
   .clip-path-hexagon {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  
+  /* Material Design elevation levels */
+  .elevation-1 {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  }
+  
+  .elevation-2 {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  }
+  
+  .elevation-3 {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  }
+  
+  .elevation-4 {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  }
+  
+  .elevation-5 {
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
   }
 }

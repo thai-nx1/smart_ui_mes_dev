@@ -7,6 +7,7 @@ import Home from "@/pages/home";
 import FormsPage from "@/pages/forms";
 import WorkflowPage from "@/pages/workflow";
 import SubmissionPage from "@/pages/submission";
+import DesignExamplePage from "@/pages/design-example";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 import { setupInitialTheme } from "@/lib/theme";
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/menu/:menuId" component={WorkflowPage} />
       <Route path="/menu/:menuId/submenu/:subMenuId" component={WorkflowPage} />
       <Route path="/submission/:workflowId" component={SubmissionPage} />
+      <Route path="/design" component={DesignExamplePage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -17,7 +17,7 @@ import {
   SidebarGroupLabel
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks } from 'lucide-react';
+import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette } from 'lucide-react';
 import { fetchMainMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
@@ -109,6 +109,19 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   <Link href="/workflow">
                     <ListChecks className="size-4" />
                     <span>{t('app.nav.workflow', 'Workflow')}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location === '/design'}
+                  className={`transition-all ${location === '/design' ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'}`}
+                >
+                  <Link href="/design">
+                    <Palette className="size-4" />
+                    <span>{t('app.nav.design', 'Hệ thống thiết kế')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
