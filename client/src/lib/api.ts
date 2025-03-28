@@ -602,13 +602,13 @@ export async function submitTransitionForm(
   submissionData: any[]
 ): Promise<GraphQLResponse<any>> {
   const query = `
-    mutation insert_submission_form($transitionId: uuid!, $recordId: uuid!, $userId: uuid!, $name: String!, $submissionData: jsonb!) {
+    mutation insert_submission_form($transitionId: String!, $recordId: String!, $userId: String!, $name: String!, $submissionData: JSON) {
       insert_submission_form(
         args: {
           name: $name
           transition_id: $transitionId,
-          record_id: $recordId,
-          user_id: $userId,
+          menu_record_id: $recordId,
+          submitter_id: $userId,
           submission_data: $submissionData
         }
       ) {

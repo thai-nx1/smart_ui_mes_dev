@@ -99,11 +99,14 @@ export function TransitionFormDialog({
         field_type: field.field_type
       }));
 
+      // Đảm bảo các tham số khớp với API
+      const formSubmitterName = "HungDN";
+      
       return submitTransitionForm(
         transitionId,
         recordId,
         currentUserId,
-        formName,
+        formSubmitterName, // Sử dụng tên mặc định theo yêu cầu
         submissionData
       );
     },
