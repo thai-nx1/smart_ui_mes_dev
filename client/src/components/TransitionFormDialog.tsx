@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Calendar, ChevronRight } from 'lucide-react';
 
 import {
@@ -44,6 +44,7 @@ export function TransitionFormDialog({
 }: TransitionFormDialogProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [formValues, setFormValues] = useState<FormField[]>([]);
 
@@ -111,6 +112,10 @@ export function TransitionFormDialog({
       );
     },
     onSuccess: () => {
+      // Tải lại dữ liệu sau khi thực hiện transition thành công
+      // Vô hiệu hóa tất cả các truy vấn menu-records để tải lại dữ liệu mới
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-records'] });
+      
       toast({
         title: t('transition.success', 'Thành công'),
         description: t('transition.successDescription', 'Hành động đã được thực hiện thành công.'),

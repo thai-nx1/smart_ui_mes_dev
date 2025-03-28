@@ -918,22 +918,35 @@ export function SubmissionDataTable({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto border-none shadow-lg">
           <DialogHeader className="border-b pb-4">
-            <DialogTitle className="text-xl font-bold text-primary">
-              {isEditing 
-                ? editedData.length === 1
-                  ? t('submission.editSingleField', 'Chỉnh sửa trường: {fieldName}', { fieldName: editedData[0]?.name })
-                  : t('submission.editData', 'Chỉnh sửa dữ liệu biểu mẫu')
-                : editedData.length === 1
-                  ? t('submission.viewSingleField', 'Xem trường: {fieldName}', { fieldName: editedData[0]?.name })
-                  : t('submission.viewData', 'Xem dữ liệu biểu mẫu')}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground mt-1">
-              {isEditing 
-                ? editedData.length === 1
-                  ? t('submission.editSingleFieldDescription', 'Chỉnh sửa giá trị cho trường này.')
-                  : t('submission.editDescription', 'Chỉnh sửa thông tin của biểu mẫu đã nộp.')
-                : t('submission.viewDescription', 'Chi tiết thông tin của biểu mẫu đã nộp.')}
-            </DialogDescription>
+            <div className="flex justify-between items-start">
+              <div>
+                <DialogTitle className="text-xl font-bold text-primary">
+                  {isEditing 
+                    ? editedData.length === 1
+                      ? t('submission.editSingleField', 'Chỉnh sửa trường: {fieldName}', { fieldName: editedData[0]?.name })
+                      : t('submission.editData', 'Chỉnh sửa dữ liệu biểu mẫu')
+                    : editedData.length === 1
+                      ? t('submission.viewSingleField', 'Xem trường: {fieldName}', { fieldName: editedData[0]?.name })
+                      : t('submission.viewData', 'Xem dữ liệu biểu mẫu')}
+                </DialogTitle>
+                <DialogDescription className="text-muted-foreground mt-1">
+                  {isEditing 
+                    ? editedData.length === 1
+                      ? t('submission.editSingleFieldDescription', 'Chỉnh sửa giá trị cho trường này.')
+                      : t('submission.editDescription', 'Chỉnh sửa thông tin của biểu mẫu đã nộp.')
+                    : t('submission.viewDescription', 'Chi tiết thông tin của biểu mẫu đã nộp.')}
+                </DialogDescription>
+              </div>
+              
+              {/* Hiển thị trạng thái */}
+              {selectedSubmission && selectedSubmission.core_dynamic_status && (
+                <div className="flex items-center">
+                  <Badge variant="outline" className="bg-primary/10 text-primary font-semibold px-3 py-1 text-xs">
+                    {selectedSubmission.core_dynamic_status.name || 'Chưa có trạng thái'}
+                  </Badge>
+                </div>
+              )}
+            </div>
           </DialogHeader>
           
           {/* Hiển thị action buttons workflow từ transitions */}
