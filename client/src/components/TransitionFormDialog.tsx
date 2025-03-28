@@ -87,10 +87,9 @@ export function TransitionFormDialog({
   // Mutation để gửi dữ liệu form
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      // TODO: Thay thế bằng user ID thực từ authentication system và workflowId
-      const userId = "5c065b51-3862-4004-ae96-ca23245aa21e"; 
-      const workflowId = "YOUR_WORKFLOW_ID"; // Replace with actual workflow ID
-      const submissionName = transitionName + " - " + new Date().toISOString();
+      // TODO: Thay thế bằng user ID thực từ authentication system
+      const currentUserId = "5c065b51-3862-4004-ae96-ca23245aa21e"; 
+      const formName = transitionName + " - " + new Date().toISOString();
 
       // Chuẩn bị dữ liệu để gửi đi, loại bỏ trường form_field_id vì API không cần
       const submissionData = formValues.map(field => ({
@@ -100,16 +99,11 @@ export function TransitionFormDialog({
         field_type: field.field_type
       }));
 
-      // Assuming fetchTransitionForm returns formId in formData
-      const formId = formData?.data?.core_core_dynamic_workflow_transitions_by_pk?.core_dynamic_form?.id;
-
-      if (!formId) {
-          throw new Error("Form ID not found in formData");
-      }
-
       return submitTransitionForm(
-        formId,
-        workflowId,
+        transitionId,
+        recordId,
+        currentUserId,
+        formName,
         submissionData
       );
     },
