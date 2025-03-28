@@ -454,39 +454,75 @@ export async function updateSubmissionForm(submissionId: string, updatedData: an
 export async function fetchMenuRecords(
   menuId: string, 
   limit: number | null = null, 
-  offset: number | null = null
+  offset: number | null = null,
+  recordId?: string
 ): Promise<GraphQLResponse<any>> {
-  const query = `
-    query QueryMenuRecord($menuId: uuid!, $limit: Int, $offset: Int) {
-      core_core_menu_records(
-        limit: $limit
-        offset: $offset
-        where: { menu_id: { _eq: $menuId } }
-      ) {
-        id
-        code
-        title
-        data
-        created_at
-        created_by
-        core_dynamic_status {
+  // Tạo câu truy vấn GraphQL với hoặc không có điều kiện recordId
+  let query;
+  
+  if (recordId) {
+    // Nếu có recordId, tìm chính xác record
+    query = `
+      query QueryMenuRecord($menuId: uuid!, $limit: Int, $offset: Int, $recordId: uuid!) {
+        core_core_menu_records(
+          limit: $limit
+          offset: $offset
+          where: { menu_id: { _eq: $menuId }, id: { _eq: $recordId } }
+        ) {
           id
           code
-          name
-        }
-        core_user {
-          id
-          username
-          email
+          title
+          data
+          created_at
+          created_by
+          core_dynamic_status {
+            id
+            code
+            name
+          }
+          core_user {
+            id
+            username
+            email
+          }
         }
       }
-    }
-  `;
+    `;
+  } else {
+    // Nếu không có recordId, truy vấn như bình thường
+    query = `
+      query QueryMenuRecord($menuId: uuid!, $limit: Int, $offset: Int) {
+        core_core_menu_records(
+          limit: $limit
+          offset: $offset
+          where: { menu_id: { _eq: $menuId } }
+        ) {
+          id
+          code
+          title
+          data
+          created_at
+          created_by
+          core_dynamic_status {
+            id
+            code
+            name
+          }
+          core_user {
+            id
+            username
+            email
+          }
+        }
+      }
+    `;
+  }
 
   const variables = {
     menuId,
     limit,
-    offset
+    offset,
+    ...(recordId && { recordId })
   };
 
   return executeGraphQLQuery(query, variables);
