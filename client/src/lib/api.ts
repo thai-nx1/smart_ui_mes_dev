@@ -249,14 +249,13 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
   // Sử dụng mutation mới theo mẫu được cung cấp và chỉnh sửa kiểu dữ liệu
   // Lưu ý: API không chấp nhận form_id, đã bỏ tham số này
   const query = `
-    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON, $formId: String!) {
+    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
       insert_menu_record(args: {
         menu_id: $menuId,
         user_id: $userId,
         organization_id: $organizationId,
         title: $title, 
-        submission_data: $submissionData,
-        form_id: $formId
+        submission_data: $submissionData
       }) {
         id
         code
@@ -308,8 +307,8 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
     userId: "5c065b51-3862-4004-ae96-ca23245aa21e", // ID cố định từ ví dụ của bạn
     organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // ID cố định từ ví dụ của bạn
     title: title,
-    submissionData: submissionFields,
-    formId: formId // API cần tham số form_id
+    submissionData: submissionFields
+    // formId đã loại bỏ vì API không chấp nhận tham số này
   };
 
   console.log("Submitting form with data:", variables);

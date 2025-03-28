@@ -153,12 +153,12 @@ export default function FormsPage() {
   }, [formsError, fieldsError, toast, t]);
 
   // Filter forms by search term
-  const filteredForms = formsData?.filter(form => 
+  const filteredForms = formsData?.filter((form: { name: string }) => 
     form.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Get selected form details
-  const selectedForm = formsData?.find(form => form.id === selectedFormId);
+  const selectedForm = formsData?.find((form: { id: string }) => form.id === selectedFormId);
 
   // Handle form selection
   const handleSelectForm = (formId: string) => {
@@ -463,7 +463,7 @@ export default function FormsPage() {
                   </div>
                 ) : filteredForms && filteredForms.length > 0 ? (
                   <ul className="divide-y divide-gray-200">
-                    {filteredForms.map((form) => (
+                    {filteredForms.map((form: { id: string; name: string; status: string }) => (
                       <li
                         key={form.id}
                         className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${

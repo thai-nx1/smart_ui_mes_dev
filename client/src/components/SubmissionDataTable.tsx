@@ -41,7 +41,12 @@ interface SubmissionDataTableProps {
   viewMode?: ViewMode;
 }
 
-export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode = 'card' }: SubmissionDataTableProps) {
+export function SubmissionDataTable({ 
+  data, 
+  onSave, 
+  readOnly = false, 
+  viewMode = 'card' 
+}: SubmissionDataTableProps) {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<FieldData[]>([]);
@@ -53,6 +58,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [dataChanged, setDataChanged] = useState(false);
 
   // Format thời gian từ timestamp
   const formatDate = (timestamp: number) => {
@@ -103,9 +109,24 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   // Xử lý khi thay đổi giá trị field
   const handleValueChange = (index: number, value: FieldValue) => {
     const newData = [...editedData];
-    newData[index] = { ...newData[index], value };
-    setEditedData(newData);
+    // Kiểm tra xem giá trị có thay đổi không để tối ưu render
+    if (JSON.stringify(newData[index].value) !== JSON.stringify(value)) {
+      newData[index] = { ...newData[index], value };
+      setEditedData(newData);
+      setDataChanged(true); // Đánh dấu dữ liệu đã thay đổi
+    }
   };
+  
+  // Theo dõi sự thay đổi dữ liệu và tối ưu re-render
+  useEffect(() => {
+    if (dataChanged) {
+      // Sử dụng requestAnimationFrame để đảm bảo UI mượt mà
+      const timerId = requestAnimationFrame(() => {
+        setDataChanged(false);
+      });
+      return () => cancelAnimationFrame(timerId);
+    }
+  }, [dataChanged]);
 
   // Xử lý khi lưu thay đổi
   const handleSave = async () => {
