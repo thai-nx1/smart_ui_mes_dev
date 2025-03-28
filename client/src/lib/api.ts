@@ -605,10 +605,10 @@ export async function submitTransitionForm(
     mutation insert_submission_form($transitionId: String!, $recordId: String!, $userId: String!, $name: String!, $submissionData: JSON) {
       insert_submission_form(
         args: {
-          name: $name
-          transition_id: $transitionId
-          menu_record_id: $recordId
-          user_id: $userId
+          name: $name,
+          transition_id: $transitionId,
+          menu_record_id: $recordId,
+          user_id: $userId,
           submission_data: $submissionData
         }
       ) {
