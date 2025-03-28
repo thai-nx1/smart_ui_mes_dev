@@ -156,7 +156,7 @@ export function OxiiBadge({ className, variant = 'default', ...props }: BadgePro
   );
 }
 
-// Oxii Card - Material Design inspired card
+// Oxii Card - Material Design inspired card matching Figma design
 export interface OxiiCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   variant?: 'elevated' | 'filled' | 'outlined';
@@ -165,7 +165,7 @@ export interface OxiiCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function OxiiCard({ className, children, variant = 'elevated', hover = false, ...props }: OxiiCardProps) {
   const variantClasses = {
-    elevated: 'bg-card shadow-md border-transparent',
+    elevated: 'bg-card shadow-md border-transparent elevation-1',
     filled: 'bg-secondary/10 border-transparent',
     outlined: 'bg-transparent border border-border'
   };
@@ -173,9 +173,9 @@ export function OxiiCard({ className, children, variant = 'elevated', hover = fa
   return (
     <Card
       className={cn(
-        'rounded-lg transition-all duration-200 overflow-hidden',
+        'rounded-lg transition-all duration-300 overflow-hidden',
         variantClasses[variant],
-        hover && 'hover:shadow-lg hover:-translate-y-1',
+        hover && 'hover:shadow-lg hover:-translate-y-1 hover:elevation-3',
         className
       )}
       {...props}
@@ -246,17 +246,25 @@ export function OxiiDialogFooter({ className, ...props }: React.ComponentProps<t
   );
 }
 
-// Oxii Button - Material Design inspired button variants
+// Oxii Button - Material Design inspired button variants matching Figma design
 export function OxiiButton({ className, variant = 'default', size = 'default', ...props }: ButtonProps) {
   return (
     <Button
       className={cn(
-        'font-medium transition-all duration-200',
-        // Enhanced hover effects
-        variant === 'default' && 'hover:shadow-md hover:bg-primary/95',
-        variant === 'outline' && 'border-primary/30 text-primary hover:bg-primary/5',
-        variant === 'ghost' && 'hover:bg-muted/80',
-        variant === 'secondary' && 'hover:shadow-sm hover:bg-secondary/95',
+        'font-medium transition-all duration-200 relative overflow-hidden',
+        'active:translate-y-0.5 active:shadow-inner',
+        // Enhanced hover and focus effects
+        variant === 'default' && 'hover:shadow-md hover:bg-primary/95 focus:ring-2 focus:ring-primary/20',
+        variant === 'outline' && 'border-primary/30 text-primary hover:bg-primary/5 focus:ring-2 focus:ring-primary/20',
+        variant === 'ghost' && 'hover:bg-muted/80 focus:ring-2 focus:ring-muted/50',
+        variant === 'secondary' && 'hover:shadow-sm hover:bg-secondary/95 focus:ring-2 focus:ring-secondary/20',
+        variant === 'destructive' && 'hover:shadow-md hover:bg-destructive/95 focus:ring-2 focus:ring-destructive/20',
+        // Sizing based on Figma design
+        size === 'default' && 'rounded-md',
+        size === 'sm' && 'rounded-md text-xs',
+        size === 'lg' && 'rounded-md text-base',
+        size === 'icon' && 'rounded-md',
+        'oxii-ripple',
         className
       )}
       variant={variant}
@@ -339,7 +347,7 @@ export function OxiiTabsContent({ className, ...props }: React.ComponentProps<ty
   );
 }
 
-// Styled Chip component (similar to filter chip in Material Design)
+// Styled Chip component (similar to filter chip in Material Design) matching Figma design
 export interface OxiiChipProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
   selected?: boolean;
@@ -369,21 +377,22 @@ export function OxiiChip({
   
   const variantClasses = {
     default: selected
-      ? 'bg-primary/15 text-primary border-primary/30'
-      : 'bg-muted/40 text-muted-foreground border-transparent hover:bg-muted/60',
+      ? 'bg-primary/15 text-primary border-primary/30 shadow-sm'
+      : 'bg-muted/40 text-muted-foreground border-transparent hover:bg-muted/60 hover:shadow-sm',
     outlined: selected
-      ? 'bg-transparent text-primary border-primary'
+      ? 'bg-transparent text-primary border-primary shadow-sm' 
       : 'bg-transparent text-muted-foreground border-muted-foreground/30 hover:border-muted-foreground/60',
     filled: selected
-      ? 'bg-primary text-primary-foreground border-transparent'
-      : 'bg-muted text-muted-foreground border-transparent hover:bg-muted/80'
+      ? 'bg-primary text-primary-foreground border-transparent shadow elevation-1' 
+      : 'bg-muted text-muted-foreground border-transparent hover:bg-muted/80 hover:shadow-sm'
   };
   
   return (
     <div
       className={cn(
         'inline-flex items-center border rounded-full cursor-pointer select-none',
-        'transition-all duration-200 font-medium',
+        'transition-all duration-200 font-medium overflow-hidden',
+        'active:scale-95',
         sizeClasses[size],
         variantClasses[variant],
         className
@@ -398,7 +407,8 @@ export function OxiiChip({
           type="button"
           className={cn(
             'ml-1 rounded-full p-0.5 focus:outline-none',
-            'hover:bg-background/20',
+            'hover:bg-background/20 transition-colors',
+            'active:bg-background/40',
             selected ? 'text-primary-foreground' : 'text-muted-foreground'
           )}
           onClick={(e) => {
