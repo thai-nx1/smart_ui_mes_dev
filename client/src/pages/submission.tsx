@@ -64,10 +64,21 @@ export default function SubmissionPage() {
       //     where: { menu_id: { _eq: "7ffe9691-7f9b-430d-a945-16e0d9b173c4" } }
       //   ) {
       //     id
+      //     code
       //     title
       //     data
       //     created_at
       //     created_by
+      //     core_dynamic_status {
+      //       id
+      //       code
+      //       name
+      //     }
+      //     core_user {
+      //       id
+      //       username
+      //       email
+      //     }
       //   }
       // }
       const response = await fetchMenuRecords(menuIdToUse, 100, 0); // limit=100, offset=0
