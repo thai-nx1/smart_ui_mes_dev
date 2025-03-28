@@ -85,7 +85,7 @@ export function SubmissionDataTable({
   const { data: transitionsData } = useQuery({
     queryKey: ['workflow-transitions', workflowId, currentStatusId],
     queryFn: () => {
-      console.log('Calling API fetchWorkflowTransitionsByStatus with workflowId:', workflowId);
+      console.log('Fetching transitions with variables:', { workflowId, fromStatusId: currentStatusId });
       return workflowId ? fetchWorkflowTransitionsByStatus(workflowId, currentStatusId) : Promise.resolve(null);
     },
     enabled: !!workflowId
@@ -118,35 +118,40 @@ export function SubmissionDataTable({
       setEditedData([...submission.data]);
       console.log('All fields in submission data:', submission.data.map((f: FieldData) => `${f.name} (${f.field_type}): ${JSON.stringify(f.value)}`));
       
-      // Tìm trạng thái hiện tại trong dữ liệu submission
-      // Mở rộng tìm kiếm với nhiều tên khả dĩ cho trường status
-      const statusField = submission.data.find((field: FieldData) => 
-        field.name.toLowerCase().includes('trạng thái') || 
-        field.name.toLowerCase() === 'status' ||
-        field.name.toLowerCase() === 'trang_thai' ||
-        field.name.toLowerCase() === 'state' ||
-        field.name.toLowerCase().includes('loại dừng'));
-      
-      // Kiểm tra nếu tìm thấy trường status
-      if (statusField && workflowId) {
-        console.log('Found status field for transitions:', statusField);
-        
-        // Kiểm tra xem giá trị có phải là UUID hợp lệ không
-        const isUUID = typeof statusField.value === 'string' && 
-                      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(statusField.value);
-        
-        if (isUUID) {
-          console.log('Using status value as UUID:', statusField.value);
-          setCurrentStatusId(String(statusField.value));
-        } else {
-          console.log('Status value is not a valid UUID, using empty string to get initial transitions');
-          setCurrentStatusId(''); // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo
-        }
+      // Sử dụng core_dynamic_status.id từ API nếu có
+      if (submission.core_dynamic_status && submission.core_dynamic_status.id) {
+        console.log('Using status ID from core_dynamic_status:', submission.core_dynamic_status.id);
+        setCurrentStatusId(submission.core_dynamic_status.id);
       } else {
-        console.log('Status field or workflowId not found. workflowId:', workflowId);
-        // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo (from_status_id is null)
-        setCurrentStatusId('');
-        console.log('Using empty status ID to get initial transitions (from_status_id is null)');
+        // Fallback: Tìm trạng thái hiện tại trong dữ liệu submission
+        const statusField = submission.data.find((field: FieldData) => 
+          field.name.toLowerCase().includes('trạng thái') || 
+          field.name.toLowerCase() === 'status' ||
+          field.name.toLowerCase() === 'trang_thai' ||
+          field.name.toLowerCase() === 'state' ||
+          field.name.toLowerCase().includes('loại dừng'));
+        
+        // Kiểm tra nếu tìm thấy trường status
+        if (statusField && workflowId) {
+          console.log('Found status field for transitions:', statusField);
+          
+          // Kiểm tra xem giá trị có phải là UUID hợp lệ không
+          const isUUID = typeof statusField.value === 'string' && 
+                        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(statusField.value);
+          
+          if (isUUID) {
+            console.log('Using status value as UUID:', statusField.value);
+            setCurrentStatusId(String(statusField.value));
+          } else {
+            console.log('Status value is not a valid UUID, using empty string to get initial transitions');
+            setCurrentStatusId(''); // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo
+          }
+        } else {
+          console.log('Status field or workflowId not found. workflowId:', workflowId);
+          // Sử dụng chuỗi rỗng để lấy các transitions khởi tạo (from_status_id is null)
+          setCurrentStatusId('');
+          console.log('Using empty status ID to get initial transitions (from_status_id is null)');
+        }
       }
     } else {
       setEditedData([]);
