@@ -418,23 +418,24 @@ export async function fetchSubmissionForms(workflowId: string): Promise<GraphQLR
 /**
  * Update submission form data
  */
-export async function updateSubmissionForm(submissionId: string, submissionData: any[]): Promise<GraphQLResponse<any>> {
+export async function updateSubmissionForm(submissionId: string, updatedData: any[]): Promise<GraphQLResponse<any>> {
   const query = `
-    mutation UpdateSubmissionForm($submissionId: uuid!, $submissionData: jsonb!) {
-      update_core_core_submission_forms_by_pk(
-        pk_columns: { id: $submissionId },
-        _set: { submission_data: $submissionData }
+    mutation UpdateMenuRecord($recordId: uuid!, $data: jsonb!) {
+      update_core_core_menu_records_by_pk(
+        pk_columns: { id: $recordId },
+        _set: { data: $data }
       ) {
         id
-        submission_data
+        data
+        title
         __typename
       }
     }
   `;
 
   const variables = {
-    submissionId,
-    submissionData
+    recordId: submissionId,
+    data: updatedData
   };
 
   return executeGraphQLQuery(query, variables);

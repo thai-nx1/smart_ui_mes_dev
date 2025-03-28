@@ -195,9 +195,9 @@ export default function SubmissionPage() {
               onSave={async (editedData) => {
                 // Lấy submission ID hiện tại
                 const currentSubmission = data.find((s: any) => 
-                  Array.isArray(s.submission_data) && 
+                  Array.isArray(s.data) && 
                   editedData.length > 0 && 
-                  s.submission_data.some((f: any) => f.id === editedData[0].id)
+                  s.data.some((f: any) => f.id === editedData[0].id)
                 );
                 
                 if (currentSubmission) {

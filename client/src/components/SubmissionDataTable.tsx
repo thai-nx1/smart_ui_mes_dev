@@ -64,8 +64,8 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   // Xử lý khi nhấn nút chỉnh sửa tất cả
   const handleEdit = (submission: any) => {
     setSelectedSubmission(submission);
-    if (Array.isArray(submission.submission_data)) {
-      setEditedData([...submission.submission_data]);
+    if (Array.isArray(submission.data)) {
+      setEditedData([...submission.data]);
     } else {
       setEditedData([]);
     }
@@ -76,8 +76,8 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   // Xử lý khi nhấn nút xem tất cả
   const handleView = (submission: any) => {
     setSelectedSubmission(submission);
-    if (Array.isArray(submission.submission_data)) {
-      setEditedData([...submission.submission_data]);
+    if (Array.isArray(submission.data)) {
+      setEditedData([...submission.data]);
     } else {
       setEditedData([]);
     }
@@ -88,9 +88,9 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   // Xử lý khi nhấn vào một trường cụ thể để chỉnh sửa
   const handleEditField = (submission: any, fieldId: string) => {
     setSelectedSubmission(submission);
-    if (Array.isArray(submission.submission_data)) {
-      // Tìm field cần chỉnh sửa trong submission_data
-      const fieldToEdit = submission.submission_data.find((field: FieldData) => field.id === fieldId);
+    if (Array.isArray(submission.data)) {
+      // Tìm field cần chỉnh sửa trong data
+      const fieldToEdit = submission.data.find((field: FieldData) => field.id === fieldId);
       if (fieldToEdit) {
         // Chỉ lấy trường cụ thể để chỉnh sửa
         setEditedData([fieldToEdit]);
@@ -111,9 +111,9 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   const handleSave = async () => {
     if (onSave && selectedSubmission) {
       try {
-        if (editedData.length === 1 && Array.isArray(selectedSubmission.submission_data)) {
+        if (editedData.length === 1 && Array.isArray(selectedSubmission.data)) {
           // Nếu đang chỉnh sửa một trường duy nhất, cần cập nhật đúng trường đó trong tất cả dữ liệu
-          const allSubmissionData = [...selectedSubmission.submission_data];
+          const allSubmissionData = [...selectedSubmission.data];
           const editedFieldIndex = allSubmissionData.findIndex(field => field.id === editedData[0].id);
           
           if (editedFieldIndex !== -1) {
@@ -304,8 +304,8 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
   const getUniqueFieldTypes = () => {
     const fieldTypes = new Set<string>();
     data.forEach(submission => {
-      if (Array.isArray(submission.submission_data)) {
-        submission.submission_data.forEach((field: FieldData) => {
+      if (Array.isArray(submission.data)) {
+        submission.data.forEach((field: FieldData) => {
           fieldTypes.add(field.name);
         });
       }
@@ -320,14 +320,14 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
     }
     
     return data.filter(submission => {
-      if (!Array.isArray(submission.submission_data)) {
+      if (!Array.isArray(submission.data)) {
         return false;
       }
       
       // Lọc theo bộ lọc hoạt động
       if (activeFilters.length > 0) {
         const hasAllActiveFilters = activeFilters.every(filterName => {
-          return submission.submission_data.some((field: FieldData) => field.name === filterName);
+          return submission.data.some((field: FieldData) => field.name === filterName);
         });
         
         if (!hasAllActiveFilters) {
@@ -340,7 +340,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
         const query = searchQuery.toLowerCase().trim();
         
         // Tìm trong tất cả các trường
-        return submission.submission_data.some((field: FieldData) => {
+        return submission.data.some((field: FieldData) => {
           const fieldValue = field.value;
           
           if (fieldValue === null || fieldValue === undefined) {
@@ -411,7 +411,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
           </thead>
           <tbody className="divide-y divide-border bg-card">
             {filteredData.map((submission, rowIndex) => {
-              if (!Array.isArray(submission.submission_data)) return null;
+              if (!Array.isArray(submission.data)) return null;
               
               return (
                 <tr 
@@ -421,7 +421,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
                   } hover:bg-primary/5`}
                 >
                   {fieldNames.map(fieldName => {
-                    const field = submission.submission_data.find(
+                    const field = submission.data.find(
                       (f: FieldData) => f.name === fieldName
                     );
                     
@@ -490,9 +490,9 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
             key={submission.id} 
             className="group mb-6 p-5 border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 bg-card"
           >
-            {Array.isArray(submission.submission_data) ? (
+            {Array.isArray(submission.data) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {submission.submission_data.map((field: FieldData) => (
+                {submission.data.map((field: FieldData) => (
                   <div 
                     key={field.id} 
                     className="flex flex-col border border-transparent bg-background/50 p-3 rounded-md hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all duration-200"
@@ -528,7 +528,7 @@ export function SubmissionDataTable({ data, onSave, readOnly = false, viewMode =
               </div>
             ) : (
               <pre className="text-xs overflow-auto max-h-40 p-3 bg-muted rounded-md font-mono">
-                {JSON.stringify(submission.submission_data, null, 2)}
+                {JSON.stringify(submission.data, null, 2)}
               </pre>
             )}
             <div className="flex justify-end gap-2 mt-6 pt-3 border-t">
