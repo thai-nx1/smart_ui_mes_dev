@@ -248,26 +248,24 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
  */
 export async function submitFormData(submission: FormSubmission & { workflowId?: string, menuId?: string, formId?: string }): Promise<GraphQLResponse<any>> {
   // Áp dụng logic cho tất cả submenu, giống như cách xử lý cho submenu khiếu nại (ID: "ss")
-  // Thêm form_id vào tham số nếu được cung cấp
   const query = `
-    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON, $formId: String) {
-      insert_menu_record(args: {
-        menu_id: $menuId,
-        user_id: $userId,
-        organization_id: $organizationId,
-        title: $title, 
-        submission_data: $submissionData,
-        form_id: $formId
-      }) {
-        id
-        code
-        menu_id
-        organization_id
-        user_id
-        workflow_id
-        data
-      }
-    }
+    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
+insert_menu_record(args: {
+menu_id: $menuId,
+user_id: $userId,
+organization_id: $organizationId,
+title: $title,
+submission_data: $submissionData
+}) {
+id
+code
+menu_id
+organization_id
+user_id
+workflow_id
+data
+}
+}
   `;
 
   // Biến đổi dữ liệu cho phù hợp với định dạng mutation mới
@@ -311,8 +309,7 @@ export async function submitFormData(submission: FormSubmission & { workflowId?:
     userId: "5c065b51-3862-4004-ae96-ca23245aa21e", // ID cố định từ ví dụ của bạn
     organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // ID cố định từ ví dụ của bạn
     title: title,
-    submissionData: submissionFields,
-    formId: formId
+    submissionData: submissionFields
   };
 
   console.log("Submitting form with data:", variables);
