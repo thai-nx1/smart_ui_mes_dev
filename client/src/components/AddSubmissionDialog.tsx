@@ -198,7 +198,8 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
       await onSubmit({
         formId: selectedFormId,
         data: submissionData,
-        workflowId // Truyền workflowId được cung cấp từ props
+        workflowId, // Truyền workflowId được cung cấp từ props
+        menuId: menuId // Sử dụng menuId từ trang
       });
       
       // Đóng dialog sau khi submit thành công
