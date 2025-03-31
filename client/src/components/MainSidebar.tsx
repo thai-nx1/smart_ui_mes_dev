@@ -31,8 +31,26 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const { data: menusData, isLoading, error } = useQuery({
     queryKey: ['/api/menus'],
     queryFn: async () => {
-      const response = await fetchMainMenus();
-      return response.data.core_core_dynamic_menus;
+      try {
+        const response = await fetchAllMenus();
+        console.log("Menu data fetched:", response.data);
+        // Lọc ra các menu cha (parent_id là null)
+        const parentMenus = response.data.core_core_dynamic_menus.filter(
+          (menu: MenuType) => menu.parent_id === null
+        );
+        
+        // Thêm các menu con vào cho mỗi menu cha
+        parentMenus.forEach((parentMenu: MenuType) => {
+          parentMenu.core_dynamic_child_menus = response.data.core_core_dynamic_menus.filter(
+            (menu: MenuType) => menu.parent_id === parentMenu.id
+          );
+        });
+        
+        return parentMenus;
+      } catch (error) {
+        console.error("Error fetching menus:", error);
+        throw error;
+      }
     }
   });
 
