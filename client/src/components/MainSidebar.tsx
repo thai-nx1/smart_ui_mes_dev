@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette } from 'lucide-react';
-import { fetchMainMenus } from '@/lib/api';
+import { fetchMainMenus, fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -27,12 +27,30 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const [location] = useLocation();
   
-  // Fetch menus from the API
+  // Fetch all menus from the API để xử lý parent/child relationship
   const { data: menusData, isLoading, error } = useQuery({
     queryKey: ['/api/menus'],
     queryFn: async () => {
-      const response = await fetchMainMenus();
-      return response.data.core_core_dynamic_menus;
+      try {
+        const response = await fetchAllMenus();
+        const allMenus = response.data.core_core_dynamic_menus || [];
+        
+        // Lọc các menu cha (parent_id là null)
+        const parentMenus = allMenus.filter(menu => !menu.parent_id);
+        
+        // Thêm submenu vào mỗi menu cha
+        return parentMenus.map(parentMenu => {
+          // Tìm tất cả các menu con của menu cha hiện tại
+          const childMenus = allMenus.filter(menu => menu.parent_id === parentMenu.id);
+          return {
+            ...parentMenu,
+            core_dynamic_child_menus: childMenus // Thêm dưới định dạng cũ để tương thích với code hiện tại
+          };
+        });
+      } catch (error) {
+        console.error("Error fetching menus:", error);
+        return [];
+      }
     }
   });
 
