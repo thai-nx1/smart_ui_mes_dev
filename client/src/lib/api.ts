@@ -335,6 +335,12 @@ export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildre
         code
         name
         workflow_id
+        core_core_dynamic_menus(where: {parent_id: {_eq: id}}) {
+          id
+          code
+          name
+          workflow_id
+        }
       }
     }
   `;
