@@ -179,7 +179,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
           id
           name
           code
-          core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
+          core_dynamic_form_fields {
             id
             is_required
             position
@@ -213,7 +213,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
  * Fetch form fields by form ID
  */
 export async function fetchFormFields(formId: string): Promise<GraphQLResponse<FormDetailsResponse>> {
-  // Sử dụng đúng format truy vấn GraphQL từ mẫu được cung cấp và thêm điều kiện deleted_at is null
+  // Sử dụng đúng format truy vấn GraphQL từ mẫu được cung cấp
   const query = `
     query FormDetail($id: uuid!) {
       core_core_dynamic_forms_by_pk(id: $id) {
@@ -222,7 +222,7 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
         description
         organization_id
         status
-        core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
+        core_dynamic_form_fields {
           id
           dynamic_field_id
           dynamic_form_id
@@ -595,7 +595,7 @@ export async function fetchTransitionForm(transitionId: string): Promise<GraphQL
           name
           status
           code
-          core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
+          core_dynamic_form_fields {
             id
             is_required
             position
@@ -676,7 +676,7 @@ export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse
           id
           name
           code
-          core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
+          core_dynamic_form_fields {
             id
             is_required
             position
