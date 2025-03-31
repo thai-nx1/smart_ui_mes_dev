@@ -170,7 +170,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
   // Sử dụng đúng tên field theo query mẫu bạn cung cấp
   const query = `
     query GetFormsByMenu($menuId: uuid!, $formType: String!) {
-      core_core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}}) {
+      core_core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}, deleted_at: {_is_null: true}}) {
         id
         form_type
         form_id
@@ -179,7 +179,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
           id
           name
           code
-          core_dynamic_form_fields {
+          core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
             id
             is_required
             position
@@ -213,7 +213,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
  * Fetch form fields by form ID
  */
 export async function fetchFormFields(formId: string): Promise<GraphQLResponse<FormDetailsResponse>> {
-  // Sử dụng đúng format truy vấn GraphQL từ mẫu được cung cấp
+  // Sử dụng đúng format truy vấn GraphQL từ mẫu được cung cấp và thêm điều kiện deleted_at is null
   const query = `
     query FormDetail($id: uuid!) {
       core_core_dynamic_forms_by_pk(id: $id) {
@@ -222,7 +222,7 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
         description
         organization_id
         status
-        core_dynamic_form_fields {
+        core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
           id
           dynamic_field_id
           dynamic_form_id
@@ -328,7 +328,7 @@ export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildre
   const query = `
     query GetMainMenus {
       core_core_dynamic_menus(
-        where: {parent_id: {_is_null: true}}
+        where: {parent_id: {_is_null: true}, deleted_at: {_is_null: true}}
         limit: 20
       ) {
         id
@@ -348,7 +348,7 @@ export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildre
 export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
   const query = `
     query GetAllMenus {
-      core_core_dynamic_menus {
+      core_core_dynamic_menus(where: {deleted_at: {_is_null: true}}) {
         id
         code
         name
@@ -368,7 +368,7 @@ export async function fetchMenuWorkflows(menuId: string): Promise<GraphQLRespons
   const query = `
     query GetWorkflowsByMenu($menuId: uuid!) {
       core_core_dynamic_workflows(
-        where: {menu_id: {_eq: $menuId}}
+        where: {menu_id: {_eq: $menuId}, deleted_at: {_is_null: true}}
       ) {
         id
         name
@@ -450,13 +450,13 @@ export async function fetchMenuRecords(
   let query;
   
   if (recordId) {
-    // Nếu có recordId, tìm chính xác record
+    // Nếu có recordId, tìm chính xác record và lọc deleted_at is null
     query = `
       query QueryMenuRecord($menuId: uuid!, $limit: Int, $offset: Int, $recordId: uuid!) {
         core_core_menu_records(
           limit: $limit
           offset: $offset
-          where: { menu_id: { _eq: $menuId }, id: { _eq: $recordId } }
+          where: { menu_id: { _eq: $menuId }, id: { _eq: $recordId }, deleted_at: { _is_null: true } }
         ) {
           id
           code
@@ -478,13 +478,13 @@ export async function fetchMenuRecords(
       }
     `;
   } else {
-    // Nếu không có recordId, truy vấn như bình thường
+    // Nếu không có recordId, truy vấn như bình thường và lọc deleted_at is null
     query = `
       query QueryMenuRecord($menuId: uuid!, $limit: Int, $offset: Int) {
         core_core_menu_records(
           limit: $limit
           offset: $offset
-          where: { menu_id: { _eq: $menuId } }
+          where: { menu_id: { _eq: $menuId }, deleted_at: { _is_null: true } }
         ) {
           id
           code
@@ -541,7 +541,8 @@ export async function fetchWorkflowTransitionsByStatus(
         core_core_dynamic_workflow_transitions(
           where: {
             from_status_id: { _eq: $fromStatusId },
-            workflow_id: { _eq: $workflowId }
+            workflow_id: { _eq: $workflowId },
+            deleted_at: { _is_null: true }
           }
         ) {
           id
@@ -557,7 +558,8 @@ export async function fetchWorkflowTransitionsByStatus(
         core_core_dynamic_workflow_transitions(
           where: {
             from_status_id: { _is_null: true },
-            workflow_id: { _eq: $workflowId }
+            workflow_id: { _eq: $workflowId },
+            deleted_at: { _is_null: true }
           }
         ) {
           id
@@ -593,7 +595,7 @@ export async function fetchTransitionForm(transitionId: string): Promise<GraphQL
           name
           status
           code
-          core_dynamic_form_fields {
+          core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
             id
             is_required
             position
@@ -664,7 +666,7 @@ export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse
   const query = `
     query FetchMenuViewForm($menuId: uuid!) {
       core_core_dynamic_menu_forms(
-        where: {menu_id: {_eq: $menuId}, form_type: {_eq: "VIEW"}}
+        where: {menu_id: {_eq: $menuId}, form_type: {_eq: "VIEW"}, deleted_at: {_is_null: true}}
       ) {
         id
         form_type
@@ -674,7 +676,7 @@ export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse
           id
           name
           code
-          core_dynamic_form_fields {
+          core_dynamic_form_fields(where: {deleted_at: {_is_null: true}}) {
             id
             is_required
             position
