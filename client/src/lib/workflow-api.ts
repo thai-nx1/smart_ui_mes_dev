@@ -28,6 +28,7 @@ export interface WorkflowDetail {
 
 /**
  * Fetch detailed workflow information including all transitions and statuses
+ * Chỉ lấy các transitions có deleted_at là null
  */
 export async function fetchWorkflowDetails(workflowId: string): Promise<GraphQLResponse<{ core_core_dynamic_workflows_by_pk: WorkflowDetail }>> {
   const query = `
@@ -37,7 +38,7 @@ export async function fetchWorkflowDetails(workflowId: string): Promise<GraphQLR
         id
         name
         organization_id
-        core_dynamic_workflow_transitions {
+        core_dynamic_workflow_transitions(where: {deleted_at: {_is_null: true}}) {
           from_status_id
           id
           to_status_id

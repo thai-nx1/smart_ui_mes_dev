@@ -139,13 +139,13 @@ export function WorkflowDiagram({
         // Trường hợp bắt đầu (không có trạng thái nguồn)
         const toId = transition.to_status_id.replace(/-/g, '_');
         mermaidCode += `
-          Start((Start)) -->|${transition.name}| ${toId}
+          Start((Bắt đầu)) -->|${transition.name}| ${toId}
         `;
       } else if (transition.from_status_id && !transition.to_status_id) {
         // Trường hợp kết thúc (không có trạng thái đích)
         const fromId = transition.from_status_id.replace(/-/g, '_');
         mermaidCode += `
-          ${fromId} -->|${transition.name}| End((End))
+          ${fromId} -->|${transition.name}| End((Kết thúc))
         `;
       }
     });
@@ -193,9 +193,7 @@ export function WorkflowDiagram({
             <DialogTitle>
               <div className="flex justify-between items-center">
                 <span>{t('workflow.diagram', 'Sơ đồ quy trình')}: {workflowName}</span>
-                <Button variant="ghost" size="icon" onClick={onClose}>
-                  <X className="w-4 h-4" />
-                </Button>
+                {/* Nút X được cung cấp tự động bởi DialogContent, không cần thêm nút ở đây */}
               </div>
             </DialogTitle>
           </DialogHeader>
