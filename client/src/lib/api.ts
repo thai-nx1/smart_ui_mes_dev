@@ -251,18 +251,16 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
  * Submit form data using GraphQL mutation
  */
 export async function submitFormData(submission: FormSubmission & { workflowId?: string, menuId?: string, formId?: string }): Promise<GraphQLResponse<any>> {
-  // Cập nhật tên và format của mutation để phù hợp với schema GraphQL API
+  // Sử dụng tên mutation trực tiếp từ schema GraphQL
   const query = `
-    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
-      create_menu_record(
-        args: {
-          menu_id: $menuId,
-          user_id: $userId,
-          organization_id: $organizationId,
-          title: $title,
-          submission_data: $submissionData
-        }
-      ) {
+    mutation InsertMenuRecord($menuId: uuid!, $userId: uuid!, $organizationId: uuid!, $title: String!, $submissionData: jsonb!) {
+      insert_core_core_menu_records_one(object: {
+        menu_id: $menuId,
+        user_id: $userId,
+        organization_id: $organizationId,
+        title: $title,
+        data: $submissionData
+      }) {
         id
         code
         menu_id
@@ -632,16 +630,14 @@ export async function submitTransitionForm(
   submissionData: any[]
 ): Promise<GraphQLResponse<any>> {
   const query = `
-    mutation SubmitTransitionForm($transitionId: String!, $recordId: String!, $userId: String!, $name: String!, $submissionData: JSON) {
-      execute_transition(
-        args: {
-          name: $name,
-          transition_id: $transitionId,
-          record_id: $recordId,
-          user_id: $userId,
-          submission_data: $submissionData
-        }
-      ) {
+    mutation SubmitTransitionForm($transitionId: uuid!, $recordId: uuid!, $userId: uuid!, $name: String!, $submissionData: jsonb!) {
+      insert_core_core_submission_forms_one(object: {
+        title: $name,
+        transition_id: $transitionId,
+        record_id: $recordId,
+        user_id: $userId,
+        submission_data: $submissionData
+      }) {
         id
         code
         submission_data
