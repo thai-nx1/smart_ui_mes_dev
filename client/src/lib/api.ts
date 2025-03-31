@@ -251,25 +251,25 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
  * Submit form data using GraphQL mutation
  */
 export async function submitFormData(submission: FormSubmission & { workflowId?: string, menuId?: string, formId?: string }): Promise<GraphQLResponse<any>> {
-  // Sử dụng tên mutation trực tiếp từ schema GraphQL
+  // Áp dụng logic cho tất cả submenu, giống như cách xử lý cho submenu khiếu nại (ID: "ss")
   const query = `
-    mutation InsertMenuRecord($menuId: uuid!, $userId: uuid!, $organizationId: uuid!, $title: String!, $submissionData: jsonb!) {
-      insert_core_core_menu_records_one(object: {
-        menu_id: $menuId,
-        user_id: $userId,
-        organization_id: $organizationId,
-        title: $title,
-        data: $submissionData
-      }) {
-        id
-        code
-        menu_id
-        organization_id
-        user_id
-        workflow_id
-        data
-      }
-    }
+    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
+insert_menu_record(args: {
+menu_id: $menuId,
+user_id: $userId,
+organization_id: $organizationId,
+title: $title,
+submission_data: $submissionData
+}) {
+id
+code
+menu_id
+organization_id
+user_id
+workflow_id
+data
+}
+}
   `;
 
   // Biến đổi dữ liệu cho phù hợp với định dạng mutation mới
@@ -630,14 +630,16 @@ export async function submitTransitionForm(
   submissionData: any[]
 ): Promise<GraphQLResponse<any>> {
   const query = `
-    mutation SubmitTransitionForm($transitionId: uuid!, $recordId: uuid!, $userId: uuid!, $name: String!, $submissionData: jsonb!) {
-      insert_core_core_submission_forms_one(object: {
-        title: $name,
-        transition_id: $transitionId,
-        record_id: $recordId,
-        user_id: $userId,
-        submission_data: $submissionData
-      }) {
+    mutation insert_submission_form($transitionId: String!, $recordId: String!, $userId: String!, $name: String!, $submissionData: JSON) {
+      insert_submission_form(
+        args: {
+          name: $name,
+          transition_id: $transitionId,
+          record_id: $recordId,
+          user_id: $userId,
+          submission_data: $submissionData
+        }
+      ) {
         id
         code
         submission_data
