@@ -11,7 +11,13 @@ import {
   DEFAULT_USER_ID
 } from './types';
 
-const GRAPHQL_ENDPOINT = 'https://delicate-herring-66.hasura.app/v1/graphql';
+// Tìm thấy rằng API ban đầu đã bị thay đổi qua kết quả kiểm tra schema
+// Sử dụng endpoint demo trước đó lại
+const GRAPHQL_ENDPOINT = 'https://demo.hasura.app/v1/graphql';
+// URL thay thế cho các endpoint không còn hoạt động
+const MOCK_ENDPOINT = 'https://delicate-herring-66.hasura.app/v1/graphql';
+// Lưu trữ token xác thực nhưng hiện tại demo endpoint không yêu cầu token
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJ1c2VyVHlwZSI6IlNZU1RFTV9VU0VSIiwidXNlcklkIjoiOTViZDhhMTMtOTE0Zi00ZDAyLTg3ZTMtMGMyNjIyYjg4MmFlIiwic2VydmljZUlkIjoiZTQ2NDU5YzItZTkxMy00MGMxLTgzODMtOGY5YmYzZTdhZGEwIiwib3JnYW5pemF0aW9uSWQiOiJhOWU5ODczNC1lNWQyLTQ4NTEtODRmMy01ZjFjOWE5Y2QyYTciLCJidXNpbmVzc1JvbGVJZHMiOlsiYzk0MGU2MjgtNmFmZC00MzRhLTgwZjMtZGJkNjdiN2ZiNGEyIl19LCJpYXQiOjE3NDMzOTg2OTAsImV4cCI6MjA1ODc1ODY5MH0.RYMF__ddVq4T6CWCNfM6sD0LHr_OpvVvJgoKW5zAhgQ';
 console.log('Using GraphQL endpoint:', GRAPHQL_ENDPOINT);
 
 /**
@@ -25,6 +31,7 @@ export async function executeGraphQLQuery<T>(query: string, variables?: Record<s
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${AUTH_TOKEN}` // Thêm header xác thực
       },
       body: JSON.stringify({
         query,
