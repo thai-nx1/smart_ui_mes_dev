@@ -251,25 +251,27 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
  * Submit form data using GraphQL mutation
  */
 export async function submitFormData(submission: FormSubmission & { workflowId?: string, menuId?: string, formId?: string }): Promise<GraphQLResponse<any>> {
-  // Áp dụng logic cho tất cả submenu, giống như cách xử lý cho submenu khiếu nại (ID: "ss")
+  // Cập nhật tên và format của mutation để phù hợp với schema GraphQL API
   const query = `
     mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
-insert_menu_record(args: {
-menu_id: $menuId,
-user_id: $userId,
-organization_id: $organizationId,
-title: $title,
-submission_data: $submissionData
-}) {
-id
-code
-menu_id
-organization_id
-user_id
-workflow_id
-data
-}
-}
+      create_menu_record(
+        args: {
+          menu_id: $menuId,
+          user_id: $userId,
+          organization_id: $organizationId,
+          title: $title,
+          submission_data: $submissionData
+        }
+      ) {
+        id
+        code
+        menu_id
+        organization_id
+        user_id
+        workflow_id
+        data
+      }
+    }
   `;
 
   // Biến đổi dữ liệu cho phù hợp với định dạng mutation mới
@@ -630,8 +632,8 @@ export async function submitTransitionForm(
   submissionData: any[]
 ): Promise<GraphQLResponse<any>> {
   const query = `
-    mutation insert_submission_form($transitionId: String!, $recordId: String!, $userId: String!, $name: String!, $submissionData: JSON) {
-      insert_submission_form(
+    mutation SubmitTransitionForm($transitionId: String!, $recordId: String!, $userId: String!, $name: String!, $submissionData: JSON) {
+      execute_transition(
         args: {
           name: $name,
           transition_id: $transitionId,
