@@ -11,12 +11,9 @@ import {
   DEFAULT_USER_ID
 } from './types';
 
-// Tìm thấy rằng API ban đầu đã bị thay đổi qua kết quả kiểm tra schema
-// Sử dụng endpoint demo trước đó lại
-const GRAPHQL_ENDPOINT = 'https://demo.hasura.app/v1/graphql';
-// URL thay thế cho các endpoint không còn hoạt động
-const MOCK_ENDPOINT = 'https://delicate-herring-66.hasura.app/v1/graphql';
-// Lưu trữ token xác thực nhưng hiện tại demo endpoint không yêu cầu token
+// Dựa vào kiểm tra schema, backend đã hoạt động và có các trường cần thiết
+const GRAPHQL_ENDPOINT = 'https://delicate-herring-66.hasura.app/v1/graphql';
+// Sử dụng token xác thực
 const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJ1c2VyVHlwZSI6IlNZU1RFTV9VU0VSIiwidXNlcklkIjoiOTViZDhhMTMtOTE0Zi00ZDAyLTg3ZTMtMGMyNjIyYjg4MmFlIiwic2VydmljZUlkIjoiZTQ2NDU5YzItZTkxMy00MGMxLTgzODMtOGY5YmYzZTdhZGEwIiwib3JnYW5pemF0aW9uSWQiOiJhOWU5ODczNC1lNWQyLTQ4NTEtODRmMy01ZjFjOWE5Y2QyYTciLCJidXNpbmVzc1JvbGVJZHMiOlsiYzk0MGU2MjgtNmFmZC00MzRhLTgwZjMtZGJkNjdiN2ZiNGEyIl19LCJpYXQiOjE3NDMzOTg2OTAsImV4cCI6MjA1ODc1ODY5MH0.RYMF__ddVq4T6CWCNfM6sD0LHr_OpvVvJgoKW5zAhgQ';
 console.log('Using GraphQL endpoint:', GRAPHQL_ENDPOINT);
 
@@ -329,24 +326,21 @@ data
  */
 export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildrenResponse>> {
   const query = `
-    query core_core_dynamic_menus {
+    query GetMainMenus {
       core_core_dynamic_menus(
-        limit: 20
-        offset: 0
         where: {parent_id: {_is_null: true}}
+        limit: 20
       ) {
         id
         code
         name
         workflow_id
-        core_dynamic_child_menus {
+        core_core_dynamic_menus(where: {parent_id: {_eq: id}}) {
           id
           code
           name
           workflow_id
-          __typename
         }
-        __typename
       }
     }
   `;
@@ -359,21 +353,13 @@ export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildre
  */
 export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
   const query = `
-    query core_core_dynamic_menus_all {
+    query GetAllMenus {
       core_core_dynamic_menus {
         id
         code
         name
         parent_id
         workflow_id
-        core_dynamic_child_menus {
-          id
-          code
-          name
-          workflow_id
-          __typename
-        }
-        __typename
       }
     }
   `;

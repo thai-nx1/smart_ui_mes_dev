@@ -255,16 +255,14 @@ export default function RecordDetailPage() {
         </CardHeader>
         
         {/* Hiển thị biểu đồ workflow */}
-        {showWorkflowDiagram && workflowData?.data?.core_core_dynamic_workflows_by_pk && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <WorkflowDiagram
-              workflowId={workflowId}
-              workflowName={workflowData.data.core_core_dynamic_workflows_by_pk.name || 'Workflow'}
-              transitions={workflowData.data.core_core_dynamic_workflows_by_pk.core_dynamic_workflow_transitions || []}
-              currentStatusId={currentStatusId}
-              onClose={() => setShowWorkflowDiagram(false)}
-            />
-          </div>
+        {showWorkflowDiagram && (
+          <WorkflowDiagram
+            workflowId={workflowId}
+            workflowName={workflowData?.data?.core_core_dynamic_workflows_by_pk?.name || 'Workflow'}
+            currentStatusId={currentStatusId}
+            onClose={() => setShowWorkflowDiagram(false)}
+            useDialogStyle={true}
+          />
         )}
         
         {/* Hiển thị action buttons workflow từ transitions */}
