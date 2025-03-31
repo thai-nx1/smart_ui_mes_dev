@@ -88,8 +88,7 @@ export function TransitionFormDialog({
   // Mutation để gửi dữ liệu form
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      // TODO: Thay thế bằng user ID thực từ authentication system
-      const currentUserId = "5c065b51-3862-4004-ae96-ca23245aa21e"; 
+      // Sử dụng DEFAULT_USER_ID từ API
       const formName = transitionName + " - " + new Date().toISOString();
 
       // Chuẩn bị dữ liệu để gửi đi, loại bỏ trường form_field_id vì API không cần
@@ -106,7 +105,7 @@ export function TransitionFormDialog({
       return submitTransitionForm(
         transitionId,
         recordId,
-        currentUserId,
+        undefined, // Sử dụng giá trị mặc định từ API function
         formSubmitterName, // Sử dụng tên mặc định theo yêu cầu
         submissionData
       );

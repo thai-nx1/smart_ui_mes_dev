@@ -149,6 +149,7 @@ export default function SubmissionPage() {
   // Mutation để tạo mới submission form
   const createSubmissionMutation = useMutation({
     mutationFn: async (formData: FormSubmission) => {
+      console.log("Submitting form data:", formData);
       // Gọi API submitFormData với workflowId hiện tại
       return submitFormData(formData);
     },

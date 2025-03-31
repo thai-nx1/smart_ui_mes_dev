@@ -304,10 +304,11 @@ data
     console.log("Using formId for submission:", formId);
   }
 
+  // Sử dụng các ID mặc định từ types.ts
   const variables = {
     menuId: menuId,
-    userId: "5c065b51-3862-4004-ae96-ca23245aa21e", // ID cố định từ ví dụ của bạn
-    organizationId: "8c96bdee-09ef-40ce-b1fa-954920e71efe", // ID cố định từ ví dụ của bạn
+    userId: DEFAULT_USER_ID, // Sử dụng hằng số từ types.ts
+    organizationId: DEFAULT_ORGANIZATION_ID, // Sử dụng hằng số từ types.ts
     title: title,
     submissionData: submissionFields
   };
@@ -635,7 +636,7 @@ export async function fetchTransitionForm(transitionId: string): Promise<GraphQL
 export async function submitTransitionForm(
   transitionId: string,
   recordId: string,
-  userId: string,
+  userId: string = DEFAULT_USER_ID, // Sử dụng giá trị mặc định từ constants
   name: string,
   submissionData: any[]
 ): Promise<GraphQLResponse<any>> {
