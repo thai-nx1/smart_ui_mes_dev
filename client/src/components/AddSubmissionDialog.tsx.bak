@@ -690,7 +690,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           readOnly
                           onClick={async () => {
                             try {
-                              
+                              const toast = useToast();
                               
                               // Import và sử dụng hàm nhập dữ liệu
                               const { importData } = await import('../lib/special-field-handlers');
@@ -734,7 +734,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                         readOnly
                         onClick={async () => {
                           try {
-                            
+                            const toast = useToast();
                             
                             // Lấy tất cả các giá trị hiện tại từ các trường khác để xuất
                             const dataToExport = Object.entries(fieldValues).reduce((acc, [key, value]) => {
@@ -802,7 +802,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           readOnly
                           onClick={async () => {
                             try {
-                              
+                              const toast = useToast();
                               
                               toast({
                                 title: "Đang mở camera",
@@ -864,7 +864,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           readOnly
                           onClick={async () => {
                             try {
-                              
+                              const toast = useToast();
                               
                               toast({
                                 title: "Đang xác định vị trí",
@@ -927,7 +927,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           readOnly
                           onClick={async () => {
                             try {
-                              
+                              const toast = useToast();
                               
                               toast({
                                 title: "Đang chuẩn bị ghi âm",
@@ -974,7 +974,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                         value={fieldValues[field.id] ? JSON.stringify(fieldValues[field.id]).substring(0, 30) + '...' : ''}
                         onClick={() => {
                           // Hiển thị toast thông báo
-                          
+                          const toast = useToast();
                           toast({
                             title: "Trường dữ liệu cache",
                             description: "Trường này được sử dụng để lưu trữ dữ liệu tạm thời và không thể chỉnh sửa trực tiếp.",
