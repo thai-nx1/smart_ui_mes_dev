@@ -219,11 +219,11 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
     const selectedForm = forms.find(form => form.id === formId) as any;
     if (selectedForm && selectedForm.core_dynamic_form_fields) {
       const initialValues: Record<string, any> = {};
-      const formFields = selectedForm.core_dynamic_form_fields.map(
-        (formField: any) => formField.core_dynamic_field
-      );
       
-      formFields.forEach((field: Field) => {
+      selectedForm.core_dynamic_form_fields.forEach((formField: any) => {
+        const field = formField.core_dynamic_field;
+        if (!field) return;
+        
         // Tạo giá trị mặc định dựa trên loại field
         let defaultValue: any = null;
         switch (field.field_type) {
@@ -238,10 +238,36 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
             defaultValue = new Date().getTime();
             break;
           case 'SINGLE_CHOICE':
-            defaultValue = '1';
+            // Lấy giá trị đầu tiên từ option_values nếu có
+            if (field.option_values) {
+              try {
+                const options = typeof field.option_values === 'string' 
+                  ? JSON.parse(field.option_values) 
+                  : field.option_values;
+                if (Array.isArray(options) && options.length > 0) {
+                  defaultValue = options[0].value || 'option1';
+                } else {
+                  defaultValue = 'option1';
+                }
+              } catch (e) {
+                defaultValue = 'option1';
+              }
+            } else {
+              defaultValue = 'option1';
+            }
             break;
           case 'MULTI_CHOICE':
-            defaultValue = ['1'];
+            defaultValue = [];
+            break;
+          case 'SCREEN_RECORD':
+          case 'PHOTO':
+          case 'IMPORT':
+          case 'EXPORT':
+          case 'QR_SCAN':
+          case 'GPS':
+          case 'AUDIO_RECORD':
+          case 'CACHE':
+            defaultValue = '';
             break;
           default:
             defaultValue = null;
@@ -250,6 +276,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         initialValues[field.id] = defaultValue;
       });
       
+      console.log("Setting initial field values:", initialValues);
       setFieldValues(initialValues);
     }
   };
@@ -499,6 +526,28 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                       value={fieldValues[field.id] ? new Date(fieldValues[field.id]).toISOString().slice(0, 10) : ''}
                       onChange={(e) => handleFieldValueChange(field.id, new Date(e.target.value).getTime())}
                     />
+                  )}
+                  
+                  {(field.field_type === 'SCREEN_RECORD' ||
+                    field.field_type === 'PHOTO' ||
+                    field.field_type === 'IMPORT' ||
+                    field.field_type === 'EXPORT' ||
+                    field.field_type === 'QR_SCAN' ||
+                    field.field_type === 'GPS' ||
+                    field.field_type === 'AUDIO_RECORD' ||
+                    field.field_type === 'CACHE') && (
+                    <div className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-center">
+                      <span className="text-sm text-gray-500">
+                        {field.field_type === 'SCREEN_RECORD' && 'Nhấn để ghi màn hình'}
+                        {field.field_type === 'PHOTO' && 'Nhấn để chụp ảnh'}
+                        {field.field_type === 'IMPORT' && 'Nhấn để nhập dữ liệu'}
+                        {field.field_type === 'EXPORT' && 'Nhấn để xuất dữ liệu'}
+                        {field.field_type === 'QR_SCAN' && 'Nhấn để quét QR'}
+                        {field.field_type === 'GPS' && 'Nhấn để xác định vị trí GPS'}
+                        {field.field_type === 'AUDIO_RECORD' && 'Nhấn để ghi âm'}
+                        {field.field_type === 'CACHE' && 'Dữ liệu bộ nhớ đệm'}
+                      </span>
+                    </div>
                   )}
                   
                   {field.field_type === 'SINGLE_CHOICE' && (
