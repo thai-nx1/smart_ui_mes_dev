@@ -476,15 +476,26 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
             <div className="space-y-6 max-h-[450px] overflow-y-auto pr-2 scroll-smooth">
               {fields.map((field) => (
                 <div key={field.id} className="space-y-2">
-                  <div className="mb-1">
-                    {field.name}
-                    {field.description && (
-                      <span className="ml-2 text-xs text-muted-foreground">({field.description})</span>
-                    )}
-                    <span className="float-right text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">
-                      {field.field_type}
-                    </span>
-                  </div>
+                  {!(field.field_type === 'SCREEN_RECORD' || 
+                    field.field_type === 'PHOTO' || 
+                    field.field_type === 'IMPORT' || 
+                    field.field_type === 'EXPORT' || 
+                    field.field_type === 'QR_SCAN' || 
+                    field.field_type === 'GPS' || 
+                    field.field_type === 'AUDIO_RECORD' || 
+                    field.field_type === 'CACHE') && (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        {field.name}
+                        {field.description && (
+                          <span className="ml-2 text-xs text-muted-foreground">({field.description})</span>
+                        )}
+                      </div>
+                      <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">
+                        {field.field_type}
+                      </span>
+                    </div>
+                  )}
                   
                   {/* Render input based on field type */}
                   {field.field_type === 'TEXT' && (
@@ -526,30 +537,132 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                     />
                   )}
                   
-                  {(field.field_type === 'SCREEN_RECORD' || 
-                    field.field_type === 'PHOTO' || 
-                    field.field_type === 'IMPORT' || 
-                    field.field_type === 'EXPORT' || 
-                    field.field_type === 'QR_SCAN' || 
-                    field.field_type === 'GPS' || 
-                    field.field_type === 'AUDIO_RECORD' || 
-                    field.field_type === 'CACHE') && (
-                    <input
-                      type="text"
-                      className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
-                      placeholder={
-                        field.field_type === 'SCREEN_RECORD' ? 'Nhấn để ghi màn hình' :
-                        field.field_type === 'PHOTO' ? 'Nhấn để chụp ảnh' :
-                        field.field_type === 'IMPORT' ? 'Nhấn để nhập dữ liệu' :
-                        field.field_type === 'EXPORT' ? 'Nhấn để xuất dữ liệu' :
-                        field.field_type === 'QR_SCAN' ? 'Nhấn để quét QR' :
-                        field.field_type === 'GPS' ? 'Nhấn để xác định vị trí GPS' :
-                        field.field_type === 'AUDIO_RECORD' ? 'Nhấn để ghi âm' :
-                        'Dữ liệu bộ nhớ đệm'
-                      }
-                      readOnly
-                      onClick={() => handleFieldValueChange(field.id, `${field.field_type.toLowerCase()}_placeholder`)}
-                    />
+                  {field.field_type === 'SCREEN_RECORD' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">SCREEN_RECORD</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Nhấn để ghi màn hình"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'screen_record_placeholder')}
+                      />
+                    </>
+                  )}
+                  
+                  {field.field_type === 'PHOTO' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">PHOTO</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Nhấn để chụp ảnh"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'photo_placeholder')}
+                      />
+                    </>
+                  )}
+                  
+                  {field.field_type === 'IMPORT' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">IMPORT</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Nhấn để nhập dữ liệu"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'import_placeholder')}
+                      />
+                    </>
+                  )}
+                  
+                  {field.field_type === 'EXPORT' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">EXPORT</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Nhấn để xuất dữ liệu"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'export_placeholder')}
+                      />
+                    </>
+                  )}
+                  
+                  {field.field_type === 'QR_SCAN' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">QR_SCAN</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Nhấn để quét QR"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'qr_scan_placeholder')}
+                      />
+                    </>
+                  )}
+                  
+                  {field.field_type === 'GPS' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">GPS</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Nhấn để xác định vị trí GPS"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'gps_placeholder')}
+                      />
+                    </>
+                  )}
+                  
+                  {field.field_type === 'AUDIO_RECORD' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">AUDIO_RECORD</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Nhấn để ghi âm"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'audio_record_placeholder')}
+                      />
+                    </>
+                  )}
+                  
+                  {field.field_type === 'CACHE' && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <div>{field.name}</div>
+                        <div className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">CACHE</div>
+                      </div>
+                      <input
+                        type="text"
+                        className="w-full p-3 border border-gray-200 rounded-md bg-white text-center text-gray-500"
+                        placeholder="Dữ liệu bộ nhớ đệm"
+                        readOnly
+                        onClick={() => handleFieldValueChange(field.id, 'cache_placeholder')}
+                      />
+                    </>
                   )}
                   
                   {field.field_type === 'SINGLE_CHOICE' && (
