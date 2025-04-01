@@ -528,25 +528,107 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                     />
                   )}
                   
-                  {(field.field_type === 'SCREEN_RECORD' ||
-                    field.field_type === 'PHOTO' ||
-                    field.field_type === 'IMPORT' ||
-                    field.field_type === 'EXPORT' ||
-                    field.field_type === 'QR_SCAN' ||
-                    field.field_type === 'GPS' ||
-                    field.field_type === 'AUDIO_RECORD' ||
-                    field.field_type === 'CACHE') && (
-                    <div className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-center">
-                      <span className="text-sm text-gray-500">
-                        {field.field_type === 'SCREEN_RECORD' && 'Nhấn để ghi màn hình'}
-                        {field.field_type === 'PHOTO' && 'Nhấn để chụp ảnh'}
-                        {field.field_type === 'IMPORT' && 'Nhấn để nhập dữ liệu'}
-                        {field.field_type === 'EXPORT' && 'Nhấn để xuất dữ liệu'}
-                        {field.field_type === 'QR_SCAN' && 'Nhấn để quét QR'}
-                        {field.field_type === 'GPS' && 'Nhấn để xác định vị trí GPS'}
-                        {field.field_type === 'AUDIO_RECORD' && 'Nhấn để ghi âm'}
-                        {field.field_type === 'CACHE' && 'Dữ liệu bộ nhớ đệm'}
-                      </span>
+                  {field.field_type === 'PHOTO' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'photo_placeholder')}
+                      >
+                        Nhấn để chụp ảnh
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">PHOTO</div>
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'IMPORT' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'import_placeholder')}
+                      >
+                        Nhấn để nhập dữ liệu
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">IMPORT</div>
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'EXPORT' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'export_placeholder')}
+                      >
+                        Nhấn để xuất dữ liệu
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">EXPORT</div>
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'QR_SCAN' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'qr_placeholder')}
+                      >
+                        Nhấn để quét QR
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">QR_SCAN</div>
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'GPS' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'gps_placeholder')}
+                      >
+                        Nhấn để xác định vị trí GPS
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">GPS</div>
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'SCREEN_RECORD' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'screen_record_placeholder')}
+                      >
+                        Nhấn để ghi màn hình
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">SCREEN_RECORD</div>
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'AUDIO_RECORD' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'audio_record_placeholder')}
+                      >
+                        Nhấn để ghi âm
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">AUDIO_RECORD</div>
+                    </div>
+                  )}
+                  
+                  {field.field_type === 'CACHE' && (
+                    <div>
+                      <button 
+                        type="button"
+                        className="w-full py-3 border border-gray-200 rounded-md bg-white text-center hover:bg-gray-50 transition-colors"
+                        onClick={() => handleFieldValueChange(field.id, 'cache_placeholder')}
+                      >
+                        Dữ liệu bộ nhớ đệm
+                      </button>
+                      <div className="text-right text-xs mt-1 text-gray-400">CACHE</div>
                     </div>
                   )}
                   
