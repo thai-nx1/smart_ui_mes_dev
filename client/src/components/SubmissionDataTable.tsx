@@ -1026,7 +1026,7 @@ export function SubmissionDataTable({
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto border-none shadow-lg">
+        <DialogContent className="sm:max-w-none md:max-w-5xl lg:max-w-6xl w-[calc(100vw-2rem)] sm:w-[calc(100vw-4rem)] max-h-[90vh] overflow-y-auto border-none shadow-lg">
           <DialogHeader className="border-b pb-4">
             <div className="flex justify-between items-start">
               <div>
@@ -1108,16 +1108,16 @@ export function SubmissionDataTable({
                 key={field.id} 
                 className={`py-4 ${isEditing ? 'hover:bg-muted/40' : ''} rounded-md transition-colors`}
               >
-                <div className="flex flex-col md:flex-row md:items-start gap-2 md:gap-6 px-1">
+                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6 px-2">
                   <div className="w-full md:w-1/4 flex items-center">
-                    <span className="font-semibold text-sm text-primary inline-flex items-center">
+                    <span className="font-semibold text-sm text-primary inline-flex items-center flex-wrap">
                       {field.name}
                       <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                         {field.field_type}
                       </span>
                     </span>
                   </div>
-                  <div className="w-full md:w-3/4 flex-1">
+                  <div className="w-full md:w-3/4 flex-1 bg-background/50 p-2 rounded-md">
                     {renderFieldInput(field, index)}
                   </div>
                 </div>
