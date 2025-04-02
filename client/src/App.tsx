@@ -16,7 +16,13 @@ import { setupInitialTheme } from "@/lib/theme";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      {/* Chuyển hướng trực tiếp từ trang chủ vào trang submission với workflow Phê duyệt tài chính */}
+      <Route path="/" component={() => {
+        // Chuyển hướng tới trang submission với ID workflow phê duyệt tài chính 
+        // và menuId của Phê duyệt tài chính
+        window.location.href = "/submission/466db422-5dc8-4de2-a963-4c8fce12e4ff?menuId=81a0d5df-57b8-49ec-8514-6d6761b5c3c5";
+        return null;
+      }} />
       <Route path="/forms" component={FormsPage} />
       <Route path="/workflow" component={WorkflowPage} />
       <Route path="/menu/:menuId" component={WorkflowPage} />

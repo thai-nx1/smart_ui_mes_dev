@@ -35,6 +35,24 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         const response = await fetchAllMenus();
         const allMenus = response.data.core_core_dynamic_menus || [];
         
+        // Lọc các menu - filter chỉ giữ lại menu "Phê duyệt" và con của nó
+        // Menu "Phê duyệt" có ID cụ thể "7cfe3d79-a48d-4ebf-98d2-4afa70684ddd"
+        const approvalParentId = "7cfe3d79-a48d-4ebf-98d2-4afa70684ddd";
+        
+        // Giữ lại menu cha "Phê duyệt" và tất cả con của nó
+        const approvalParent = allMenus.find(menu => menu.id === approvalParentId);
+        if (approvalParent) {
+          const approvalChildMenus = allMenus.filter(menu => menu.parent_id === approvalParentId);
+          
+          return [{
+            ...approvalParent,
+            core_dynamic_child_menus: approvalChildMenus
+          }];
+        }
+        
+        // Backup trong trường hợp không tìm thấy menu cụ thể
+        console.log("Menu 'Phê duyệt' không được tìm thấy, hiển thị tất cả menu");
+        
         // Lọc các menu cha (parent_id là null)
         const parentMenus = allMenus.filter(menu => !menu.parent_id);
         
