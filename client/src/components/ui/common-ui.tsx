@@ -18,26 +18,30 @@ import { useTranslation } from "react-i18next";
 
 // Định nghĩa variants cho AppButton
 const appButtonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center rounded-md text-sm font-medium font-['Roboto'] tracking-wide ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-gray-400 bg-background hover:bg-primary/5 hover:text-primary hover:border-primary",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        primary: "bg-blue-300 text-white hover:bg-blue-300/90",
-        success: "bg-green-600 text-white hover:bg-green-600/90",
-        warning: "bg-orange-300 text-white hover:bg-orange-300/90",
-        danger: "bg-red-500 text-white hover:bg-red-500/90",
+        primary: "bg-blue-500 text-white hover:bg-blue-500/90 shadow-sm",
+        success: "bg-green-600 text-white hover:bg-green-600/90 shadow-sm",
+        warning: "bg-orange-400 text-white hover:bg-orange-400/90 shadow-sm",
+        danger: "bg-red-500 text-white hover:bg-red-500/90 shadow-sm",
+        text: "bg-transparent text-primary hover:bg-primary/5 p-0 h-auto",
       },
       size: {
-        default: "h-45px px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "h-10 px-4 py-2",
+        sm: "h-8 rounded-md px-3 text-xs",
+        md: "h-10 rounded-md px-4",
+        lg: "h-11 rounded-md px-6",
+        xl: "h-12 rounded-md px-8 text-base",
+        icon: "h-10 w-10 p-2",
+        "icon-sm": "h-8 w-8 p-1.5",
       },
     },
     defaultVariants: {
@@ -69,19 +73,27 @@ AppButton.displayName = "AppButton";
 
 // Định nghĩa variants cho AppCard
 const appCardVariants = cva(
-  "rounded-md border bg-card text-card-foreground shadow-sm",
+  "rounded-md border bg-card text-card-foreground shadow-sm overflow-hidden",
   {
     variants: {
       variant: {
         default: "border-border",
-        primary: "border-blue-300",
+        primary: "border-primary",
         error: "border-red-500",
         success: "border-green-600",
-        warning: "border-orange-300",
+        warning: "border-orange-400",
+        elevated: "border-transparent shadow-md",
+        outlined: "border-gray-200 shadow-none",
       },
+      size: {
+        default: "p-0",
+        sm: "p-0 text-sm",
+        lg: "p-0 text-base",
+      }
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
 );
@@ -99,24 +111,24 @@ export interface AppCardProps
 }
 
 export const AppCard = React.forwardRef<HTMLDivElement, AppCardProps>(
-  ({ className, variant, title, description, footer, headerAction, children, ...props }, ref) => {
+  ({ className, variant, size, title, description, footer, headerAction, children, ...props }, ref) => {
     return (
       <Card 
-        className={cn(appCardVariants({ variant, className }))}
+        className={cn(appCardVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       >
         {(title || description || headerAction) && (
-          <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4 pb-2">
             <div>
-              {title && <CardTitle>{title}</CardTitle>}
-              {description && <CardDescription>{description}</CardDescription>}
+              {title && <CardTitle className="text-base font-medium">{title}</CardTitle>}
+              {description && <CardDescription className="text-sm text-muted-foreground">{description}</CardDescription>}
             </div>
             {headerAction && <div>{headerAction}</div>}
           </CardHeader>
         )}
-        <CardContent>{children}</CardContent>
-        {footer && <CardFooter>{footer}</CardFooter>}
+        <CardContent className="px-4 py-3">{children}</CardContent>
+        {footer && <CardFooter className="px-4 py-3 border-t">{footer}</CardFooter>}
       </Card>
     );
   }
@@ -136,10 +148,10 @@ const AppBadge = ({ className, variant = "default", status, children }: CustomBa
   
   switch(variant) {
     case "primary":
-      badgeClassName = "bg-blue-300/10 text-blue-300 border-blue-300/30";
+      badgeClassName = "bg-blue-500/10 text-blue-500 border-blue-500/30";
       break;
     case "secondary":
-      badgeClassName = "bg-gray-300/10 text-gray-800 border-gray-300/30";
+      badgeClassName = "bg-gray-300/10 text-gray-700 border-gray-300/30";
       break;
     case "success":
       badgeClassName = "bg-green-600/10 text-green-600 border-green-600/30";
@@ -148,13 +160,13 @@ const AppBadge = ({ className, variant = "default", status, children }: CustomBa
       badgeClassName = "bg-red-500/10 text-red-500 border-red-500/30";
       break;
     case "warning":
-      badgeClassName = "bg-orange-300/10 text-orange-300 border-orange-300/30";
+      badgeClassName = "bg-orange-400/10 text-orange-400 border-orange-400/30";
       break;
     case "info":
-      badgeClassName = "bg-blue-100/10 text-blue-100 border-blue-100/30";
+      badgeClassName = "bg-blue-400/10 text-blue-400 border-blue-400/30";
       break;
     case "outline":
-      badgeClassName = "bg-transparent border border-gray-400 text-gray-800";
+      badgeClassName = "bg-transparent border border-gray-400 text-gray-700";
       break;
     default:
       badgeClassName = "bg-primary/10 text-primary border-primary/30";
@@ -163,7 +175,7 @@ const AppBadge = ({ className, variant = "default", status, children }: CustomBa
   
   return (
     <Badge 
-      className={cn("px-3 py-1 border font-medium", badgeClassName, 
+      className={cn("px-3 py-1.5 border text-xs font-medium rounded-full", badgeClassName, 
         status && "flex items-center gap-1", className)}
     >
       {status && <span className="size-2 rounded-full bg-current" />}
@@ -190,7 +202,7 @@ export const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
     return (
       <div className="space-y-2">
         {label && (
-          <Label htmlFor={id} className="text-sm font-medium flex items-center gap-1">
+          <Label htmlFor={id} className="text-sm font-medium flex items-center gap-1 mb-1.5">
             {label}
             {required && <span className="text-red-500">*</span>}
           </Label>
@@ -204,10 +216,10 @@ export const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
           <Input
             id={id}
             className={cn(
-              "h-45px border-gray-400 hover:border-gray-500 focus:border-blue-300 focus:ring-blue-300",
+              "h-10 border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:border-blue-500 focus:ring-blue-500/30 focus:ring-2",
               icon && iconPosition === "left" && "pl-10",
               icon && iconPosition === "right" && "pr-10",
-              error && "border-red-500 focus:border-red-500 focus:ring-red-500",
+              error && "border-red-500 focus:border-red-500 focus:ring-red-500/30",
               className
             )}
             ref={ref}
@@ -219,7 +231,7 @@ export const AppInput = React.forwardRef<HTMLInputElement, AppInputProps>(
             </div>
           )}
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       </div>
     );
   }
@@ -257,7 +269,7 @@ export const AppTextarea = React.forwardRef<HTMLTextAreaElement, AppTextareaProp
     return (
       <div className="space-y-2">
         {label && (
-          <Label htmlFor={id} className="text-sm font-medium flex items-center gap-1">
+          <Label htmlFor={id} className="text-sm font-medium flex items-center gap-1 mb-1.5">
             {label}
             {required && <span className="text-red-500">*</span>}
           </Label>
@@ -265,14 +277,14 @@ export const AppTextarea = React.forwardRef<HTMLTextAreaElement, AppTextareaProp
         <Textarea
           id={id}
           className={cn(
-            "min-h-[100px] border-gray-400 hover:border-gray-500 focus:border-blue-300 focus:ring-blue-300 resize-none",
-            error && "border-red-500 focus:border-red-500 focus:ring-red-500",
+            "min-h-[100px] border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:border-blue-500 focus:ring-blue-500/30 focus:ring-2 resize-none",
+            error && "border-red-500 focus:border-red-500 focus:ring-red-500/30",
             className
           )}
           ref={ref}
           {...props}
         />
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       </div>
     );
   }
@@ -296,20 +308,20 @@ export const AppCheckbox = React.forwardRef<HTMLInputElement, AppCheckboxProps>(
             id={id}
             type="checkbox"
             className={cn(
-              "h-20px w-20px text-blue-300 border-gray-400",
-              error && "border-red-500",
+              "h-5 w-5 rounded text-blue-500 border-gray-300 shadow-sm focus:ring-blue-500/30 focus:ring-2",
+              error && "border-red-500 focus:ring-red-500/30",
               className
             )}
             ref={ref}
             {...props}
           />
           {label && (
-            <Label htmlFor={id} className="text-sm font-medium cursor-pointer">
+            <Label htmlFor={id} className="text-sm font-medium cursor-pointer text-gray-700">
               {label}
             </Label>
           )}
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       </div>
     );
   }
@@ -331,7 +343,7 @@ export const AppSelect = React.forwardRef<HTMLSelectElement, AppSelectProps>(
     return (
       <div className="space-y-2">
         {label && (
-          <Label htmlFor={id} className="text-sm font-medium flex items-center gap-1">
+          <Label htmlFor={id} className="text-sm font-medium flex items-center gap-1 mb-1.5">
             {label}
             {required && <span className="text-red-500">*</span>}
           </Label>
@@ -339,23 +351,27 @@ export const AppSelect = React.forwardRef<HTMLSelectElement, AppSelectProps>(
         <Select defaultValue={props.defaultValue?.toString()}>
           <SelectTrigger 
             className={cn(
-              "h-45px border-gray-400 hover:border-gray-500 focus:border-blue-300 focus:ring-blue-300",
-              error && "border-red-500 focus:border-red-500 focus:ring-red-500",
+              "h-10 border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:border-blue-500 focus:ring-blue-500/30 focus:ring-2",
+              error && "border-red-500 focus:border-red-500 focus:ring-red-500/30",
               className
             )}
             id={id}
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="border border-gray-200 shadow-md">
             {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem 
+                key={option.value} 
+                value={option.value}
+                className="cursor-pointer hover:bg-blue-50"
+              >
                 {option.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       </div>
     );
   }
@@ -376,19 +392,19 @@ export interface AppTableProps extends React.TableHTMLAttributes<HTMLTableElemen
 export const AppTable = React.forwardRef<HTMLTableElement, AppTableProps>(
   ({ className, headers, data, fixedHeader = true, stickyFirstColumn = false, stickyLastColumn = false, alternateRows = true, responsive = true, ...props }, ref) => {
     return (
-      <div className={cn("w-full rounded-md border border-border", responsive && "overflow-x-auto", className)}>
+      <div className={cn("w-full rounded-md border border-gray-200 shadow-sm", responsive && "overflow-x-auto", className)}>
         <table className="w-full border-collapse min-w-[650px]" ref={ref} {...props}>
           <thead>
-            <tr className="bg-muted/70 text-primary-foreground">
+            <tr className="bg-gray-50 border-b border-gray-200">
               {headers.map((header, index) => (
                 <th 
                   key={index} 
                   className={cn(
-                    "p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap",
+                    "p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap",
                     index === headers.length - 1 && "border-r-0",
-                    fixedHeader && "sticky top-0 z-10 bg-muted/70",
-                    stickyFirstColumn && index === 0 && "sticky left-0 z-20 bg-muted/70",
-                    stickyLastColumn && index === headers.length - 1 && "sticky right-0 z-20 bg-muted/70"
+                    fixedHeader && "sticky top-0 z-10 bg-gray-50",
+                    stickyFirstColumn && index === 0 && "sticky left-0 z-20 bg-gray-50",
+                    stickyLastColumn && index === headers.length - 1 && "sticky right-0 z-20 bg-gray-50"
                   )}
                 >
                   <div className="flex items-center">
@@ -398,22 +414,22 @@ export const AppTable = React.forwardRef<HTMLTableElement, AppTableProps>(
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border bg-card">
+          <tbody className="divide-y divide-gray-200 bg-white">
             {data.map((row, rowIndex) => {
               const rowBgClass = alternateRows ? (
-                rowIndex % 2 === 0 ? "bg-background/40" : "bg-background/80"
-              ) : "bg-background";
+                rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"
+              ) : "bg-white";
               
               return (
                 <tr 
                   key={rowIndex} 
-                  className={cn("transition-colors duration-150 hover:bg-primary/5", rowBgClass)}
+                  className={cn("transition-colors duration-150 hover:bg-blue-50", rowBgClass)}
                 >
                   {row.map((cell, cellIndex) => (
                     <td 
                       key={cellIndex} 
                       className={cn(
-                        "p-3 border-r text-sm relative", 
+                        "p-3 text-sm relative text-gray-700", 
                         cellIndex === row.length - 1 && "border-r-0",
                         stickyFirstColumn && cellIndex === 0 && "sticky left-0 z-10",
                         stickyLastColumn && cellIndex === row.length - 1 && "sticky right-0 z-10"
@@ -440,4 +456,14 @@ export const AppTable = React.forwardRef<HTMLTableElement, AppTableProps>(
 AppTable.displayName = "AppTable";
 
 // Xuất tất cả các components để sử dụng trong cả ứng dụng
-// Các component đã được export ở trên
+export {
+  AppButton,
+  AppCard,
+  AppBadge,
+  AppInput,
+  AppDateInput,
+  AppTextarea,
+  AppCheckbox,
+  AppSelect,
+  AppTable
+};
