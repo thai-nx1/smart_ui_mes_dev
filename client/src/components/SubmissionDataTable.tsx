@@ -1026,8 +1026,8 @@ export function SubmissionDataTable({
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-none md:max-w-5xl lg:max-w-6xl w-[calc(100vw-2rem)] sm:w-[calc(100vw-4rem)] max-h-[90vh] overflow-y-auto border-none shadow-lg">
-          <DialogHeader className="border-b pb-4">
+        <DialogContent className="sm:max-w-none md:max-w-5xl lg:max-w-6xl w-[calc(100vw-2rem)] sm:w-[calc(100vw-4rem)] max-h-[90vh] overflow-y-auto border-none shadow-lg p-0 gap-0">
+          <DialogHeader className="border-b">
             <div className="flex justify-between items-start">
               <div>
                 <DialogTitle className="text-xl font-bold text-primary">
@@ -1102,22 +1102,22 @@ export function SubmissionDataTable({
             </>
           )}
           
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border px-6 py-4">
             {editedData.map((field, index) => (
               <div 
                 key={field.id} 
                 className={`py-4 ${isEditing ? 'hover:bg-muted/40' : ''} rounded-md transition-colors`}
               >
-                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6 px-2">
-                  <div className="w-full md:w-1/4 flex items-center">
-                    <span className="font-semibold text-sm text-primary inline-flex items-center flex-wrap">
+                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6">
+                  <div className="w-full md:w-1/3 flex items-center">
+                    <span className="font-medium text-sm text-primary inline-flex items-center flex-wrap">
                       {field.name}
                       <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                         {field.field_type}
                       </span>
                     </span>
                   </div>
-                  <div className="w-full md:w-3/4 flex-1 bg-background/50 p-2 rounded-md">
+                  <div className="w-full md:w-2/3 flex-1 bg-slate-50 dark:bg-slate-800/50 py-2 px-3 rounded-md">
                     {renderFieldInput(field, index)}
                   </div>
                 </div>
@@ -1125,7 +1125,7 @@ export function SubmissionDataTable({
             ))}
           </div>
 
-          <DialogFooter className="flex justify-between border-t pt-4 mt-4">
+          <DialogFooter className="flex justify-between border-t">
             {!readOnly && (
               <>
                 {isEditing ? (

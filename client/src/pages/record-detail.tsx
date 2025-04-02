@@ -322,15 +322,15 @@ export default function RecordDetailPage() {
                       } hover:bg-primary/5`}
                     >
                       <td className="p-3 border-r border-border align-top">
-                        <div className="font-semibold text-sm text-primary">
+                        <div className="font-medium text-sm text-primary">
                           {field.name}
-                          <div className="mt-1 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground inline-block">
+                          <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground inline-block">
                             {field.field_type}
-                          </div>
+                          </span>
                         </div>
                       </td>
                       <td className="p-3 border-border">
-                        <div className="text-sm py-1 px-2 bg-slate-50 dark:bg-slate-900 rounded-md">
+                        <div className="text-sm py-2 px-3 bg-slate-50 dark:bg-slate-800/50 rounded-md">
                           {renderFieldValue(field.value, field.field_type)}
                         </div>
                       </td>
