@@ -192,7 +192,7 @@ export default function RecordDetailPage() {
   const titleField = getTitleField();
 
   return (
-    <div className="container py-6">
+    <div className="container">
       <Card className="border shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center mb-2">

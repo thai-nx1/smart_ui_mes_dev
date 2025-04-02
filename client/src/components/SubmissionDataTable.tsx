@@ -1102,13 +1102,13 @@ export function SubmissionDataTable({
             </>
           )}
           
-          <div className="divide-y divide-border px-6 py-4">
+          <div className="divide-y divide-border px-6 py-0">
             {editedData.map((field, index) => (
               <div 
                 key={field.id} 
-                className={`py-4 ${isEditing ? 'hover:bg-muted/40' : ''} rounded-md transition-colors`}
+                className={`pb-3 ${isEditing ? 'hover:bg-muted/40' : ''} rounded-md transition-colors`}
               >
-                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6">
+                <div className="flex flex-col md:flex-row md:items-start gap-3 md:gap-6 pt-3">
                   <div className="w-full md:w-1/3 flex items-center">
                     <span className="font-medium text-sm text-primary inline-flex items-center flex-wrap">
                       {field.name}
