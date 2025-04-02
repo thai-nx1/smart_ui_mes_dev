@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { themeManager } from '@/lib/theme';
+import { MainSidebar } from '@/components/MainSidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -106,17 +107,25 @@ export function MainLayout({ children, title }: MainLayoutProps) {
 
       </header>
 
-      <main className="bg-background text-foreground pb-10">
-        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-3 py-3' : 'px-4 sm:px-6 lg:px-8 py-6'} relative`}>
-          {/* Lớp background trang trí */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent -z-10 opacity-50"></div>
-          
-          {/* Nội dung chính */}
-          <div className="relative z-10">
-            {children}
+      <div className="flex">
+        {/* Sidebar Menu */}
+        <MainSidebar>
+          {/* Không cần nội dung con trong MainSidebar vì nó đã được định nghĩa trong component */}
+        </MainSidebar>
+        
+        {/* Main content area */}
+        <main className="bg-background text-foreground pb-10 flex-1">
+          <div className={`max-w-7xl mx-auto ${isMobile ? 'px-3 py-3' : 'px-4 sm:px-6 lg:px-8 py-6'} relative`}>
+            {/* Lớp background trang trí */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent -z-10 opacity-50"></div>
+            
+            {/* Nội dung chính */}
+            <div className="relative z-10">
+              {children}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
       
       <footer className="mt-auto py-4 border-t bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
