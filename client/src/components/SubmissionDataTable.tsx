@@ -15,7 +15,7 @@ import { FieldValue } from '@/lib/types';
 import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid, Search, Check, RotateCcw, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile, useScreenSize } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
 import { 
   DropdownMenu,
@@ -65,16 +65,26 @@ export function SubmissionDataTable({
   const [dialogOpen, setDialogOpen] = useState(false);
   // Phát hiện thiết bị di động và sử dụng chế độ card cho mobile, table cho desktop
   const isMobile = useIsMobile();
+  const screenSize = useScreenSize();
   
-  // Ưu tiên viewMode từ props, nếu không có thì dùng card cho mobile, table cho desktop
-  const [currentViewMode, setCurrentViewMode] = useState<ViewMode>(viewMode || (isMobile ? 'card' : 'table'));
+  // Ưu tiên viewMode từ props, nếu không có thì dùng card cho mobile, table cho desktop/tablet
+  const [currentViewMode, setCurrentViewMode] = useState<ViewMode>(
+    viewMode || (screenSize === 'mobile' ? 'card' : 'table')
+  );
   
-  // Theo dõi thay đổi của isMobile để cập nhật chế độ xem
+  // Log kích thước màn hình cho debugging
+  useEffect(() => {
+    console.log('Current screen size:', screenSize);
+  }, [screenSize]);
+  
+  // Theo dõi thay đổi của screenSize để cập nhật chế độ xem
   useEffect(() => {
     if (!viewMode) { // Chỉ tự động thay đổi khi không có viewMode từ props
-      setCurrentViewMode(isMobile ? 'card' : 'table');
+      const newViewMode = screenSize === 'mobile' ? 'card' : 'table';
+      setCurrentViewMode(newViewMode);
+      console.log('View mode updated to:', newViewMode);
     }
-  }, [isMobile, viewMode]);
+  }, [screenSize, viewMode]);
   
   // State cho tìm kiếm và lọc
   const [searchQuery, setSearchQuery] = useState("");
@@ -549,7 +559,7 @@ export function SubmissionDataTable({
     return (
       <div className="w-full rounded-md border border-border">
         {/* Phiên bản desktop - hiển thị bảng đầy đủ với scroll ngang */}
-        <div className="hidden md:block w-full overflow-x-auto rounded-md">
+        <div className="w-full overflow-x-auto rounded-md">
           <table className="w-full border-collapse min-w-[650px]">
             <thead>
               <tr className="bg-muted/70 text-primary-foreground">
@@ -744,11 +754,11 @@ export function SubmissionDataTable({
   // - Có nút xem chi tiết ở cuối card
   const renderCardView = () => {
     return (
-      <div className="space-y-4 max-w-md mx-auto overflow-y-auto max-h-screen">
+      <div className="space-y-4 w-full max-w-md mx-auto overflow-y-auto">
         {filteredData.map((submission) => (
           <div 
             key={submission.id} 
-            className="group mb-4 p-4 border bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+            className="group mb-4 p-4 border dark:border-gray-700 bg-card dark:bg-card rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
           >
             {Array.isArray(submission.data) ? (
               <div className="space-y-2">
