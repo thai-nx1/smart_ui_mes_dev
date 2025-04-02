@@ -1026,7 +1026,7 @@ export function SubmissionDataTable({
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-none md:max-w-5xl lg:max-w-6xl w-[calc(100vw-2rem)] sm:w-[calc(100vw-4rem)] max-h-[90vh] overflow-y-auto border-none shadow-lg p-0 gap-0">
+        <DialogContent className="sm:max-w-none md:max-w-5xl lg:max-w-6xl w-[95vw] sm:w-[calc(100vw-4rem)] max-h-[90vh] overflow-y-auto border-none shadow-lg p-0 gap-0">
           <DialogHeader className="border-b">
             <div className="flex justify-between items-start">
               <div>

@@ -301,7 +301,8 @@ export default function RecordDetailPage() {
         <CardContent className="pt-6">
           <div className="space-y-6">
             {/* Tạo bảng responsive cho mobile */}
-            <div className="w-full overflow-x-auto rounded-md">
+            {/* Desktop view - table format */}
+            <div className="hidden md:block w-full overflow-x-auto rounded-md">
               <table className="w-full border-collapse min-w-[500px]">
                 <thead>
                   <tr className="bg-muted/30">
@@ -316,7 +317,7 @@ export default function RecordDetailPage() {
                 <tbody className="divide-y divide-border">
                   {recordData.data && recordData.data.map((field: FieldData, index: number) => (
                     <tr 
-                      key={field.id}
+                      key={`desktop-${field.id}`}
                       className={`transition-colors duration-150 ${
                         index % 2 === 0 ? 'bg-background/50' : 'bg-background/80'
                       } hover:bg-primary/5`}
@@ -338,6 +339,30 @@ export default function RecordDetailPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+            
+            {/* Mobile view - card format */}
+            <div className="md:hidden space-y-4">
+              {recordData.data && recordData.data.map((field: FieldData, index: number) => (
+                <div 
+                  key={`mobile-${field.id}`}
+                  className="border border-border rounded-md overflow-hidden"
+                >
+                  <div className="p-2 bg-muted/20 border-b border-border">
+                    <div className="font-medium text-sm text-primary flex items-center flex-wrap">
+                      {field.name}
+                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                        {field.field_type}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <div className="text-sm py-2 px-3 bg-slate-50 dark:bg-slate-800/50 rounded-md">
+                      {renderFieldValue(field.value, field.field_type)}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {(!recordData.data || recordData.data.length === 0) && (
