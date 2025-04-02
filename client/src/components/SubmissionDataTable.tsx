@@ -759,7 +759,7 @@ export function SubmissionDataTable({
         {filteredData.map((submission) => (
           <div 
             key={submission.id} 
-            className="group mb-4 p-4 border dark:border-gray-700 bg-card dark:bg-card rounded-xl shadow-sm hover:shadow-md transition-all duration-300 max-h-[240px] overflow-y-auto flex flex-col"
+            className="group mb-4 p-4 border dark:border-gray-700 bg-card dark:bg-card rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
           >
             {Array.isArray(submission.data) ? (
               <div className="space-y-2">
@@ -775,8 +775,8 @@ export function SubmissionDataTable({
                   ) : '-'}
                 </div>
                 
-                {/* Field data trong format key-value - giới hạn số lượng hiển thị */}
-                {submission.data.slice(0, 4).map((field: FieldData) => (
+                {/* Field data trong format key-value */}
+                {submission.data.map((field: FieldData) => (
                   <div 
                     key={field.id} 
                     className="border-b border-gray-100 py-2 last:border-b-0"
