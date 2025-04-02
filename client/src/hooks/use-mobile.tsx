@@ -3,9 +3,15 @@ import * as React from "react"
 // Giới hạn kích thước màn hình di động, được cài đặt là 768px
 const MOBILE_BREAKPOINT = 640 // Giảm xuống để đảm bảo dạng bảng hiển thị ở màn hình lớn hơn
 
+// Tạo interface cho kết quả trả về
+export interface MobileInfo {
+  isMobile: boolean;
+  screenWidth: number;
+}
+
 // Hook kiểm tra xem thiết bị hiện tại có phải là di động không
-export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+export function useIsMobile(): MobileInfo {
+  const [isMobile, setIsMobile] = React.useState<boolean>(false)
   const [screenWidth, setScreenWidth] = React.useState<number>(window.innerWidth)
 
   React.useEffect(() => {
@@ -30,7 +36,8 @@ export function useIsMobile() {
     return () => mql.removeEventListener("change", onChange)
   }, [])
 
-  return { isMobile: !!isMobile, screenWidth }
+  // Trả về đối tượng với thông tin chi tiết
+  return { isMobile, screenWidth }
 }
 
 // Hook trả về loại màn hình chi tiết hơn

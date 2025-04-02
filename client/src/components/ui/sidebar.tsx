@@ -55,7 +55,7 @@ const SidebarProvider = React.forwardRef<
 >(
   (
     {
-      defaultOpen = true,
+      defaultOpen = false, // Mặc định là false để không tự ẩn menu ở desktop
       open: openProp,
       onOpenChange: setOpenProp,
       className,
@@ -120,7 +120,7 @@ const SidebarProvider = React.forwardRef<
         state,
         open,
         setOpen,
-        isMobile,
+        isMobile: !!isMobile, // Chắc chắn là boolean
         openMobile,
         setOpenMobile,
         toggleSidebar,
