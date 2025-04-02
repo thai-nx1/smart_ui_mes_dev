@@ -3,23 +3,94 @@
 @tailwind utilities;
 
 :root {
-  /* Oxii Design System colors */
-  --oxii-primary: #00B1D2;
-  --oxii-primary-80: rgba(0, 177, 210, 0.8);
-  --oxii-primary-60: rgba(0, 177, 210, 0.6);
-  --oxii-primary-40: rgba(0, 177, 210, 0.4);
-  --oxii-primary-20: rgba(0, 177, 210, 0.2);
-  --oxii-primary-10: rgba(0, 177, 210, 0.1);
-  --oxii-primary-dark: #008FAA;
-  --oxii-primary-light: #66D6ED;
+  /* Core Design System colors */
+  --text-color: #232735;
+  --text-color-secondary: #73798D;
+  --primary-color: #00B1D2;
+  --primary-color-text: #ffffff;
   
-  --oxii-secondary: #03DAC6;
-  --oxii-secondary-variant: #018786;
-  --oxii-error: #B00020;
-  --oxii-surface: #FFFFFF;
-  --oxii-background: #F8F9FA;
+  /* Surface colors */
+  --surface-0: #ffffff;
+  --surface-50: #FAFAFA;
+  --surface-100: #F5F5F5;
+  --surface-200: #EEEEEE;
+  --surface-300: #E0E0E0;
+  --surface-400: #BDBDBD;
+  --surface-500: #8B90A0;
+  --surface-600: #757575;
+  --surface-700: #616161;
+  --surface-800: #424242;
+  --surface-900: #212121;
+  --surface-ground: #f8f9fa;
+  --surface-section: #ffffff;
+  --surface-card: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-border: #dee2e6;
   
+  /* Layout variables */
+  --content-padding: 1rem;
+  --inline-spacing: 0.5rem;
   --border-radius: 0.5rem;
+  
+  /* Blue color palette */
+  --blue-50: #f4fafe;
+  --blue-100: #cae6fc;
+  --blue-200: #a0d2fa;
+  --blue-300: #00B1D2; /* Primary color */
+  --blue-400: #4baaf5;
+  --blue-500: #2196f3;
+  --blue-600: #1c80cf;
+  --blue-700: #1769aa;
+  --blue-800: #125386;
+  --blue-900: #0d3c61;
+  
+  /* Green color palette */
+  --green-50: #f6fbf6;
+  --green-100: #d4ecd5;
+  --green-200: #b2ddb4;
+  --green-300: #90cd93;
+  --green-400: #6ebe71;
+  --green-500: #4caf50;
+  --green-600: #00D18A;
+  --green-700: #357b38;
+  --green-800: #2a602c;
+  --green-900: #1e4620;
+  
+  /* Orange color palette */
+  --orange-50: #fff8f2;
+  --orange-100: #fde0c2;
+  --orange-200: #fbc791;
+  --orange-300: #FF9E17;
+  --orange-400: #f79530;
+  --orange-500: #f57c00;
+  --orange-600: #d06900;
+  --orange-700: #ac5700;
+  --orange-800: #874400;
+  --orange-900: #623200;
+  
+  /* Gray color palette */
+  --gray-50: #FAFAFA;
+  --gray-100: #F5F5F5;
+  --gray-200: #EEEEEE;
+  --gray-300: #F7F7F9;
+  --gray-400: #E3E5EC;
+  --gray-500: #888888;
+  --gray-600: #757575;
+  --gray-700: #616161;
+  --gray-800: #323232;
+  --gray-900: #1D1D1D;
+  
+  /* Red color palette */
+  --red-50: #fff5f5;
+  --red-100: #ffd1ce;
+  --red-200: #ffada7;
+  --red-300: #ff8980;
+  --red-400: #ff6459;
+  --red-500: #ff4032;
+  --red-600: #d9362b;
+  --red-700: #b32d23;
+  --red-800: #8c231c;
+  --red-900: #661a14;
   
   /* Light mode */
   --background: 0 0% 100%;

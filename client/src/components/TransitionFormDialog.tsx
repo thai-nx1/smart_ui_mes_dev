@@ -363,17 +363,17 @@ export function TransitionFormDialog({
     <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-primary/10 transition-colors duration-200">
+          <Button size="sm" variant="outline" className="border-blue-300 text-blue-300 hover:bg-blue-300/10 transition-colors duration-200">
             <ChevronRight className="h-4 w-4 mr-1" /> {transitionName}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium text-primary">
+          <DialogTitle className="text-xl font-medium text-blue-300">
             <div className="flex items-center">
-              <span className="text-primary">{t('transition.title', 'Xử lý phiếu')}: </span>
-              <span className="ml-2 text-primary font-bold">{transitionName}</span>
+              <span className="text-blue-300">{t('transition.title', 'Xử lý phiếu')}: </span>
+              <span className="ml-2 text-blue-300 font-bold">{transitionName}</span>
             </div>
           </DialogTitle>
           <DialogDescription>
@@ -385,7 +385,7 @@ export function TransitionFormDialog({
           <h3 className="text-base font-medium">Hành động có sẵn:</h3>
           <div className="mt-2 flex space-x-2">
             <span 
-              className="px-3 py-1 border border-primary text-primary rounded-full text-sm cursor-pointer hover:bg-primary/10 transition-colors duration-200"
+              className="px-3 py-1 border border-blue-300 text-blue-300 rounded-full text-sm cursor-pointer hover:bg-blue-300/10 transition-colors duration-200"
               onClick={() => {
                 // Tự động chọn transition hiện tại để hiện form
                 fetchAndSetFormFields(transitionId);
@@ -417,7 +417,7 @@ export function TransitionFormDialog({
               <Button 
                 type="submit" 
                 disabled={isPending}
-                className="bg-primary hover:bg-primary/90 text-white transition-colors duration-200"
+                className="bg-blue-300 hover:bg-blue-600 text-white transition-colors duration-200"
               >
                 {isPending ? t('loading', 'Đang xử lý...') : t('transition.submit', 'Đồng ý')}
               </Button>
