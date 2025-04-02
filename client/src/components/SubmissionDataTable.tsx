@@ -572,9 +572,9 @@ export function SubmissionDataTable({
     
     // Responsive table với hai phiên bản: desktop và mobile
     return (
-      <div className="w-full rounded-md border border-border h-full">
+      <div className="w-full rounded-md border border-border">
         {/* Phiên bản desktop - hiển thị bảng đầy đủ với scroll cả ngang và dọc */}
-        <div className="w-full h-full overflow-auto rounded-md">
+        <div className="w-full overflow-auto rounded-md">
           <table className="w-full border-collapse min-w-[650px]">
             <thead>
               <tr className="bg-muted/70 text-primary-foreground">
@@ -769,7 +769,7 @@ export function SubmissionDataTable({
   // - Có nút xem chi tiết ở cuối card
   const renderCardView = () => {
     return (
-      <div className="space-y-4 w-full h-full overflow-auto">
+      <div className="space-y-4 w-full overflow-auto">
         {filteredData.map((submission) => (
           <div 
             key={submission.id} 
@@ -943,7 +943,7 @@ export function SubmissionDataTable({
         {/* Hiển thị các action buttons */}
         {renderActionButtons()}
         
-        <div className="p-4 flex-1 overflow-auto h-full">
+        <div className="p-4 flex-1 overflow-auto">
           {isLoading ? (
           <div className="py-20 px-4 text-center h-full flex items-center justify-center">
             <div className="mx-auto max-w-md flex flex-col items-center">
