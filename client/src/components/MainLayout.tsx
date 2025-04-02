@@ -18,7 +18,6 @@ export function MainLayout({ children, title }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(themeManager.getIsDarkMode());
   
   // Theo dõi cuộn trang để thêm shadow cho header
@@ -40,12 +39,8 @@ export function MainLayout({ children, title }: MainLayoutProps) {
     return unsubscribe;
   }, []);
   
-  // Menu điều hướng phụ
-  const navLinks = [
-    { title: t('nav.dashboard', 'Bảng điều khiển'), href: '#' },
-    { title: t('nav.profile', 'Hồ sơ'), href: '#' },
-    { title: t('nav.settings', 'Cài đặt'), href: '#' },
-  ];
+  // Menu điều hướng phụ đã bị loại bỏ theo yêu cầu
+  const navLinks: Array<{title: string, href: string}> = [];
   
   return (
     <div className="min-h-screen bg-background">
@@ -59,17 +54,6 @@ export function MainLayout({ children, title }: MainLayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-x-3">
-              {isMobile && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="md:hidden"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                  {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </Button>
-              )}
-              
               <div className="flex items-center">
                 <span className="h-8 w-8 inline-flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold rounded">
                   D
@@ -119,21 +103,7 @@ export function MainLayout({ children, title }: MainLayoutProps) {
           </div>
         </div>
         
-        {isMobile && isMenuOpen && (
-          <div className="md:hidden p-4 border-t bg-background">
-            <nav className="space-y-1">
-              {navLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.href}
-                  className="block px-3 py-2 rounded-md hover:bg-muted text-sm font-medium"
-                >
-                  {link.title}
-                </a>
-              ))}
-            </nav>
-          </div>
-        )}
+
       </header>
 
       <main className="bg-background text-foreground pb-10">
