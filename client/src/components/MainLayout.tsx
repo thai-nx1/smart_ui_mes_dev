@@ -43,17 +43,22 @@ export function MainLayout({ children, title }: MainLayoutProps) {
   const navLinks: Array<{title: string, href: string}> = [];
   
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background">
       <header 
-        className={`w-full border-b bg-background h-12 z-40`}
+        className={`sticky top-0 z-40 w-full transition-all duration-200 ${
+          scrolled 
+            ? 'bg-background/90 backdrop-blur-md border-b shadow-sm' 
+            : 'bg-background border-b'
+        }`}
       >
-        <div className="px-2 h-full">
-          <div className="flex justify-between items-center h-full">
-            <div className="flex items-center gap-x-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-x-3">
+              {/* Nút menu cho mobile, chỉ hiện trên trang chủ */}
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="md:hidden h-8 w-8" 
+                className="md:hidden mr-1" 
                 onClick={() => {
                   const triggerButton = document.querySelector('[data-sidebar-trigger]');
                   if (triggerButton) {
@@ -61,60 +66,83 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                   }
                 }}
               >
-                <Menu className="h-4 w-4" />
+                <Menu className="h-5 w-5" />
               </Button>
               
               <div className="flex items-center">
-                <span className="h-6 w-6 inline-flex items-center justify-center bg-primary text-primary-foreground text-sm font-bold rounded">
+                <span className="h-8 w-8 inline-flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold rounded">
                   D
                 </span>
-                <span className="ml-1 text-sm font-semibold text-foreground hidden md:inline">DynamicForm</span>
+                <span className="ml-2 text-lg font-semibold text-foreground hidden md:inline">DynamicForm</span>
               </div>
               
               {title && (
                 <div className="flex items-center">
-                  <div className="hidden md:block h-4 w-px bg-border mx-2" />
-                  <h1 className="text-sm font-semibold text-foreground truncate max-w-[180px] md:max-w-none">
+                  <div className="hidden md:block h-6 w-px bg-border mx-3" />
+                  <h1 className={`${isMobile ? 'text-sm' : 'text-lg'} font-semibold text-foreground truncate max-w-[180px] md:max-w-none`}>
                     {title}
                   </h1>
                 </div>
               )}
             </div>
             
-            <div className="flex items-center gap-x-1">
-              <ThemeSwitcher />
-              <LanguageSwitcher />
+            <div className="flex items-center gap-x-1 sm:gap-x-3">
+              <div className="hidden md:flex items-center mr-2">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder={t('actions.search', 'Tìm kiếm...')}
+                    className="h-9 w-[180px] lg:w-[280px] rounded-md border bg-background px-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  />
+                </div>
+              </div>
               
-              <Avatar className="h-6 w-6 border">
+              <Button variant="ghost" size="icon" className="relative size-8 text-muted-foreground hover:text-foreground hidden md:flex">
+                <Bell className="h-[1.2rem] w-[1.2rem]" />
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground">
+                  3
+                </Badge>
+              </Button>
+              
+              <LanguageSwitcher />
+              <ThemeSwitcher />
+              
+              <div className="h-8 w-px bg-border mx-1 hidden md:block" />
+              
+              <Avatar className="h-8 w-8 border">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">VN</AvatarFallback>
+                <AvatarFallback className="bg-primary/10 text-primary font-medium">VN</AvatarFallback>
               </Avatar>
             </div>
           </div>
         </div>
+        
+
       </header>
 
-      <main className="bg-background text-foreground flex-1 overflow-auto">
-        <div className="w-full relative h-full">
-          {/* Không sử dụng background trang trí nữa */}
+      <main className="bg-background text-foreground pb-10">
+        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-3 py-3' : 'px-4 sm:px-6 lg:px-8 py-6'} relative`}>
+          {/* Lớp background trang trí */}
+          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent -z-10 opacity-50"></div>
           
           {/* Nội dung chính */}
-          <div className="h-full">
+          <div className="relative z-10">
             {children}
           </div>
         </div>
       </main>
       
-      <footer className="border-t bg-muted/30 py-2">
-        <div className="px-2">
-          <div className="flex justify-between items-center text-xs text-muted-foreground">
+      <footer className="mt-auto py-4 border-t bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
             <p>
-              &copy; {new Date().getFullYear()} DynamicForm
+              &copy; {new Date().getFullYear()} DynamicForm. {t('footer.allRightsReserved', 'Bản quyền đã được đăng ký.')}
             </p>
-            <div className="flex space-x-2">
-              <a href="#" className="hover:text-primary">{t('footer.privacy', 'Chính sách')}</a>
-              <a href="#" className="hover:text-primary">{t('footer.terms', 'Điều khoản')}</a>
-              <a href="#" className="hover:text-primary">{t('footer.contact', 'Liên hệ')}</a>
+            <div className="flex space-x-4 mt-3 md:mt-0">
+              <a href="#" className="hover:text-primary transition-colors">{t('footer.privacy', 'Chính sách')}</a>
+              <a href="#" className="hover:text-primary transition-colors">{t('footer.terms', 'Điều khoản')}</a>
+              <a href="#" className="hover:text-primary transition-colors">{t('footer.contact', 'Liên hệ')}</a>
             </div>
           </div>
         </div>
