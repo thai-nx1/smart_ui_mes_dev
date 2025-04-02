@@ -67,7 +67,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Sidebar */}
-        <Sidebar className="z-10 border-r border-border bg-card transition-all duration-300">
+        <Sidebar className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground transition-all duration-300">
           <SidebarHeader className="p-4 border-b">
             <div className="flex items-center">
               <div className="mr-3 flex items-center justify-center h-9 w-9 rounded-md bg-primary text-primary-foreground">
@@ -79,14 +79,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 </svg>
               </div>
               <div>
-                <h1 className="text-lg font-bold text-foreground">
+                <h1 className="text-lg font-bold text-sidebar-foreground">
                   {t('app.shortTitle', 'Form Động')}
                 </h1>
                 <p className="text-xs text-muted-foreground">
                   {t('app.version', 'v1.0.0')}
                 </p>
               </div>
-              <button className="ml-auto lg:hidden text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-primary/10" onClick={() => {
+              <button className="ml-auto lg:hidden text-muted-foreground hover:text-sidebar-foreground p-1 rounded-full hover:bg-primary/10" onClick={() => {
                 const triggerButton = document.querySelector('[data-sidebar-trigger]');
                 if (triggerButton) {
                   (triggerButton as HTMLButtonElement).click();
@@ -107,7 +107,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <SidebarMenuButton
                   asChild
                   isActive={location === '/'}
-                  className={`transition-all ${location === '/' ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'}`}
+                  className={`transition-all ${location === '/' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
                 >
                   <Link href="/">
                     <Home className="size-4" />
@@ -120,7 +120,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <SidebarMenuButton
                   asChild
                   isActive={location === '/forms'}
-                  className={`transition-all ${location === '/forms' ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'}`}
+                  className={`transition-all ${location === '/forms' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
                 >
                   <Link href="/forms">
                     <FormInput className="size-4" />
@@ -133,7 +133,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <SidebarMenuButton
                   asChild
                   isActive={location === '/workflow'}
-                  className={`transition-all ${location === '/workflow' ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'}`}
+                  className={`transition-all ${location === '/workflow' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
                 >
                   <Link href="/workflow">
                     <ListChecks className="size-4" />
@@ -146,7 +146,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <SidebarMenuButton
                   asChild
                   isActive={location === '/design'}
-                  className={`transition-all ${location === '/design' ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'}`}
+                  className={`transition-all ${location === '/design' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
                 >
                   <Link href="/design">
                     <Palette className="size-4" />
@@ -195,13 +195,13 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
             </SidebarMenu>
           </SidebarContent>
 
-          <SidebarFooter className="border-t bg-muted/30 p-2">
+          <SidebarFooter className="border-t border-sidebar-border bg-sidebar-accent/20 p-2">
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={location === '/settings'}
-                  className={`transition-all ${location === '/settings' ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'}`}
+                  className={`transition-all ${location === '/settings' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
                 >
                   <Link href="/settings">
                     <Settings className="size-4" />
@@ -317,7 +317,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
           asChild
           onClick={handleMobileMenuClick}
           className={`transition-all ${
-            isActive ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'
+            isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
           }`}
         >
           <Link href={`/menu/${menu.id}`}>
@@ -344,7 +344,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
       <SidebarMenuButton
         onClick={() => setIsOpen(!isOpen)}
         className={`transition-all ${
-          isOpen || hasActiveChild ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'
+          isOpen || hasActiveChild ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
         }`}
       >
         <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2">
@@ -390,7 +390,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                 key={subMenu.id}
                 asChild
                 className={`pl-8 flex items-center gap-1.5 transition-all text-sm ${
-                  isActive ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'
+                  isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
                 }`}
                 onClick={handleSubmenuClick}
               >
