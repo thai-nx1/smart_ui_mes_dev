@@ -534,11 +534,11 @@ export function SubmissionDataTable({
     // Sử dụng trường từ API nếu có, nếu không sử dụng các trường từ dữ liệu
     const fieldNames = viewFormFields.length > 0 ? viewFormFields : getUniqueFieldTypes();
     
-    // Responsive table với scroll horizontal trong container
+    // Responsive table với hai phiên bản: desktop và mobile
     return (
       <div className="w-full rounded-md border border-border">
-        {/* Tạo một container có scroll ngang cho bảng */}
-        <div className="w-full overflow-x-auto rounded-md">
+        {/* Phiên bản desktop - hiển thị bảng đầy đủ với scroll ngang */}
+        <div className="hidden md:block w-full overflow-x-auto rounded-md">
           <table className="w-full border-collapse min-w-[650px]">
             <thead>
               <tr className="bg-muted/70 text-primary-foreground">
@@ -598,6 +598,62 @@ export function SubmissionDataTable({
                               {submission.core_dynamic_status.name || '-'}
                             </span>
                           ) : '-'}
+                    
+        {/* Phiên bản mobile - hiển thị card dọc */}
+        <div className="md:hidden divide-y divide-border">
+          {filteredData.map((submission, rowIndex) => {
+            if (!Array.isArray(submission.data)) return null;
+            
+            const rowBgClass = rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80';
+            
+            return (
+              <div key={submission.id} className={`p-4 ${rowBgClass} transition-colors hover:bg-primary/5 relative`}>
+                {/* Thông tin code và trạng thái */}
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-mono font-medium text-sm">
+                    {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
+                  </span>
+                  {submission.core_dynamic_status ? (
+                    <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                      {submission.core_dynamic_status.name || '-'}
+                    </span>
+                  ) : '-'}
+                </div>
+                
+                {/* Dữ liệu fields */}
+                <div className="space-y-2">
+                  {fieldNames.map((fieldName: string) => {
+                    const field = submission.data.find(
+                      (f: FieldData) => f.name === fieldName
+                    );
+                    
+                    if (!field) return null;
+                    
+                    return (
+                      <div key={field.id} className="grid grid-cols-2 gap-2 text-sm">
+                        <span className="font-medium text-muted-foreground">{field.name}</span>
+                        <span className="text-right">{renderFieldValue(field.value, field.field_type)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Nút thao tác */}
+                <div className="mt-3 flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleView(submission)}
+                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    {t('actions.view', 'Xem')}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
                         </div>
                       </div>
                     </td>

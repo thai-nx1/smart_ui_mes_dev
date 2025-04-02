@@ -352,9 +352,9 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
           </svg>
         </div>
-        <span className="truncate">{menu.name}</span>
+        <span className="text-sm">{menu.name}</span>
         {menu.code && (
-          <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap max-w-[60px] md:max-w-none truncate">
+          <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap">
             {menu.code}
           </span>
         )}
@@ -409,9 +409,9 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                       <path d="m9 16 3-3-3-3"></path>
                     </svg>
                   )}
-                  <span className="truncate">{subMenu.name}</span>
+                  <span className="text-sm break-normal">{subMenu.name}</span>
                   {subMenu.code && (
-                    <span className="ml-auto text-xs text-muted-foreground/70 whitespace-nowrap">{subMenu.code}</span>
+                    <span className="ml-1 text-xs text-muted-foreground/70">{subMenu.code}</span>
                   )}
                 </Link>
               </SidebarMenuSubButton>
