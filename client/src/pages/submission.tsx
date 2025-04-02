@@ -209,7 +209,7 @@ export default function SubmissionPage() {
 
   if (isLoading) {
     return (
-      <MainLayout title={t('submission.title', 'Dữ liệu đã nộp')}>
+      <div className="container py-6">
         <Card>
           <CardHeader>
             <CardTitle>
@@ -231,13 +231,13 @@ export default function SubmissionPage() {
             </div>
           </CardContent>
         </Card>
-      </MainLayout>
+      </div>
     );
   }
 
   if (error || !data) {
     return (
-      <MainLayout title={t('submission.title', 'Dữ liệu đã nộp')}>
+      <div className="container py-6">
         <Card className="border-destructive">
           <CardHeader>
             <CardTitle className="text-destructive">
@@ -251,16 +251,18 @@ export default function SubmissionPage() {
             <p className="text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
           </CardContent>
         </Card>
-      </MainLayout>
+      </div>
     );
   }
 
+  const title = currentSubmenu?.name || t('submission.title', 'Dữ liệu đã nộp');
+
   return (
-    <MainLayout title={t('submission.title', 'Dữ liệu đã nộp')}>
+    <div className="container py-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
-            <CardTitle>{t('submission.formData', 'Dữ liệu biểu mẫu đã nộp')}</CardTitle>
+            <CardTitle>{title}</CardTitle>
             <CardDescription>
               {t('submission.description', 'Danh sách các biểu mẫu đã được gửi qua workflow này')}
             </CardDescription>
@@ -300,6 +302,6 @@ export default function SubmissionPage() {
           )}
         </CardContent>
       </Card>
-    </MainLayout>
+    </div>
   );
 }

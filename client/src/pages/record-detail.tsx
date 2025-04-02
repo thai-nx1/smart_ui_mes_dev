@@ -125,7 +125,7 @@ export default function RecordDetailPage() {
 
   if (isLoading) {
     return (
-      <MainLayout title={t('recordDetail.title', 'Chi tiết biểu mẫu')}>
+      <div className="container py-6">
         <Card>
           <CardHeader>
             <div className="flex items-center mb-2">
@@ -154,13 +154,13 @@ export default function RecordDetailPage() {
             </div>
           </CardContent>
         </Card>
-      </MainLayout>
+      </div>
     );
   }
 
   if (error || !recordData) {
     return (
-      <MainLayout title={t('recordDetail.title', 'Chi tiết biểu mẫu')}>
+      <div className="container py-6">
         <Card className="border-destructive">
           <CardHeader>
             <div className="flex items-center mb-2">
@@ -185,14 +185,14 @@ export default function RecordDetailPage() {
             <p className="text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
           </CardContent>
         </Card>
-      </MainLayout>
+      </div>
     );
   }
 
   const titleField = getTitleField();
 
   return (
-    <MainLayout title={t('recordDetail.title', 'Chi tiết biểu mẫu')}>
+    <div className="container py-6">
       <Card className="border shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center mb-2">
@@ -358,6 +358,6 @@ export default function RecordDetailPage() {
           </Button>
         </CardFooter>
       </Card>
-    </MainLayout>
+    </div>
   );
 }
