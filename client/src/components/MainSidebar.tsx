@@ -67,7 +67,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Sidebar */}
-        <Sidebar className="z-10 border-r border-border bg-card">
+        <Sidebar className="z-10 border-r border-border bg-card transition-all duration-300">
           <SidebarHeader className="p-4 border-b">
             <div className="flex items-center">
               <div className="mr-3 flex items-center justify-center h-9 w-9 rounded-md bg-primary text-primary-foreground">
@@ -86,6 +86,17 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   {t('app.version', 'v1.0.0')}
                 </p>
               </div>
+              <button className="ml-auto lg:hidden text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-primary/10" onClick={() => {
+                const triggerButton = document.querySelector('[data-sidebar-trigger]');
+                if (triggerButton) {
+                  (triggerButton as HTMLButtonElement).click();
+                }
+              }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
           </SidebarHeader>
 
@@ -222,11 +233,56 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Xử lý che phủ màn hình khi sidebar đang mở trên thiết bị di động
+function useOverlay() {
+  useEffect(() => {
+    const sidebarContent = document.querySelector('[data-sidebar-content]');
+    if (!sidebarContent) return;
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-sidebar-opened') {
+          const isOpen = sidebarContent.getAttribute('data-sidebar-opened') === 'true';
+          if (isOpen) {
+            const overlay = document.createElement('div');
+            overlay.id = 'sidebar-overlay';
+            overlay.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm z-0 lg:hidden animate-in fade-in-0 duration-200';
+            overlay.onclick = () => {
+              const triggerButton = document.querySelector('[data-sidebar-trigger]');
+              if (triggerButton) {
+                (triggerButton as HTMLButtonElement).click();
+              }
+            };
+            document.body.appendChild(overlay);
+          } else {
+            const overlay = document.getElementById('sidebar-overlay');
+            if (overlay) {
+              overlay.classList.add('animate-out', 'fade-out-0');
+              setTimeout(() => {
+                overlay.remove();
+              }, 200);
+            }
+          }
+        }
+      });
+    });
+
+    observer.observe(sidebarContent, { attributes: true });
+
+    return () => {
+      observer.disconnect();
+      const overlay = document.getElementById('sidebar-overlay');
+      if (overlay) overlay.remove();
+    };
+  }, []);
+}
+
 // Dynamic Menu Item Component
 function DynamicMenuItem({ menu }: { menu: MenuType }) {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const hasChildren = menu.core_dynamic_child_menus && menu.core_dynamic_child_menus.length > 0;
+  useOverlay(); // Sử dụng overlay
 
   // Kiểm tra xem có submenu đang được chọn không
   const hasActiveChild = menu.core_dynamic_child_menus?.some(
@@ -241,12 +297,25 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
     }
   }, [location, hasActiveChild]);
   
+  // Xử lý đóng sidebar khi click vào menu trên thiết bị di động
+  const handleMobileMenuClick = () => {
+    if (window.innerWidth < 1024) { // 1024px là điểm ngắt cho lg (large) trong Tailwind
+      setTimeout(() => {
+        const triggerButton = document.querySelector('[data-sidebar-trigger]');
+        if (triggerButton) {
+          (triggerButton as HTMLButtonElement).click();
+        }
+      }, 100);
+    }
+  };
+  
   if (!hasChildren) {
     const isActive = location === `/menu/${menu.id}`;
     return (
       <SidebarMenuItem>
         <SidebarMenuButton
           asChild
+          onClick={handleMobileMenuClick}
           className={`transition-all ${
             isActive ? 'bg-primary/15 text-primary font-medium' : 'hover:bg-muted'
           }`}
@@ -258,10 +327,12 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                 <polyline points="14 2 14 8 20 8" />
               </svg>
             </div>
-            <span>{menu.name}</span>
-            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70">
-              {menu.code}
-            </span>
+            <span className="truncate">{menu.name}</span>
+            {menu.code && (
+              <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap max-w-[60px] md:max-w-none truncate">
+                {menu.code}
+              </span>
+            )}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -281,14 +352,14 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
           </svg>
         </div>
-        <span>{menu.name}</span>
+        <span className="truncate">{menu.name}</span>
         {menu.code && (
-          <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70">
+          <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap max-w-[60px] md:max-w-none truncate">
             {menu.code}
           </span>
         )}
         <ChevronDown 
-          className={`ml-auto size-4 transition-transform duration-200 ${
+          className={`ml-auto size-4 transition-transform duration-200 flex-shrink-0 ${
             isOpen ? 'transform rotate-180 text-primary' : 'text-muted-foreground'
           }`} 
         />
@@ -298,7 +369,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
         <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200">
           {menu.core_dynamic_child_menus.map((subMenu) => {
             let href = "";
-            // Xử lý đặc biệt cho tất cả các submenu, áp dụng cách xử lý giống như submenu khiếu nại
+            // Xử lý đặc biệt cho tất cả các submenu
             if (subMenu.workflow_id) {
               href = `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}`;
             } else {
@@ -306,41 +377,41 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             }
             const isActive = location === href || location.startsWith(`/submission/${subMenu.workflow_id}`);
             
-            // Khi click vào submenu, sẽ gọi 2 API:
-            // 1. API lấy data từ core_core_menu_records theo menu_id
-            // 2. API lấy form VIEW từ core_core_dynamic_menu_forms theo menu_id
-            const handleSubmenuClick = () => {
+            const handleSubmenuClick = (e: React.MouseEvent) => {
               // Xử lý đã được thực hiện trong component Submission thông qua menuId param
               console.log(`Navigating to submenu: ${subMenu.name}, ID: ${subMenu.id}, workflowId: ${subMenu.workflow_id}`);
+              
+              // Đóng sidebar trên thiết bị di động sau khi chọn submenu
+              handleMobileMenuClick();
             };
             
             return (
               <SidebarMenuSubButton
                 key={subMenu.id}
                 asChild
-                className={`pl-9 flex items-center gap-2 transition-all ${
+                className={`pl-8 flex items-center gap-1.5 transition-all text-sm ${
                   isActive ? 'bg-primary/10 text-primary font-medium' : 'hover:bg-muted'
                 }`}
                 onClick={handleSubmenuClick}
               >
-                <Link href={href}>
+                <Link href={href} className="py-1.5">
                   {subMenu.workflow_id ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3 mr-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                       <circle cx="9" cy="7" r="4"></circle>
                       <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
                       <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3 mr-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M2 9V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1"></path>
                       <path d="M2 13h10"></path>
                       <path d="m9 16 3-3-3-3"></path>
                     </svg>
                   )}
-                  {subMenu.name}
+                  <span className="truncate">{subMenu.name}</span>
                   {subMenu.code && (
-                    <span className="ml-auto text-xs text-muted-foreground/70">{subMenu.code}</span>
+                    <span className="ml-auto text-xs text-muted-foreground/70 whitespace-nowrap">{subMenu.code}</span>
                   )}
                 </Link>
               </SidebarMenuSubButton>

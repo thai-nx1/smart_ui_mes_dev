@@ -17,7 +17,7 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-foreground">
           <Languages className="h-4 w-4" />
           <span className="sr-only">{t('app.switchLanguage', 'Chuyển đổi ngôn ngữ')}</span>
         </Button>

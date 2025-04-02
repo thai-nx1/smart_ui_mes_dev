@@ -36,7 +36,7 @@ export function ThemeSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-foreground">
           {theme === 'light' && <Sun className="h-4 w-4" />}
           {theme === 'dark' && <Moon className="h-4 w-4" />}
           {theme === 'system' && <Laptop className="h-4 w-4" />}

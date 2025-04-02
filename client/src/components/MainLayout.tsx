@@ -70,24 +70,24 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                 </Button>
               )}
               
-              <div className="hidden md:flex items-center">
+              <div className="flex items-center">
                 <span className="h-8 w-8 inline-flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold rounded">
                   D
                 </span>
-                <span className="ml-2 text-lg font-semibold text-foreground">DynamicForm</span>
+                <span className="ml-2 text-lg font-semibold text-foreground hidden md:inline">DynamicForm</span>
               </div>
               
               {title && (
                 <div className="flex items-center">
                   <div className="hidden md:block h-6 w-px bg-border mx-3" />
-                  <h1 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold text-foreground`}>
+                  <h1 className={`${isMobile ? 'text-sm' : 'text-lg'} font-semibold text-foreground truncate max-w-[180px] md:max-w-none`}>
                     {title}
                   </h1>
                 </div>
               )}
             </div>
             
-            <div className="flex items-center gap-x-3">
+            <div className="flex items-center gap-x-1 sm:gap-x-3">
               <div className="hidden md:flex items-center mr-2">
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -99,7 +99,7 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                 </div>
               </div>
               
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative size-8 text-muted-foreground hover:text-foreground hidden md:flex">
                 <Bell className="h-[1.2rem] w-[1.2rem]" />
                 <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground">
                   3
