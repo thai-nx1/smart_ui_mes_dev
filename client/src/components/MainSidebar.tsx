@@ -344,25 +344,31 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                 }`}
                 onClick={handleSubmenuClick}
               >
-                <Link href={href} className="py-1.5 w-full flex items-center">
-                  {subMenu.workflow_id ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3 mr-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="9" cy="7" r="4"></circle>
-                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="size-3 mr-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 9V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1"></path>
-                      <path d="M2 13h10"></path>
-                      <path d="m9 16 3-3-3-3"></path>
-                    </svg>
-                  )}
-                  <span className="text-sm break-all whitespace-normal min-w-0 flex-1 mr-2">{subMenu.name}</span>
-                  {subMenu.code && (
-                    <span className="ml-1 text-xs text-muted-foreground/70 whitespace-nowrap flex-shrink-0">{subMenu.code}</span>
-                  )}
+                <Link href={href} className="py-1.5 w-full flex items-start">
+                  <div className="flex items-center w-full">
+                    <div className="flex-shrink-0 mr-1">
+                      {subMenu.workflow_id ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="9" cy="7" r="4"></circle>
+                          <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 9V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1"></path>
+                          <path d="M2 13h10"></path>
+                          <path d="m9 16 3-3-3-3"></path>
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex flex-col min-w-0 flex-grow">
+                      <div className="text-sm font-medium hyphens-auto overflow-hidden break-words break-all">{subMenu.name}</div>
+                      {subMenu.code && (
+                        <div className="text-xs text-muted-foreground/70">{subMenu.code}</div>
+                      )}
+                    </div>
+                  </div>
                 </Link>
               </SidebarMenuSubButton>
             );
