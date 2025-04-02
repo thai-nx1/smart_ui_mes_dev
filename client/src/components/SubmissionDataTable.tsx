@@ -853,9 +853,9 @@ export function SubmissionDataTable({
         </div>
 
         {/* Thanh tìm kiếm */}
-        <div className="px-4 py-3 border-b border-border/80 bg-background/70">
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-            <div className={`relative flex-1 w-full sm:max-w-xs transition-all duration-200 ${isSearchFocused ? 'sm:max-w-sm' : ''}`}>
+        <div className="px-2 sm:px-4 py-3 border-b border-border/80 bg-background/70">
+          <div className="flex flex-col gap-3 items-start">
+            <div className={`relative w-full transition-all duration-200`}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
@@ -876,8 +876,8 @@ export function SubmissionDataTable({
               )}
             </div>
             
-            <div className="flex items-center gap-2">
-              {getUniqueFieldTypes().slice(0, 4).map((fieldName: string) => (
+            <div className="flex flex-wrap items-center gap-2 w-full">
+              {getUniqueFieldTypes().slice(0, 3).map((fieldName: string) => (
                 <Button 
                   key={fieldName}
                   variant="outline"
