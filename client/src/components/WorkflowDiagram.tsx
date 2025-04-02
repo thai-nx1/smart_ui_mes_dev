@@ -149,13 +149,13 @@ export function WorkflowDiagram({
         // Trường hợp bắt đầu (không có trạng thái nguồn)
         const toId = transition.to_status_id.replace(/-/g, '_');
         mermaidCode += `
-          Start((Bắt đầu)) -->|${transition.name}| ${toId}
+          Start((Bắt đầu)):::start -->|${transition.name}| ${toId}
         `;
       } else if (transition.from_status_id && !transition.to_status_id) {
         // Trường hợp kết thúc (không có trạng thái đích)
         const fromId = transition.from_status_id.replace(/-/g, '_');
         mermaidCode += `
-          ${fromId} -->|${transition.name}| End((Kết thúc))
+          ${fromId} -->|${transition.name}| End((Kết thúc)):::end
         `;
       }
     });
@@ -163,6 +163,8 @@ export function WorkflowDiagram({
     // Thêm định nghĩa style cho trạng thái hiện tại và cải thiện hiệu suất hiển thị
     mermaidCode += `
       classDef current fill:#00B1D2,color:white,stroke:#009ab8,stroke-width:2px;
+      classDef start fill:#00B1D2,color:white,stroke:#009ab8,stroke-width:2px;
+      classDef end fill:#00B1D2,color:white,stroke:#009ab8,stroke-width:2px;
       classDef default fill:#f9f9f9,stroke:#ccc,color:#333;
     `;
 
@@ -236,7 +238,7 @@ export function WorkflowDiagram({
           </div>
           
           <DialogFooter>
-            <Button onClick={onClose}>{t('common.close', 'Đóng')}</Button>
+            <Button onClick={onClose} className="bg-primary hover:bg-primary/90 text-white transition-colors duration-200">{t('common.close', 'Đóng')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -247,7 +249,12 @@ export function WorkflowDiagram({
       <Card className="w-full max-w-4xl mx-auto shadow-lg border border-border">
         <div className="flex justify-between items-center p-4 border-b border-border">
           <h3 className="text-lg font-medium">{t('workflow.diagram', 'Sơ đồ workflow')}: {workflowName}</h3>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClose}
+            className="text-primary hover:bg-primary/10 transition-colors duration-200"
+          >
             <X className="h-4 w-4" />
           </Button>
         </div>

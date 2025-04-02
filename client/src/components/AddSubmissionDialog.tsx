@@ -554,7 +554,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           <Button
                             variant="outline"
                             size="sm"
-                            className="mt-2 w-full"
+                            className="mt-2 w-full text-primary border-primary hover:bg-primary/10 transition-colors duration-200"
                             onClick={() => handleFieldValueChange(field.id, '')}
                           >
                             Xóa video
@@ -616,7 +616,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           <Button
                             variant="outline"
                             size="sm"
-                            className="mt-2 w-full"
+                            className="mt-2 w-full text-primary border-primary hover:bg-primary/10 transition-colors duration-200"
                             onClick={() => handleFieldValueChange(field.id, '')}
                           >
                             Xóa ảnh
@@ -676,7 +676,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           <Button
                             variant="outline"
                             size="sm"
-                            className="mt-2 w-full"
+                            className="mt-2 w-full text-primary border-primary hover:bg-primary/10 transition-colors duration-200"
                             onClick={() => handleFieldValueChange(field.id, '')}
                           >
                             Xóa file
@@ -788,7 +788,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           <Button
                             variant="outline"
                             size="sm"
-                            className="mt-2 w-full"
+                            className="mt-2 w-full text-primary border-primary hover:bg-primary/10 transition-colors duration-200"
                             onClick={() => handleFieldValueChange(field.id, '')}
                           >
                             Quét lại
@@ -850,7 +850,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           <Button
                             variant="outline"
                             size="sm"
-                            className="mt-2 w-full"
+                            className="mt-2 w-full text-primary border-primary hover:bg-primary/10 transition-colors duration-200"
                             onClick={() => handleFieldValueChange(field.id, '')}
                           >
                             Xác định lại
@@ -913,7 +913,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                           <Button
                             variant="outline"
                             size="sm"
-                            className="mt-2 w-full"
+                            className="mt-2 w-full text-primary border-primary hover:bg-primary/10 transition-colors duration-200"
                             onClick={() => handleFieldValueChange(field.id, '')}
                           >
                             Xóa bản ghi

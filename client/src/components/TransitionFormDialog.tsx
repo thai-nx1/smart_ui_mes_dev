@@ -363,16 +363,21 @@ export function TransitionFormDialog({
     <Dialog open={isOpen} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button size="sm" variant="outline">
-            {transitionName}
+          <Button size="sm" variant="outline" className="border-primary text-primary hover:bg-primary/10 transition-colors duration-200">
+            <ChevronRight className="h-4 w-4 mr-1" /> {transitionName}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium text-primary">Xem dữ liệu biểu mẫu</DialogTitle>
+          <DialogTitle className="text-xl font-medium text-primary">
+            <div className="flex items-center">
+              <span className="text-primary">{t('transition.title', 'Xử lý phiếu')}: </span>
+              <span className="ml-2 text-primary font-bold">{transitionName}</span>
+            </div>
+          </DialogTitle>
           <DialogDescription>
-            Chi tiết thông tin của biểu mẫu đã nộp.
+            {t('transition.description', 'Vui lòng điền thông tin cần thiết để tiếp tục')}
           </DialogDescription>
         </DialogHeader>
 
