@@ -22,10 +22,12 @@ import { fetchMainMenus, fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { useScreenSize } from '@/hooks/use-mobile';
 
 export function MainSidebar({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const [location] = useLocation();
+  const screenSize = useScreenSize(); // Sử dụng hook để lấy kích thước màn hình hiện tại
   
   // Fetch all menus from the API để xử lý parent/child relationship
   // Thêm retry và staleTime để đảm bảo dữ liệu luôn hiển thị sau khi mount
@@ -65,10 +67,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
     refetchOnMount: true
   });
 
+  // Lấy cài đặt mặc định cho SidebarProvider dựa trên kích thước màn hình
+  const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
+  const defaultOpen = isDesktopOrTablet; // Mặc định mở trên desktop/tablet
+
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <div className="flex min-h-screen">
-        {/* Mobile Sidebar Trigger */}
+        {/* Mobile Sidebar Trigger - Chỉ hiển thị trên mobile */}
         <div className="fixed z-20 top-4 left-4 lg:hidden">
           <SidebarTrigger>
             <Button size="icon" variant="outline" className="shadow-sm hover:bg-primary/10 transition-colors">
@@ -77,8 +83,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarTrigger>
         </div>
 
-        {/* Sidebar */}
-        <Sidebar className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground transition-all duration-300">
+        {/* Sidebar - Collapsible="none" trên desktop và tablet để không thể đóng */}
+        <Sidebar 
+          className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground transition-all duration-300"
+          collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
+        >
           <SidebarHeader className="p-4 border-b">
             <div className="flex items-center">
               <div className="mr-3 flex items-center justify-center h-9 w-9 rounded-md bg-primary text-primary-foreground">
@@ -97,6 +106,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   {t('app.version', 'v1.0.0')}
                 </p>
               </div>
+              {/* Chỉ hiển thị nút đóng trên mobile */}
               <button className="ml-auto lg:hidden text-muted-foreground hover:text-sidebar-foreground p-1 rounded-full hover:bg-primary/10" onClick={() => {
                 const triggerButton = document.querySelector('[data-sidebar-trigger]');
                 if (triggerButton) {

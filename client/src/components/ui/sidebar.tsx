@@ -3,7 +3,7 @@ import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
 
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile, useScreenSize } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -65,7 +65,9 @@ const SidebarProvider = React.forwardRef<
     },
     ref
   ) => {
-    const isMobile = useIsMobile()
+    const { isMobile } = useIsMobile()
+    const screenSize = useScreenSize()
+    const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet'
     const [openMobile, setOpenMobile] = React.useState(false)
 
     // This is the internal state of the sidebar.
@@ -176,7 +178,11 @@ const Sidebar = React.forwardRef<
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
-    if (collapsible === "none") {
+    // Trên desktop/tablet luôn hiển thị sidebar cố định nếu collapsible='none'
+    const screenSize = useScreenSize();
+    const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
+    
+    if (collapsible === "none" || isDesktopOrTablet) {
       return (
         <div
           className={cn(
