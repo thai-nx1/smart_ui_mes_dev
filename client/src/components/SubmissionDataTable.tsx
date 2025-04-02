@@ -15,6 +15,7 @@ import { FieldValue } from '@/lib/types';
 import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid, Search, Check, RotateCcw, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
 import { 
   DropdownMenu,
@@ -62,8 +63,11 @@ export function SubmissionDataTable({
   const [editedData, setEditedData] = useState<FieldData[]>([]);
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  // Luôn sử dụng chế độ bảng
-  const currentViewMode: ViewMode = 'table';
+  // Phát hiện thiết bị di động và sử dụng chế độ card cho mobile, table cho desktop
+  const isMobile = useIsMobile();
+  
+  // Ưu tiên viewMode từ props, nếu không có thì dùng card cho mobile, table cho desktop
+  const currentViewMode: ViewMode = viewMode || (isMobile ? 'card' : 'table');
   
   // State cho tìm kiếm và lọc
   const [searchQuery, setSearchQuery] = useState("");
@@ -724,20 +728,40 @@ export function SubmissionDataTable({
   };
 
   // Render chế độ xem dạng card
+  // Render chế độ xem dạng card theo yêu cầu:
+  // - Nền trắng
+  // - Bóng đổ
+  // - Bo góc
+  // - Có padding
+  // - Mỗi dòng là key-value
+  // - Có nút xem chi tiết ở cuối card
   const renderCardView = () => {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 max-w-md mx-auto overflow-y-auto max-h-screen">
         {filteredData.map((submission) => (
           <div 
             key={submission.id} 
-            className="group mb-6 p-5 border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 bg-card"
+            className="group mb-4 p-4 border bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
           >
             {Array.isArray(submission.data) ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                {/* Header với code và status */}
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-mono font-medium text-sm">
+                    {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
+                  </span>
+                  {submission.core_dynamic_status ? (
+                    <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                      {submission.core_dynamic_status.name || '-'}
+                    </span>
+                  ) : '-'}
+                </div>
+                
+                {/* Field data trong format key-value */}
                 {submission.data.map((field: FieldData) => (
                   <div 
                     key={field.id} 
-                    className="flex flex-col border border-transparent bg-background/50 p-3 rounded-md hover:border-primary/20 hover:bg-primary/5 cursor-pointer transition-all duration-200"
+                    className="border-b border-gray-100 py-2 last:border-b-0"
                     onClick={() => !readOnly && handleEditField(submission, field.id)}
                     title={readOnly ? undefined : t('submission.clickToEdit', 'Nhấp để chỉnh sửa trường này')}
                   >
@@ -951,7 +975,7 @@ export function SubmissionDataTable({
               </div>
             </div>
           ) : (
-            renderTableView()
+            currentViewMode === 'table' ? renderTableView() : renderCardView()
           )}
         </div>
       </div>
