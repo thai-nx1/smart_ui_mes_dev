@@ -101,62 +101,6 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarHeader>
 
           <SidebarContent className="px-2 py-4">
-            {/* Built-in Navigation Links */}
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location === '/'}
-                  className={`transition-all ${location === '/' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
-                >
-                  <Link href="/">
-                    <Home className="size-4" />
-                    <span>{t('app.nav.home', 'Trang chủ')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location === '/forms'}
-                  className={`transition-all ${location === '/forms' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
-                >
-                  <Link href="/forms">
-                    <FormInput className="size-4" />
-                    <span>{t('app.nav.forms', 'Quản lý Form')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location === '/workflow'}
-                  className={`transition-all ${location === '/workflow' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
-                >
-                  <Link href="/workflow">
-                    <ListChecks className="size-4" />
-                    <span>{t('app.nav.workflow', 'Workflow')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location === '/design'}
-                  className={`transition-all ${location === '/design' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
-                >
-                  <Link href="/design">
-                    <Palette className="size-4" />
-                    <span>{t('app.nav.design', 'Hệ thống thiết kế')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-
-            <SidebarSeparator className="my-4" />
 
             {/* Dynamic Menus from API */}
             <SidebarGroupLabel className="text-xs font-semibold text-primary mb-2 px-3 flex items-center">
@@ -196,22 +140,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarContent>
 
           <SidebarFooter className="border-t border-sidebar-border bg-sidebar-accent/20 p-2">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={location === '/settings'}
-                  className={`transition-all ${location === '/settings' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'}`}
-                >
-                  <Link href="/settings">
-                    <Settings className="size-4" />
-                    <span>{t('app.nav.settings', 'Cài đặt')}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-            
-            <div className="px-3 py-2 mt-2 text-xs text-muted-foreground flex items-center justify-between">
+            <div className="px-3 py-2 text-xs text-muted-foreground flex items-center justify-between">
               <div>
                 <span>{t('app.copyright', '© 2025 DynamicForm')}</span>
               </div>
