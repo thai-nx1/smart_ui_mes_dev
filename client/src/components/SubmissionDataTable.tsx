@@ -53,7 +53,7 @@ export function SubmissionDataTable({
   data, 
   onSave, 
   readOnly = true, // Mặc định là chỉ xem
-  viewMode = 'card',
+  viewMode, // Không đặt giá trị mặc định để tự động phát hiện dựa trên kích thước màn hình
   menuId,
   workflowId,
   formData
@@ -622,7 +622,7 @@ export function SubmissionDataTable({
                           ) : '-'}
                     
         {/* Phiên bản mobile - hiển thị card dọc - chỉ hiển thị ở mobile */}
-        <div className="hidden md:hidden divide-y divide-border">
+        <div className={`${currentViewMode === 'card' ? 'block' : 'hidden'} md:hidden divide-y divide-border`}>
           {filteredData.map((submission, rowIndex) => {
             if (!Array.isArray(submission.data)) return null;
             
