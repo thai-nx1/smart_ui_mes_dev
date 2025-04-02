@@ -282,7 +282,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                 <polyline points="14 2 14 8 20 8" />
               </svg>
             </div>
-            <span className="min-w-0 flex-1 break-words whitespace-normal">{menu.name}</span>
+            <span className="min-w-0 flex-1 overflow-hidden text-wrap hyphens-auto break-words py-1 leading-tight">{menu.name}</span>
             {menu.code && (
               <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
                 {menu.code}
@@ -307,7 +307,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
           </svg>
         </div>
-        <span className="text-sm min-w-0 flex-1 break-words whitespace-normal">{menu.name}</span>
+        <span className="text-sm min-w-0 flex-1 overflow-hidden text-wrap hyphens-auto break-words py-1 leading-tight">{menu.name}</span>
         {menu.code && (
           <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
             {menu.code}
@@ -364,7 +364,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                       )}
                     </div>
                     <div className="flex min-w-0 flex-grow">
-                      <div className="text-sm font-medium hyphens-auto overflow-hidden break-words break-all">{subMenu.name}</div>
+                      <div className="text-sm font-medium hyphens-auto overflow-hidden text-wrap break-words py-1 leading-tight">{subMenu.name}</div>
                     </div>
                   </div>
                 </Link>
