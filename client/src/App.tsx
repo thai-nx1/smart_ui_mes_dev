@@ -17,7 +17,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/forms" component={FormsPage} />
+      {/* Removed forms page route */}
       <Route path="/workflow" component={WorkflowPage} />
       <Route path="/menu/:menuId" component={WorkflowPage} />
       <Route path="/menu/:menuId/submenu/:subMenuId" component={WorkflowPage} />
