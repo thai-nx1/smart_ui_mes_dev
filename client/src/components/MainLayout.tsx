@@ -121,13 +121,13 @@ export function MainLayout({ children, title }: MainLayoutProps) {
 
       </header>
 
-      <main className="bg-background text-foreground pb-10">
-        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-3 py-3' : 'px-4 sm:px-6 lg:px-8 py-6'} relative`}>
-          {/* Lớp background trang trí */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent -z-10 opacity-50"></div>
+      <main className="bg-background text-foreground min-h-[calc(100vh-9rem)] flex flex-col">
+        <div className="relative flex-1 w-full h-full">
+          {/* Loại bỏ container để nội dung tràn viền đầy đủ */}
+          <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-primary/5 to-transparent opacity-50"></div>
           
-          {/* Nội dung chính */}
-          <div className="relative z-10">
+          {/* Nội dung chính không có padding để neo 4 bên */}
+          <div className="relative z-10 h-full">
             {children}
           </div>
         </div>

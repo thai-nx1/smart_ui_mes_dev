@@ -572,9 +572,9 @@ export function SubmissionDataTable({
     
     // Responsive table với hai phiên bản: desktop và mobile
     return (
-      <div className="w-full rounded-md border border-border">
-        {/* Phiên bản desktop - hiển thị bảng đầy đủ với scroll ngang */}
-        <div className="w-full overflow-x-auto rounded-md">
+      <div className="w-full rounded-md border border-border h-full">
+        {/* Phiên bản desktop - hiển thị bảng đầy đủ với scroll cả ngang và dọc */}
+        <div className="w-full h-full overflow-auto rounded-md">
           <table className="w-full border-collapse min-w-[650px]">
             <thead>
               <tr className="bg-muted/70 text-primary-foreground">
@@ -769,7 +769,7 @@ export function SubmissionDataTable({
   // - Có nút xem chi tiết ở cuối card
   const renderCardView = () => {
     return (
-      <div className="space-y-4 w-full overflow-y-auto">
+      <div className="space-y-4 w-full h-full overflow-auto">
         {filteredData.map((submission) => (
           <div 
             key={submission.id} 
@@ -859,15 +859,15 @@ export function SubmissionDataTable({
 
   return (
     <>
-      <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
-        <div className="p-4 bg-muted/30 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div className="bg-card w-full h-full flex flex-col border shadow-sm overflow-hidden">
+        <div className="py-3 px-4 bg-muted/30 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 flex-shrink-0">
           <h3 className="text-lg font-semibold text-primary">
             {t('submission.title', 'Dữ liệu đã nộp')}
           </h3>
         </div>
 
-        {/* Thanh tìm kiếm */}
-        <div className="px-2 sm:px-4 py-3 border-b border-border/80 bg-background/70">
+        {/* Thanh tìm kiếm - flex-shrink-0 để không bị co khi content dài */}
+        <div className="px-4 py-3 border-b border-border/80 bg-background/70 flex-shrink-0">
           <div className="flex flex-col gap-3 items-start">
             <div className={`relative w-full transition-all duration-200`}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -943,9 +943,9 @@ export function SubmissionDataTable({
         {/* Hiển thị các action buttons */}
         {renderActionButtons()}
         
-        <div className="p-4">
+        <div className="p-4 flex-1 overflow-auto h-full">
           {isLoading ? (
-          <div className="py-20 px-4 text-center">
+          <div className="py-20 px-4 text-center h-full flex items-center justify-center">
             <div className="mx-auto max-w-md flex flex-col items-center">
               <div className="relative w-16 h-16 mb-4">
                 <svg className="animate-spin h-16 w-16 text-primary/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

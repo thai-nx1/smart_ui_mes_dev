@@ -258,9 +258,9 @@ export default function SubmissionPage() {
   const title = currentSubmenu?.name || t('submission.title', 'Dữ liệu đã nộp');
 
   return (
-    <div className="py-4 px-1 sm:container sm:py-6 sm:px-6">
-      <Card className="overflow-hidden w-full">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-2">
+    <div className="h-full">
+      <Card className="overflow-hidden w-full border-0 rounded-none h-full flex flex-col">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-2 px-6">
           <div>
             <CardTitle className="text-xl sm:text-2xl">{title}</CardTitle>
             <CardDescription>
@@ -272,33 +272,35 @@ export default function SubmissionPage() {
             workflowId={workflowId}
           />
         </CardHeader>
-        <CardContent className="p-0 sm:p-4">
+        <CardContent className="p-0 flex-1 overflow-auto">
           {data.length === 0 ? (
             <div className="p-4 sm:p-8 text-center">
               <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi qua workflow này')}</p>
             </div>
           ) : (
-            <SubmissionDataTable 
-              data={data}
-              onSave={async (editedData) => {
-                // Lấy submission ID hiện tại
-                const currentSubmission = data.find((s: any) => 
-                  Array.isArray(s.data) && 
-                  editedData.length > 0 && 
-                  s.data.some((f: any) => f.id === editedData[0].id)
-                );
-                
-                if (currentSubmission) {
-                  const result = await handleSaveSubmission(currentSubmission.id, editedData);
-                  return result;
-                }
-                
-                throw new Error(t('submission.noSubmissionFound', 'Không tìm thấy biểu mẫu để cập nhật'));
-              }}
-              menuId={menuIdToUse}
-              workflowId={workflowId}
-              formData={formViewData}
-            />
+            <div className="overflow-auto h-full">
+              <SubmissionDataTable 
+                data={data}
+                onSave={async (editedData) => {
+                  // Lấy submission ID hiện tại
+                  const currentSubmission = data.find((s: any) => 
+                    Array.isArray(s.data) && 
+                    editedData.length > 0 && 
+                    s.data.some((f: any) => f.id === editedData[0].id)
+                  );
+                  
+                  if (currentSubmission) {
+                    const result = await handleSaveSubmission(currentSubmission.id, editedData);
+                    return result;
+                  }
+                  
+                  throw new Error(t('submission.noSubmissionFound', 'Không tìm thấy biểu mẫu để cập nhật'));
+                }}
+                menuId={menuIdToUse}
+                workflowId={workflowId}
+                formData={formViewData}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
