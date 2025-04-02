@@ -534,126 +534,135 @@ export function SubmissionDataTable({
     // Sử dụng trường từ API nếu có, nếu không sử dụng các trường từ dữ liệu
     const fieldNames = viewFormFields.length > 0 ? viewFormFields : getUniqueFieldTypes();
     
+    // Responsive table với scroll horizontal trong container
     return (
-      <div className="w-full overflow-auto rounded-md border border-border">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-muted/70 text-primary-foreground">
-              <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
-                <div className="flex items-center">
-                  <span>Code</span>
-                </div>
-              </th>
-              <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
-                <div className="flex items-center">
-                  <span>Trạng thái</span>
-                </div>
-              </th>
-              {fieldNames.map((fieldName: string) => (
-                <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border">
+      <div className="w-full rounded-md border border-border">
+        {/* Tạo một container có scroll ngang cho bảng */}
+        <div className="w-full overflow-x-auto rounded-md">
+          <table className="w-full border-collapse min-w-[650px]">
+            <thead>
+              <tr className="bg-muted/70 text-primary-foreground">
+                {/* Cố định cột code */}
+                <th className="sticky left-0 bg-muted/70 p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap z-10">
                   <div className="flex items-center">
-                    <span>{fieldName}</span>
+                    <span>Code</span>
                   </div>
                 </th>
-              ))}
-              <th className="p-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border">
-                <div className="flex items-center justify-center">
-                  {t('actions.actions', 'Thao tác')}
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border bg-card">
-            {filteredData.map((submission, rowIndex) => {
-              if (!Array.isArray(submission.data)) return null;
-              
-              return (
-                <tr 
-                  key={submission.id} 
-                  className={`group transition-colors duration-150 ${
-                    rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80'
-                  } hover:bg-primary/5`}
-                >
-                  {/* Cột code */}
-                  <td className="p-3 border-r border-border text-sm relative">
-                    <div className="relative">
-                      <div className="mr-6 font-mono">
-                        {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
-                      </div>
+                <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
+                  <div className="flex items-center">
+                    <span>Trạng thái</span>
+                  </div>
+                </th>
+                {fieldNames.map((fieldName: string) => (
+                  <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
+                    <div className="flex items-center">
+                      <span>{fieldName}</span>
                     </div>
-                  </td>
-                  
-                  {/* Cột trạng thái */}
-                  <td className="p-3 border-r border-border text-sm relative">
-                    <div className="relative">
-                      <div className="mr-6">
-                        {submission.core_dynamic_status ? (
-                          <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                            {submission.core_dynamic_status.name || '-'}
-                          </span>
-                        ) : '-'}
+                  </th>
+                ))}
+                {/* Cố định cột thao tác bên phải */}
+                <th className="sticky right-0 bg-muted/70 p-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border whitespace-nowrap z-10">
+                  <div className="flex items-center justify-center">
+                    {t('actions.actions', 'Thao tác')}
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border bg-card">
+              {filteredData.map((submission, rowIndex) => {
+                if (!Array.isArray(submission.data)) return null;
+                
+                // Row background classes alternate
+                const rowBgClass = rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80';
+                
+                return (
+                  <tr 
+                    key={submission.id} 
+                    className={`group transition-colors duration-150 ${rowBgClass} hover:bg-primary/5`}
+                  >
+                    {/* Cột code - cố định bên trái */}
+                    <td className="sticky left-0 p-3 border-r border-border text-sm relative whitespace-nowrap z-10">
+                      <div className={`relative px-2 py-1 ${rowBgClass}`}>
+                        <div className="font-mono">
+                          {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  
-                  {/* Các cột dữ liệu */}
-                  {fieldNames.map((fieldName: string) => {
-                    const field = submission.data.find(
-                      (f: FieldData) => f.name === fieldName
-                    );
+                    </td>
                     
-                    return (
-                      <td 
-                        key={`${submission.id}-${fieldName}`} 
-                        className={`p-3 border-r last:border-r-0 border-border text-sm relative ${
-                          field && !readOnly ? 'cursor-pointer hover:bg-primary/10' : ''
-                        }`}
-                        onClick={() => field && !readOnly && handleEditField(submission, field.id)}
-                      >
-                        {field ? (
-                          <div className="relative">
-                            <div className="mr-6">
-                              {renderFieldValue(field.value, field.field_type)}
-                            </div>
-                            {!readOnly && (
-                              <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <Edit className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
+                    {/* Cột trạng thái */}
+                    <td className="p-3 border-r border-border text-sm relative whitespace-nowrap">
+                      <div className="relative">
+                        <div>
+                          {submission.core_dynamic_status ? (
+                            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                              {submission.core_dynamic_status.name || '-'}
+                            </span>
+                          ) : '-'}
+                        </div>
+                      </div>
+                    </td>
+                    
+                    {/* Các cột dữ liệu */}
+                    {fieldNames.map((fieldName: string) => {
+                      const field = submission.data.find(
+                        (f: FieldData) => f.name === fieldName
+                      );
+                      
+                      return (
+                        <td 
+                          key={`${submission.id}-${fieldName}`} 
+                          className={`p-3 border-r last:border-r-0 border-border text-sm relative ${
+                            field && !readOnly ? 'cursor-pointer hover:bg-primary/10' : ''
+                          }`}
+                          onClick={() => field && !readOnly && handleEditField(submission, field.id)}
+                        >
+                          {field ? (
+                            <div className="relative max-w-[200px] overflow-hidden text-ellipsis">
+                              <div className="mr-4 truncate">
+                                {renderFieldValue(field.value, field.field_type)}
                               </div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </td>
-                    );
-                  })}
-                  <td className="p-2 text-center">
-                    <div className="flex justify-center gap-1">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleView(submission)}
-                        className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      {!readOnly && (
+                              {!readOnly && (
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                  <Edit className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                    
+                    {/* Cột thao tác - cố định bên phải */}
+                    <td className="sticky right-0 p-2 text-center z-10">
+                      <div className={`flex justify-center gap-1 px-2 py-1 ${rowBgClass}`}>
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          onClick={() => handleEdit(submission)}
+                          onClick={() => handleView(submission)}
                           className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                         </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                        {!readOnly && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleEdit(submission)}
+                            className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   };

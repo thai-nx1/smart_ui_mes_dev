@@ -300,25 +300,45 @@ export default function RecordDetailPage() {
 
         <CardContent className="pt-6">
           <div className="space-y-6">
-            {recordData.data && recordData.data.map((field: FieldData, index: number) => (
-              <div key={field.id} className="border-b pb-4 last:border-0">
-                <div className="flex flex-col md:flex-row gap-2">
-                  <div className="w-full md:w-1/4">
-                    <div className="font-semibold text-sm text-primary inline-flex items-center">
-                      {field.name}
-                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                        {field.field_type}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-3/4 flex-1">
-                    <div className="text-sm py-1 px-2 bg-slate-50 dark:bg-slate-900 rounded-md">
-                      {renderFieldValue(field.value, field.field_type)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {/* Tạo bảng responsive cho mobile */}
+            <div className="w-full overflow-x-auto rounded-md">
+              <table className="w-full border-collapse min-w-[500px]">
+                <thead>
+                  <tr className="bg-muted/30">
+                    <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
+                      {t('recordDetail.fieldName', 'Tên trường')}
+                    </th>
+                    <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border whitespace-nowrap">
+                      {t('recordDetail.fieldValue', 'Giá trị')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {recordData.data && recordData.data.map((field: FieldData, index: number) => (
+                    <tr 
+                      key={field.id}
+                      className={`transition-colors duration-150 ${
+                        index % 2 === 0 ? 'bg-background/50' : 'bg-background/80'
+                      } hover:bg-primary/5`}
+                    >
+                      <td className="p-3 border-r border-border align-top">
+                        <div className="font-semibold text-sm text-primary">
+                          {field.name}
+                          <div className="mt-1 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground inline-block">
+                            {field.field_type}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3 border-border">
+                        <div className="text-sm py-1 px-2 bg-slate-50 dark:bg-slate-900 rounded-md">
+                          {renderFieldValue(field.value, field.field_type)}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             {(!recordData.data || recordData.data.length === 0) && (
               <div className="text-center py-8 text-muted-foreground">
