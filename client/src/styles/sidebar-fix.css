@@ -1,48 +1,58 @@
-/* Đảm bảo sidebar luôn hiển thị đầy đủ trên desktop và tablet */
+/* CSS để đảm bảo sidebar không bị thu gọn trên desktop */
 @media (min-width: 768px) {
+  /* Đặt chiều rộng cố định cho sidebar */
   [data-sidebar="sidebar"] {
     width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
     visibility: visible !important;
     opacity: 1 !important;
     transform: none !important;
     display: flex !important;
-  }
-  
-  [data-state="collapsed"] {
-    width: 280px !important;
-  }
-  
-  .group-data-\[collapsible\=icon\]\:w-\[--sidebar-width-icon\] {
-    width: 280px !important;
-  }
-  
-  [data-collapsible="icon"] {
-    width: 280px !important;
-  }
-  
-  .group[data-state="collapsed"] .fixed {
+    flex-shrink: 0 !important;
+    position: fixed !important;
+    top: 0 !important;
     left: 0 !important;
-    width: 280px !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    transition: none !important;
+    z-index: 30 !important;
   }
-  
-  .peer-data-\[variant\=sidebar\]\:w-\[--sidebar-width\] {
-    width: 280px !important;
+
+  /* Đặt margin-left cho content để không bị đè bởi sidebar */
+  [data-sidebar="sidebar"] + .flex-1 {
+    margin-left: 280px !important;
   }
-  
-  .group-data-\[collapsible\=offcanvas\]\:left-\[calc\(var\(--sidebar-width\)\*-1\)\] {
-    left: 0 !important;
+
+  /* Đảm bảo nội dung không thu gọn */
+  [data-sidebar-content] {
+    width: 100% !important;
+    transform: none !important;
+    transition: none !important;
   }
-  
-  .relative[data-collapsible="offcanvas"] {
-    width: 280px !important;
+
+  /* Khôi phục animation chỉ trên mobile */
+  @media (max-width: 767px) {
+    [data-sidebar="sidebar"] {
+      transition: transform 0.3s ease, opacity 0.3s ease !important;
+    }
   }
-  
-  .peer.group {
-    width: 280px !important;
+
+  /* Đảm bảo các menu hiển thị đầy đủ */
+  [data-sidebar-menu-button] span {
+    overflow: visible !important;
+    text-overflow: initial !important;
+    white-space: normal !important;
   }
-  
-  /* Thêm một thanh dải phân cách bên phải khi sidebar hiển thị */
-  [data-sidebar="sidebar"] {
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+
+  /* Ẩn trigger button trên desktop */
+  [data-sidebar-trigger] {
+    display: none !important;
+  }
+
+  /* Overlay sidebar */
+  .sidebar-desktop-container {
+    position: relative !important;
   }
 }

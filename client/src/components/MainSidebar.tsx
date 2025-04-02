@@ -71,39 +71,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
   const defaultOpen = true; // Luôn mở mặc định (không phụ thuộc kích thước màn hình)
   
-  // Thêm style để đảm bảo sidebar không co lại trên desktop/tablet
-  useEffect(() => {
-    if (isDesktopOrTablet) {
-      const style = document.createElement('style');
-      style.id = 'force-sidebar-expanded';
-      style.innerHTML = `
-        @media (min-width: 768px) {
-          [data-sidebar="sidebar"] {
-            width: 280px !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            transform: none !important;
-            display: flex !important;
-          }
-          [data-state="collapsed"] {
-            width: 280px !important;
-          }
-        }
-      `;
-      document.head.appendChild(style);
-      
-      return () => {
-        const styleElement = document.getElementById('force-sidebar-expanded');
-        if (styleElement) {
-          styleElement.remove();
-        }
-      };
-    }
-  }, [isDesktopOrTablet]);
+  // Sử dụng CSS từ file sidebar-fix.css trong một class
+  const containerClass = isDesktopOrTablet 
+    ? "flex min-h-screen sidebar-desktop-container" 
+    : "flex min-h-screen";
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <div className="flex min-h-screen">
+    <SidebarProvider defaultOpen={true}>
+      <div className={containerClass}>
         {/* Mobile Sidebar Trigger - Chỉ hiển thị trên mobile */}
         <div className="fixed z-20 top-4 left-4 lg:hidden">
           <SidebarTrigger>
@@ -113,9 +88,9 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarTrigger>
         </div>
 
-        {/* Sidebar - Collapsible="none" trên desktop và tablet để không thể đóng */}
+        {/* Sidebar - Bắt buộc always open trên desktop */}
         <Sidebar 
-          className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground transition-all duration-300"
+          className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground"
           collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
         >
           <SidebarHeader className="p-4 border-b">
