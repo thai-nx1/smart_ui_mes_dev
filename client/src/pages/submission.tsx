@@ -258,11 +258,11 @@ export default function SubmissionPage() {
   const title = currentSubmenu?.name || t('submission.title', 'Dữ liệu đã nộp');
 
   return (
-    <div className="container py-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <div className="container py-6 px-2 sm:px-6">
+      <Card className="overflow-hidden">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-2">
           <div>
-            <CardTitle>{title}</CardTitle>
+            <CardTitle className="text-xl sm:text-2xl">{title}</CardTitle>
             <CardDescription>
               {t('submission.description', 'Danh sách các biểu mẫu đã được gửi qua workflow này')}
             </CardDescription>
@@ -272,9 +272,9 @@ export default function SubmissionPage() {
             workflowId={workflowId}
           />
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-4">
           {data.length === 0 ? (
-            <div className="p-8 text-center">
+            <div className="p-4 sm:p-8 text-center">
               <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi qua workflow này')}</p>
             </div>
           ) : (

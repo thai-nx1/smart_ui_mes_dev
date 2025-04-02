@@ -64,7 +64,7 @@ export function SubmissionDataTable({
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   // Phát hiện thiết bị di động và sử dụng chế độ card cho mobile, table cho desktop
-  const isMobile = useIsMobile();
+  const { isMobile, screenWidth } = useIsMobile();
   const screenSize = useScreenSize();
   
   // Ưu tiên viewMode từ props, nếu không có thì dùng card cho mobile, table cho desktop/tablet

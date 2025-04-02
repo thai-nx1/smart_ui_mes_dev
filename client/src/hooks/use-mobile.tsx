@@ -6,6 +6,7 @@ const MOBILE_BREAKPOINT = 640 // Giảm xuống để đảm bảo dạng bảng
 // Hook kiểm tra xem thiết bị hiện tại có phải là di động không
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+  const [screenWidth, setScreenWidth] = React.useState<number>(window.innerWidth)
 
   React.useEffect(() => {
     // Sử dụng MediaQueryList API để theo dõi thay đổi kích thước màn hình
@@ -13,20 +14,23 @@ export function useIsMobile() {
     
     // Hàm xử lý khi kích thước màn hình thay đổi
     const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+      const width = window.innerWidth
+      setScreenWidth(width)
+      setIsMobile(width < MOBILE_BREAKPOINT)
+      console.log('Current screen size:', width < MOBILE_BREAKPOINT ? 'mobile' : 'desktop', 'width:', width)
     }
     
     // Đăng ký sự kiện thay đổi
     mql.addEventListener("change", onChange)
     
     // Khởi tạo giá trị ban đầu
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    onChange()
     
     // Dọn dẹp khi component unmount
     return () => mql.removeEventListener("change", onChange)
   }, [])
 
-  return !!isMobile
+  return { isMobile: !!isMobile, screenWidth }
 }
 
 // Hook trả về loại màn hình chi tiết hơn
