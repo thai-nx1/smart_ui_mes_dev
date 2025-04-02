@@ -339,7 +339,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
               <SidebarMenuSubButton
                 key={subMenu.id}
                 asChild
-                className={`pl-8 flex items-center gap-1.5 transition-all text-sm w-full ${
+                className={`pl-8 flex items-center gap-1.5 transition-all text-sm w-full overflow-hidden ${
                   isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
                 }`}
                 onClick={handleSubmenuClick}
@@ -359,9 +359,9 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                       <path d="m9 16 3-3-3-3"></path>
                     </svg>
                   )}
-                  <span className="text-sm break-words whitespace-normal min-w-0 flex-1">{subMenu.name}</span>
+                  <span className="text-sm break-all whitespace-normal min-w-0 flex-1 mr-2">{subMenu.name}</span>
                   {subMenu.code && (
-                    <span className="ml-1 text-xs text-muted-foreground/70 whitespace-nowrap">{subMenu.code}</span>
+                    <span className="ml-1 text-xs text-muted-foreground/70 whitespace-nowrap flex-shrink-0">{subMenu.code}</span>
                   )}
                 </Link>
               </SidebarMenuSubButton>
