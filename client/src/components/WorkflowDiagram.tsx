@@ -7,15 +7,25 @@ import { useTranslation } from 'react-i18next';
 import { fetchWorkflowDetails, generateMermaidDiagram } from '../lib/workflow-api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
-// Cấu hình mermaid
+// Cấu hình mermaid với các thiết lập tối ưu
 mermaid.initialize({
   startOnLoad: true,
   theme: 'default',
   securityLevel: 'loose',
+  logLevel: 'error', // Chỉ hiển thị lỗi, giảm logs
   flowchart: {
     useMaxWidth: true,
     htmlLabels: true,
-    curve: 'basis'
+    curve: 'natural', // Smooth curves for better appearance
+    defaultRenderer: 'dagre-d3' // Renderer tốc độ cao
+  },
+  themeVariables: {
+    primaryColor: '#00B1D2',
+    primaryTextColor: '#fff',
+    primaryBorderColor: '#009ab8',
+    lineColor: '#999',
+    secondaryColor: '#f4f4f4',
+    tertiaryColor: '#f9f9f9'
   }
 });
 
@@ -150,9 +160,10 @@ export function WorkflowDiagram({
       }
     });
 
-    // Thêm định nghĩa style cho trạng thái hiện tại
+    // Thêm định nghĩa style cho trạng thái hiện tại và cải thiện hiệu suất hiển thị
     mermaidCode += `
-      classDef current fill:#00B1D2,color:white,stroke:#0091A8,stroke-width:2px;
+      classDef current fill:#00B1D2,color:white,stroke:#009ab8,stroke-width:2px;
+      classDef default fill:#f9f9f9,stroke:#ccc,color:#333;
     `;
 
     try {

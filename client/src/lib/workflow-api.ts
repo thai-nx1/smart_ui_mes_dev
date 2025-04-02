@@ -86,7 +86,7 @@ export function generateMermaidDiagram(
       statusMap.set(fromStatusId, {
         id: fromStatusId,
         name: transition.core_dynamic_from_status.name,
-        style: fromStatusId === currentStatusId ? 'fill:#ffff00,stroke:#333,stroke-width:2' : undefined
+        style: fromStatusId === currentStatusId ? 'fill:#00B1D2,stroke:#009ab8,stroke-width:2' : undefined
       });
     }
     
@@ -96,7 +96,7 @@ export function generateMermaidDiagram(
       statusMap.set(toStatusId, {
         id: toStatusId,
         name: transition.core_dynamic_to_status.name,
-        style: toStatusId === currentStatusId ? 'fill:#ffff00,stroke:#333,stroke-width:2' : undefined
+        style: toStatusId === currentStatusId ? 'fill:#00B1D2,stroke:#009ab8,stroke-width:2' : undefined
       });
     }
   });

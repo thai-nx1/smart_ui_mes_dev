@@ -199,7 +199,7 @@ export function TransitionFormDialog({
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-sm font-medium text-primary">{field.name}</span>
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">TEXT</span>
             </div>
             <Input
@@ -215,7 +215,7 @@ export function TransitionFormDialog({
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-sm font-medium text-primary">{field.name}</span>
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">PARAGRAPH</span>
             </div>
             <Textarea
@@ -231,7 +231,7 @@ export function TransitionFormDialog({
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-sm font-medium text-primary">{field.name}</span>
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">NUMBER</span>
             </div>
             <Input
@@ -248,7 +248,7 @@ export function TransitionFormDialog({
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-sm font-medium text-primary">{field.name}</span>
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">DATE</span>
             </div>
             <div className="flex items-center border rounded-md">
@@ -268,7 +268,7 @@ export function TransitionFormDialog({
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-sm font-medium text-primary">{field.name}</span>
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">SINGLE_CHOICE</span>
             </div>
             <div className="space-y-2">
@@ -302,7 +302,7 @@ export function TransitionFormDialog({
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-sm font-medium text-primary">{field.name}</span>
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">MULTI_CHOICE</span>
             </div>
             <div className="space-y-2">
@@ -339,7 +339,7 @@ export function TransitionFormDialog({
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-500">{field.name}</span>
+              <span className="text-sm font-medium text-primary">{field.name}</span>
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{field.field_type}</span>
             </div>
             <Input
@@ -370,7 +370,7 @@ export function TransitionFormDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium text-blue-500">Xem dữ liệu biểu mẫu</DialogTitle>
+          <DialogTitle className="text-xl font-medium text-primary">Xem dữ liệu biểu mẫu</DialogTitle>
           <DialogDescription>
             Chi tiết thông tin của biểu mẫu đã nộp.
           </DialogDescription>
@@ -380,7 +380,7 @@ export function TransitionFormDialog({
           <h3 className="text-base font-medium">Hành động có sẵn:</h3>
           <div className="mt-2 flex space-x-2">
             <span 
-              className="px-3 py-1 border border-blue-500 text-blue-500 rounded-full text-sm cursor-pointer hover:bg-blue-50"
+              className="px-3 py-1 border border-primary text-primary rounded-full text-sm cursor-pointer hover:bg-primary/10 transition-colors duration-200"
               onClick={() => {
                 // Tự động chọn transition hiện tại để hiện form
                 fetchAndSetFormFields(transitionId);
@@ -412,7 +412,7 @@ export function TransitionFormDialog({
               <Button 
                 type="submit" 
                 disabled={isPending}
-                className="bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                className="bg-primary hover:bg-primary/90 text-white transition-colors duration-200"
               >
                 {isPending ? t('loading', 'Đang xử lý...') : t('transition.submit', 'Đồng ý')}
               </Button>
