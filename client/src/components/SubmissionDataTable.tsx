@@ -80,9 +80,10 @@ export function SubmissionDataTable({
   // Theo dõi thay đổi của screenSize để cập nhật chế độ xem
   useEffect(() => {
     if (!viewMode) { // Chỉ tự động thay đổi khi không có viewMode từ props
+      // Với màn hình lớn luôn hiển thị dạng bảng (table), màn hình mobile hiển thị dạng card
       const newViewMode = screenSize === 'mobile' ? 'card' : 'table';
       setCurrentViewMode(newViewMode);
-      console.log('View mode updated to:', newViewMode);
+      console.log('View mode updated to:', newViewMode, 'based on screen size:', screenSize);
     }
   }, [screenSize, viewMode]);
   
@@ -620,8 +621,8 @@ export function SubmissionDataTable({
                             </span>
                           ) : '-'}
                     
-        {/* Phiên bản mobile - hiển thị card dọc */}
-        <div className="md:hidden divide-y divide-border">
+        {/* Phiên bản mobile - hiển thị card dọc - chỉ hiển thị ở mobile */}
+        <div className="hidden md:hidden divide-y divide-border">
           {filteredData.map((submission, rowIndex) => {
             if (!Array.isArray(submission.data)) return null;
             
