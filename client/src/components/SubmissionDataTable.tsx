@@ -67,7 +67,14 @@ export function SubmissionDataTable({
   const isMobile = useIsMobile();
   
   // Ưu tiên viewMode từ props, nếu không có thì dùng card cho mobile, table cho desktop
-  const currentViewMode: ViewMode = viewMode || (isMobile ? 'card' : 'table');
+  const [currentViewMode, setCurrentViewMode] = useState<ViewMode>(viewMode || (isMobile ? 'card' : 'table'));
+  
+  // Theo dõi thay đổi của isMobile để cập nhật chế độ xem
+  useEffect(() => {
+    if (!viewMode) { // Chỉ tự động thay đổi khi không có viewMode từ props
+      setCurrentViewMode(isMobile ? 'card' : 'table');
+    }
+  }, [isMobile, viewMode]);
   
   // State cho tìm kiếm và lọc
   const [searchQuery, setSearchQuery] = useState("");
