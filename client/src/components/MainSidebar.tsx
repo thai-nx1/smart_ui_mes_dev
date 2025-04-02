@@ -69,7 +69,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
   // Lấy cài đặt mặc định cho SidebarProvider dựa trên kích thước màn hình
   const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
-  const defaultOpen = isDesktopOrTablet; // Mặc định mở trên desktop/tablet
+  const defaultOpen = true; // Luôn mở mặc định (không phụ thuộc kích thước màn hình)
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>

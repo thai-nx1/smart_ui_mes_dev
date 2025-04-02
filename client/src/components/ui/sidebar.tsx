@@ -73,9 +73,15 @@ const SidebarProvider = React.forwardRef<
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
     const [_open, _setOpen] = React.useState(defaultOpen)
-    const open = openProp ?? _open
+    // Luôn hiển thị mở rộng trên desktop/tablet
+    const open = isDesktopOrTablet ? true : (openProp ?? _open)
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
+        // Ngăn đóng sidebar trên desktop/tablet
+        if (isDesktopOrTablet) {
+          return;
+        }
+          
         if (setOpenProp) {
           return setOpenProp?.(
             typeof value === "function" ? value(open) : value
@@ -87,7 +93,7 @@ const SidebarProvider = React.forwardRef<
         // This sets the cookie to keep the sidebar state.
         document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
       },
-      [setOpenProp, open]
+      [setOpenProp, open, isDesktopOrTablet]
     )
 
     // Helper to toggle the sidebar.
@@ -190,6 +196,7 @@ const Sidebar = React.forwardRef<
             className
           )}
           ref={ref}
+          data-state="expanded"
           {...props}
         >
           {children}
