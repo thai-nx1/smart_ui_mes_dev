@@ -182,7 +182,6 @@ const Sidebar = React.forwardRef<
     const screenSize = useScreenSize();
     const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
     
-    // Luôn hiển thị sidebar đầy đủ trên desktop và tablet
     if (collapsible === "none" || isDesktopOrTablet) {
       return (
         <div

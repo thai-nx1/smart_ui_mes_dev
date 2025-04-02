@@ -69,7 +69,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
   // Lấy cài đặt mặc định cho SidebarProvider dựa trên kích thước màn hình
   const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
-  const defaultOpen = true; // Luôn mặc định mở cho tất cả kích thước màn hình
+  const defaultOpen = isDesktopOrTablet; // Mặc định mở trên desktop/tablet
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
@@ -85,8 +85,8 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
         {/* Sidebar - Collapsible="none" trên desktop và tablet để không thể đóng */}
         <Sidebar 
-          className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground transition-all duration-300 w-full max-w-[280px]"
-          collapsible="none" // Không cho phép đóng trong mọi trường hợp
+          className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground transition-all duration-300"
+          collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
         >
           <SidebarHeader className="p-4 border-b">
             <div className="flex items-center">
