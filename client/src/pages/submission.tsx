@@ -258,8 +258,8 @@ export default function SubmissionPage() {
   const title = currentSubmenu?.name || t('submission.title', 'Dữ liệu đã nộp');
 
   return (
-    <div className="container py-6 px-2 sm:px-6">
-      <Card className="overflow-hidden">
+    <div className="py-4 px-1 sm:container sm:py-6 sm:px-6">
+      <Card className="overflow-hidden w-full">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-2">
           <div>
             <CardTitle className="text-xl sm:text-2xl">{title}</CardTitle>
