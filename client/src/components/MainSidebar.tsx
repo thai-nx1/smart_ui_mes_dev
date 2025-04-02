@@ -70,6 +70,36 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   // Lấy cài đặt mặc định cho SidebarProvider dựa trên kích thước màn hình
   const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
   const defaultOpen = true; // Luôn mở mặc định (không phụ thuộc kích thước màn hình)
+  
+  // Thêm style để đảm bảo sidebar không co lại trên desktop/tablet
+  useEffect(() => {
+    if (isDesktopOrTablet) {
+      const style = document.createElement('style');
+      style.id = 'force-sidebar-expanded';
+      style.innerHTML = `
+        @media (min-width: 768px) {
+          [data-sidebar="sidebar"] {
+            width: 280px !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            transform: none !important;
+            display: flex !important;
+          }
+          [data-state="collapsed"] {
+            width: 280px !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      return () => {
+        const styleElement = document.getElementById('force-sidebar-expanded');
+        if (styleElement) {
+          styleElement.remove();
+        }
+      };
+    }
+  }, [isDesktopOrTablet]);
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>

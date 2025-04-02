@@ -1,0 +1,48 @@
+/* Đảm bảo sidebar luôn hiển thị đầy đủ trên desktop và tablet */
+@media (min-width: 768px) {
+  [data-sidebar="sidebar"] {
+    width: 280px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    display: flex !important;
+  }
+  
+  [data-state="collapsed"] {
+    width: 280px !important;
+  }
+  
+  .group-data-\[collapsible\=icon\]\:w-\[--sidebar-width-icon\] {
+    width: 280px !important;
+  }
+  
+  [data-collapsible="icon"] {
+    width: 280px !important;
+  }
+  
+  .group[data-state="collapsed"] .fixed {
+    left: 0 !important;
+    width: 280px !important;
+  }
+  
+  .peer-data-\[variant\=sidebar\]\:w-\[--sidebar-width\] {
+    width: 280px !important;
+  }
+  
+  .group-data-\[collapsible\=offcanvas\]\:left-\[calc\(var\(--sidebar-width\)\*-1\)\] {
+    left: 0 !important;
+  }
+  
+  .relative[data-collapsible="offcanvas"] {
+    width: 280px !important;
+  }
+  
+  .peer.group {
+    width: 280px !important;
+  }
+  
+  /* Thêm một thanh dải phân cách bên phải khi sidebar hiển thị */
+  [data-sidebar="sidebar"] {
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
