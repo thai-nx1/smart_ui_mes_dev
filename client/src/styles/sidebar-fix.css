@@ -48,7 +48,17 @@
     top: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
+    left: 280px !important;
+    padding: 0 !important;
     overflow: auto !important;
+  }
+  
+  /* Loại bỏ padding và margin trong main content */
+  [data-sidebar="sidebar"] + .flex-1 main,
+  [data-sidebar="sidebar"] + .flex-1 main > div,
+  [data-sidebar="sidebar"] + .flex-1 main > div > div {
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   /* Đảm bảo nội dung sidebar không thu gọn */

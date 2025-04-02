@@ -121,8 +121,8 @@ export function MainLayout({ children, title }: MainLayoutProps) {
 
       </header>
 
-      <main className="bg-background text-foreground pb-10 flex-1 overflow-auto">
-        <div className={`max-w-7xl mx-auto ${isMobile ? 'px-3 py-3' : 'px-4 sm:px-6 lg:px-8 py-6'} relative h-full`}>
+      <main className="bg-background text-foreground flex-1 overflow-auto">
+        <div className="w-full relative h-full">
           {/* Lớp background trang trí */}
           <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent -z-10 opacity-50"></div>
           
