@@ -270,16 +270,16 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
           }`}
         >
-          <Link href={`/menu/${menu.id}`}>
+          <Link href={`/menu/${menu.id}`} className="w-full flex items-center">
             <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
                 <polyline points="14 2 14 8 20 8" />
               </svg>
             </div>
-            <span className="truncate">{menu.name}</span>
+            <span className="min-w-0 flex-1 break-words whitespace-normal">{menu.name}</span>
             {menu.code && (
-              <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap max-w-[60px] md:max-w-none truncate">
+              <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
                 {menu.code}
               </span>
             )}
@@ -302,9 +302,9 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
           </svg>
         </div>
-        <span className="text-sm">{menu.name}</span>
+        <span className="text-sm min-w-0 flex-1 break-words whitespace-normal">{menu.name}</span>
         {menu.code && (
-          <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap">
+          <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
             {menu.code}
           </span>
         )}
@@ -339,12 +339,12 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
               <SidebarMenuSubButton
                 key={subMenu.id}
                 asChild
-                className={`pl-8 flex items-center gap-1.5 transition-all text-sm ${
+                className={`pl-8 flex items-center gap-1.5 transition-all text-sm w-full ${
                   isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
                 }`}
                 onClick={handleSubmenuClick}
               >
-                <Link href={href} className="py-1.5">
+                <Link href={href} className="py-1.5 w-full flex items-center">
                   {subMenu.workflow_id ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="size-3 mr-1 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
@@ -359,9 +359,9 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                       <path d="m9 16 3-3-3-3"></path>
                     </svg>
                   )}
-                  <span className="text-sm break-normal">{subMenu.name}</span>
+                  <span className="text-sm break-words whitespace-normal min-w-0 flex-1">{subMenu.name}</span>
                   {subMenu.code && (
-                    <span className="ml-1 text-xs text-muted-foreground/70">{subMenu.code}</span>
+                    <span className="ml-1 text-xs text-muted-foreground/70 whitespace-nowrap">{subMenu.code}</span>
                   )}
                 </Link>
               </SidebarMenuSubButton>
