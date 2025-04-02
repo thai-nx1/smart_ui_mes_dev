@@ -28,30 +28,41 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   
   // Fetch all menus from the API để xử lý parent/child relationship
+  // Thêm retry và staleTime để đảm bảo dữ liệu luôn hiển thị sau khi mount
   const { data: menusData, isLoading, error } = useQuery({
     queryKey: ['/api/menus'],
     queryFn: async () => {
       try {
+        // Hiển thị log rõ ràng hơn
+        console.log("Fetching menus for sidebar...");
         const response = await fetchAllMenus();
         const allMenus = response.data.core_core_dynamic_menus || [];
+        console.log("Fetched", allMenus.length, "menus from API");
         
         // Lọc các menu cha (parent_id là null)
         const parentMenus = allMenus.filter(menu => !menu.parent_id);
+        console.log("Found", parentMenus.length, "parent menus");
         
         // Thêm submenu vào mỗi menu cha
-        return parentMenus.map(parentMenu => {
+        const menuWithChildren = parentMenus.map(parentMenu => {
           // Tìm tất cả các menu con của menu cha hiện tại
           const childMenus = allMenus.filter(menu => menu.parent_id === parentMenu.id);
+          console.log(`Menu '${parentMenu.name}' has ${childMenus.length} child menus`);
           return {
             ...parentMenu,
             core_dynamic_child_menus: childMenus // Thêm dưới định dạng cũ để tương thích với code hiện tại
           };
         });
+        
+        return menuWithChildren;
       } catch (error) {
         console.error("Error fetching menus:", error);
         return [];
       }
-    }
+    },
+    retry: 1,
+    staleTime: 60 * 1000, // 1 phút
+    refetchOnMount: true
   });
 
   return (

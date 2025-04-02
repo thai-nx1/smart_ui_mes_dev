@@ -354,11 +354,15 @@ export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
         name
         parent_id
         workflow_id
+        description
       }
     }
   `;
 
-  return executeGraphQLQuery<GraphQLResponse<MenusResponse>>(query);
+  console.log("Fetching all menus from API...");
+  const response = await executeGraphQLQuery<GraphQLResponse<MenusResponse>>(query);
+  console.log("Successfully fetched menus:", response.data?.core_core_dynamic_menus?.length || 0, "items");
+  return response;
 }
 
 /**
