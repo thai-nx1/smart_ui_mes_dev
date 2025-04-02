@@ -652,7 +652,7 @@ export function SubmissionDataTable({
                     if (!field) return null;
                     
                     return (
-                      <div key={field.id} className="grid grid-cols-2 gap-2 text-sm">
+                      <div key={field.id} className="flex flex-row justify-between items-center gap-2 text-sm">
                         <span className="font-medium text-muted-foreground">{field.name}</span>
                         <span className="text-right">{renderFieldValue(field.value, field.field_type)}</span>
                       </div>
@@ -755,7 +755,7 @@ export function SubmissionDataTable({
   // - Có nút xem chi tiết ở cuối card
   const renderCardView = () => {
     return (
-      <div className="space-y-4 w-full max-w-md mx-auto overflow-y-auto">
+      <div className="space-y-4 w-full overflow-y-auto">
         {filteredData.map((submission) => (
           <div 
             key={submission.id} 
