@@ -308,11 +308,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             {menu.code}
           </span>
         )}
-        <ChevronDown 
-          className={`ml-auto size-4 transition-transform duration-200 flex-shrink-0 ${
-            isOpen ? 'transform rotate-180 text-primary' : 'text-muted-foreground'
-          }`} 
-        />
+        {/* Đã loại bỏ ChevronDown icon theo yêu cầu */}
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
@@ -362,11 +358,8 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                         </svg>
                       )}
                     </div>
-                    <div className="flex flex-col min-w-0 flex-grow">
+                    <div className="flex min-w-0 flex-grow">
                       <div className="text-sm font-medium hyphens-auto overflow-hidden break-words break-all">{subMenu.name}</div>
-                      {subMenu.code && (
-                        <div className="text-xs text-muted-foreground/70">{subMenu.code}</div>
-                      )}
                     </div>
                   </div>
                 </Link>

@@ -455,15 +455,4 @@ export const AppTable = React.forwardRef<HTMLTableElement, AppTableProps>(
 );
 AppTable.displayName = "AppTable";
 
-// Xuất tất cả các components để sử dụng trong cả ứng dụng
-export {
-  AppButton,
-  AppCard,
-  AppBadge,
-  AppInput,
-  AppDateInput,
-  AppTextarea,
-  AppCheckbox,
-  AppSelect,
-  AppTable
-};
+// Các components đã được export ở trên thông qua export const, không cần export lại
