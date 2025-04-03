@@ -7,17 +7,17 @@ import { useTranslation } from 'react-i18next';
 import { fetchWorkflowDetails, generateMermaidDiagram } from '../lib/workflow-api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
-// Cấu hình mermaid với các thiết lập tối ưu
+// Cấu hình mermaid với các thiết lập tối ưu và khắc phục lỗi
 mermaid.initialize({
-  startOnLoad: true,
+  startOnLoad: false, // Không tự động load để tránh lỗi
   theme: 'default',
   securityLevel: 'loose',
   logLevel: 'error', // Chỉ hiển thị lỗi, giảm logs
   flowchart: {
     useMaxWidth: true,
     htmlLabels: true,
-    curve: 'natural', // Smooth curves for better appearance
-    defaultRenderer: 'dagre-d3' // Renderer tốc độ cao
+    curve: 'basis', // Sử dụng curve đơn giản hơn
+    defaultRenderer: 'dagre-wrapper' // Sử dụng renderer đơn giản hơn để tránh lỗi
   },
   themeVariables: {
     primaryColor: '#00B1D2',
@@ -123,18 +123,14 @@ export function WorkflowDiagram({
       }
     });
 
-    // Tạo mã nguồn Mermaid
-    let mermaidCode = `
-      flowchart LR
-    `;
+    // Sử dụng cú pháp Mermaid đúng
+    let mermaidCode = `graph LR\n`;
 
     // Thêm các node (trạng thái)
     statuses.forEach((name, id) => {
       const safeId = id.replace(/-/g, '_'); // Thay thế dấu - bằng _ để tránh lỗi cú pháp Mermaid
       const isCurrentStatus = id === currentStatusId;
-      mermaidCode += `
-        ${safeId}("${name}")${isCurrentStatus ? ':::current' : ''}
-      `;
+      mermaidCode += `  ${safeId}["${name}"]${isCurrentStatus ? ' style ' + safeId + ' fill:#00B1D2,color:white,stroke:#1c80cf,stroke-width:2px' : ''}\n`;
     });
 
     // Thêm kết nối giữa các node
@@ -142,31 +138,22 @@ export function WorkflowDiagram({
       if (transition.from_status_id && transition.to_status_id) {
         const fromId = transition.from_status_id.replace(/-/g, '_');
         const toId = transition.to_status_id.replace(/-/g, '_');
-        mermaidCode += `
-          ${fromId} -->|${transition.name}| ${toId}
-        `;
+        mermaidCode += `  ${fromId} --- "${transition.name}" ---> ${toId}\n`;
       } else if (!transition.from_status_id && transition.to_status_id) {
         // Trường hợp bắt đầu (không có trạng thái nguồn)
         const toId = transition.to_status_id.replace(/-/g, '_');
-        mermaidCode += `
-          Start((Bắt đầu)):::start -->|${transition.name}| ${toId}
-        `;
+        mermaidCode += `  Start((Bắt đầu)) --- "${transition.name}" ---> ${toId}\n`;
+        mermaidCode += `  style Start fill:#00B1D2,stroke:#1c80cf,stroke-width:2px,color:white\n`;
       } else if (transition.from_status_id && !transition.to_status_id) {
         // Trường hợp kết thúc (không có trạng thái đích)
         const fromId = transition.from_status_id.replace(/-/g, '_');
-        mermaidCode += `
-          ${fromId} -->|${transition.name}| End((Kết thúc)):::end
-        `;
+        mermaidCode += `  ${fromId} --- "${transition.name}" ---> End((Kết thúc))\n`;
+        mermaidCode += `  style End fill:#00B1D2,stroke:#1c80cf,stroke-width:2px,color:white\n`;
       }
     });
 
-    // Thêm định nghĩa style cho trạng thái hiện tại và cải thiện hiệu suất hiển thị
-    mermaidCode += `
-      classDef current fill:#00B1D2,color:white,stroke:#1c80cf,stroke-width:2px;
-      classDef start fill:#00B1D2,color:white,stroke:#1c80cf,stroke-width:2px;
-      classDef end fill:#00B1D2,color:white,stroke:#1c80cf,stroke-width:2px;
-      classDef default fill:#F5F5F5,stroke:#E0E0E0,color:#232735;
-    `;
+    // Thêm định nghĩa style mặc định
+    mermaidCode += `  classDef default fill:#F5F5F5,stroke:#E0E0E0,color:#232735\n`;
 
     try {
       // Xóa nội dung cũ
