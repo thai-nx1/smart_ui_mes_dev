@@ -634,62 +634,6 @@ export function SubmissionDataTable({
                               {submission.core_dynamic_status.name || '-'}
                             </span>
                           ) : '-'}
-                    
-        {/* Phiên bản mobile - hiển thị card dọc - chỉ hiển thị ở mobile */}
-        <div className={`${currentViewMode === 'card' ? 'block' : 'hidden'} md:hidden divide-y divide-border`}>
-          {filteredData.map((submission, rowIndex) => {
-            if (!Array.isArray(submission.data)) return null;
-            
-            const rowBgClass = rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80';
-            
-            return (
-              <div key={submission.id} className={`p-4 ${rowBgClass} transition-colors hover:bg-primary/5 relative`}>
-                {/* Thông tin code và trạng thái */}
-                <div className="flex justify-between items-center mb-3">
-                  <span className="font-mono font-medium text-sm">
-                    {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
-                  </span>
-                  {submission.core_dynamic_status ? (
-                    <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                      {submission.core_dynamic_status.name || '-'}
-                    </span>
-                  ) : '-'}
-                </div>
-                
-                {/* Dữ liệu fields */}
-                <div className="space-y-2">
-                  {fieldNames.map((fieldName: string) => {
-                    const field = submission.data.find(
-                      (f: FieldData) => f.name === fieldName
-                    );
-                    
-                    if (!field) return null;
-                    
-                    return (
-                      <div key={field.id} className="flex flex-row justify-between items-center gap-2 text-sm">
-                        <span className="font-medium text-muted-foreground">{field.name}</span>
-                        <span className="text-right">{renderFieldValue(field.value, field.field_type)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                {/* Nút thao tác */}
-                <div className="mt-3 flex justify-end">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleView(submission)}
-                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    {t('actions.view', 'Xem')}
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
                         </div>
                       </div>
                     </td>
@@ -703,18 +647,43 @@ export function SubmissionDataTable({
                       return (
                         <td 
                           key={`${submission.id}-${fieldName}`} 
-                          className={`p-3 border-r last:border-r-0 border-border text-sm relative ${
+                          className={`p-3 border-r border-border text-sm ${
                             field && !readOnly ? 'cursor-pointer hover:bg-primary/10' : ''
                           }`}
                           onClick={() => field && !readOnly && handleEditField(submission, field.id)}
                         >
                           {field ? (
-                            <div className="relative max-w-[200px] overflow-hidden text-ellipsis">
-                              <div className="mr-4 truncate">
-                                {renderFieldValue(field.value, field.field_type)}
+                            <div className="relative w-full min-w-[200px]">
+                              <div className="break-all whitespace-pre-wrap pr-8">
+                                {typeof field.value === 'string' 
+                                  ? (
+                                    <div className="text-sm text-muted-foreground">
+                                      {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                                    </div>
+                                  )
+                                  : Array.isArray(field.value) 
+                                    ? field.value.length > 0 
+                                      ? (
+                                        <div className="flex flex-wrap gap-1">
+                                          {field.value.map((v: string, i: number) => (
+                                            <span 
+                                              key={i} 
+                                              className="inline-flex items-center px-2 py-1 bg-primary/10 text-sm rounded break-all"
+                                            >
+                                              {v}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      )
+                                      : <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
+                                    : (
+                                      <div className="text-sm text-muted-foreground">
+                                        {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                                      </div>
+                                    )}
                               </div>
                               {!readOnly && (
-                                <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                   <Edit className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
                                 </div>
                               )}
@@ -808,18 +777,33 @@ export function SubmissionDataTable({
                         <Edit className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200" />
                       )}
                     </div>
-                    <div className="mt-1 font-medium">
+                    <div className="mt-1">
                       {typeof field.value === 'string' 
-                        ? field.value || <span className="text-muted-foreground italic text-sm">Chưa có dữ liệu</span>
+                        ? (
+                          <div className="break-all text-sm text-muted-foreground whitespace-pre-wrap">
+                            {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                          </div>
+                        )
                         : Array.isArray(field.value) 
                           ? field.value.length > 0 
-                            ? field.value.map((v, i) => (
-                                <span key={i} className="inline-flex items-center mr-2 mb-1 px-2 py-1 bg-primary/10 text-sm rounded">
-                                  {v}
-                                </span>
-                              ))
-                            : <span className="text-muted-foreground italic text-sm">Chưa có dữ liệu</span>
-                          : String(field.value) || <span className="text-muted-foreground italic text-sm">Chưa có dữ liệu</span>}
+                            ? (
+                              <div className="flex flex-wrap gap-1">
+                                {field.value.map((v: string, i: number) => (
+                                  <span 
+                                    key={i} 
+                                    className="inline-flex items-center px-2 py-1 bg-primary/10 text-sm rounded break-all"
+                                  >
+                                    {v}
+                                  </span>
+                                ))}
+                              </div>
+                            )
+                            : <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
+                          : (
+                            <div className="break-all text-sm text-muted-foreground whitespace-pre-wrap">
+                              {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                            </div>
+                          )}
                     </div>
                   </div>
                 ))}

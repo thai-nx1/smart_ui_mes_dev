@@ -331,8 +331,41 @@ export default function RecordDetailPage() {
                         </div>
                       </td>
                       <td className="p-3 border-border">
-                        <div className="text-sm py-2 px-3 bg-slate-50 dark:bg-slate-800/50 rounded-md">
-                          {renderFieldValue(field.value, field.field_type)}
+                        <div className="text-sm py-3 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-md min-w-0">
+                          <div className="break-all whitespace-pre-wrap overflow-hidden">
+                            {typeof field.value === 'string' ? (
+                              <div className="text-muted-foreground">
+                                {field.field_type === 'PHOTO' ? (
+                                  <div className="text-xs">
+                                    {field.value || <span className="italic">Chưa có dữ liệu</span>}
+                                  </div>
+                                ) : (
+                                  <div>
+                                    {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                                  </div>
+                                )}
+                              </div>
+                            ) : Array.isArray(field.value) ? (
+                              field.value.length > 0 ? (
+                                <div className="flex flex-wrap gap-1.5">
+                                  {field.value.map((v: string, i: number) => (
+                                    <span 
+                                      key={i} 
+                                      className="inline-flex items-center px-2 py-1 bg-primary/10 rounded break-all"
+                                    >
+                                      {v}
+                                    </span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
+                              )
+                            ) : (
+                              <div className="text-muted-foreground">
+                                {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -357,8 +390,41 @@ export default function RecordDetailPage() {
                     </div>
                   </div>
                   <div className="p-3">
-                    <div className="text-sm py-2 px-3 bg-slate-50 dark:bg-slate-800/50 rounded-md">
-                      {renderFieldValue(field.value, field.field_type)}
+                    <div className="text-sm py-3 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-md min-w-0">
+                      <div className="break-all whitespace-pre-wrap overflow-hidden">
+                        {typeof field.value === 'string' ? (
+                          <div className="text-muted-foreground">
+                            {field.field_type === 'PHOTO' ? (
+                              <div className="text-xs">
+                                {field.value || <span className="italic">Chưa có dữ liệu</span>}
+                              </div>
+                            ) : (
+                              <div>
+                                {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                              </div>
+                            )}
+                          </div>
+                        ) : Array.isArray(field.value) ? (
+                          field.value.length > 0 ? (
+                            <div className="flex flex-wrap gap-1.5">
+                              {field.value.map((v: string, i: number) => (
+                                <span 
+                                  key={i} 
+                                  className="inline-flex items-center px-2 py-1 bg-primary/10 rounded break-all"
+                                >
+                                  {v}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
+                          )
+                        ) : (
+                          <div className="text-muted-foreground">
+                            {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
