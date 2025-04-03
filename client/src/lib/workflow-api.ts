@@ -104,26 +104,34 @@ export function generateMermaidDiagram(
   // Thêm định nghĩa trạng thái vào cú pháp Mermaid
   statusMap.forEach(status => {
     const statusId = status.id.replace(/-/g, '_'); // Thay thế dấu - bằng _ để tránh lỗi cú pháp Mermaid
-    mermaidSyntax += `  ${statusId}["${status.name}"]${status.style ? ` style ${statusId} ${status.style}` : ''}\n`;
+    mermaidSyntax += `  ${statusId}["${status.name}"]\n`;
+    // Thêm style riêng sau khi đã định nghĩa node
+    if (status.style) {
+      mermaidSyntax += `  style ${statusId} ${status.style}\n`;
+    }
   });
   
-  // Thêm các chuyển tiếp
+  // Thêm các chuyển tiếp - sử dụng cú pháp đơn giản hơn
+  let linkCount = 0;
   workflowDetail.core_dynamic_workflow_transitions.forEach(transition => {
     if (transition.from_status_id && transition.to_status_id) {
       const fromId = transition.from_status_id.replace(/-/g, '_');
       const toId = transition.to_status_id.replace(/-/g, '_');
-      // Sử dụng --- thay vì --> để sửa lỗi cú pháp
-      mermaidSyntax += `  ${fromId} --- "${transition.name}" ---> ${toId}\n`;
+      // Sử dụng cú pháp đơn giản hơn
+      mermaidSyntax += `  ${fromId} --> ${toId}\n`;
+      linkCount++;
     } else if (!transition.from_status_id && transition.to_status_id) {
       // Trường hợp bắt đầu (không có trạng thái nguồn)
       const toId = transition.to_status_id.replace(/-/g, '_');
-      mermaidSyntax += `  Start((Bắt đầu)) --- "${transition.name}" ---> ${toId}\n`;
+      mermaidSyntax += `  Start((Bắt đầu)) --> ${toId}\n`;
       mermaidSyntax += `  style Start fill:#00B1D2,stroke:#009ab8,stroke-width:2,color:#fff\n`;
+      linkCount++;
     } else if (transition.from_status_id && !transition.to_status_id) {
       // Trường hợp kết thúc (không có trạng thái đích)
       const fromId = transition.from_status_id.replace(/-/g, '_');
-      mermaidSyntax += `  ${fromId} --- "${transition.name}" ---> End((Kết thúc))\n`;
+      mermaidSyntax += `  ${fromId} --> End((Kết thúc))\n`;
       mermaidSyntax += `  style End fill:#00B1D2,stroke:#009ab8,stroke-width:2,color:#fff\n`;
+      linkCount++;
     }
   });
   

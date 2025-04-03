@@ -130,24 +130,29 @@ export function WorkflowDiagram({
     statuses.forEach((name, id) => {
       const safeId = id.replace(/-/g, '_'); // Thay thế dấu - bằng _ để tránh lỗi cú pháp Mermaid
       const isCurrentStatus = id === currentStatusId;
-      mermaidCode += `  ${safeId}["${name}"]${isCurrentStatus ? ' style ' + safeId + ' fill:#00B1D2,color:white,stroke:#1c80cf,stroke-width:2px' : ''}\n`;
+      mermaidCode += `  ${safeId}["${name}"]\n`;
+      if (isCurrentStatus) {
+        mermaidCode += `  style ${safeId} fill:#00B1D2,color:white,stroke:#1c80cf,stroke-width:2px\n`;
+      }
     });
 
-    // Thêm kết nối giữa các node
+    // Thêm kết nối giữa các node - sử dụng cú pháp đơn giản hơn để tránh lỗi
     workflowTransitions.forEach(transition => {
       if (transition.from_status_id && transition.to_status_id) {
         const fromId = transition.from_status_id.replace(/-/g, '_');
         const toId = transition.to_status_id.replace(/-/g, '_');
-        mermaidCode += `  ${fromId} --- "${transition.name}" ---> ${toId}\n`;
+        mermaidCode += `  ${fromId} --> ${toId}\n`;
+        // Thêm nhãn riêng
+        // Không thêm linkStyle nữa vì gây lỗi cú pháp
       } else if (!transition.from_status_id && transition.to_status_id) {
         // Trường hợp bắt đầu (không có trạng thái nguồn)
         const toId = transition.to_status_id.replace(/-/g, '_');
-        mermaidCode += `  Start((Bắt đầu)) --- "${transition.name}" ---> ${toId}\n`;
+        mermaidCode += `  Start((Bắt đầu)) --> ${toId}\n`;
         mermaidCode += `  style Start fill:#00B1D2,stroke:#1c80cf,stroke-width:2px,color:white\n`;
       } else if (transition.from_status_id && !transition.to_status_id) {
         // Trường hợp kết thúc (không có trạng thái đích)
         const fromId = transition.from_status_id.replace(/-/g, '_');
-        mermaidCode += `  ${fromId} --- "${transition.name}" ---> End((Kết thúc))\n`;
+        mermaidCode += `  ${fromId} --> End((Kết thúc))\n`;
         mermaidCode += `  style End fill:#00B1D2,stroke:#1c80cf,stroke-width:2px,color:white\n`;
       }
     });
