@@ -192,9 +192,9 @@ export default function RecordDetailPage() {
   const titleField = getTitleField();
 
   return (
-    <div className="container">
-      <Card className="border shadow-sm">
-        <CardHeader className="pb-4">
+    <div className="container max-w-full h-[calc(100vh-4rem)] flex flex-col">
+      <Card className="border shadow-sm flex-1 flex flex-col overflow-hidden">
+        <CardHeader className="pb-4 flex-shrink-0">
           <div className="flex items-center mb-2">
             <Button 
               variant="ghost" 
@@ -254,20 +254,21 @@ export default function RecordDetailPage() {
           </div>
         </CardHeader>
         
-        {/* Hiển thị biểu đồ workflow */}
         {showWorkflowDiagram && (
-          <WorkflowDiagram
-            workflowId={workflowId}
-            workflowName={workflowData?.data?.core_core_dynamic_workflows_by_pk?.name || 'Workflow'}
-            currentStatusId={currentStatusId}
-            onClose={() => setShowWorkflowDiagram(false)}
-            useDialogStyle={true}
-          />
+          <div className="flex-shrink-0">
+            <WorkflowDiagram
+              workflowId={workflowId}
+              workflowName={workflowData?.data?.core_core_dynamic_workflows_by_pk?.name || 'Workflow'}
+              currentStatusId={currentStatusId}
+              onClose={() => setShowWorkflowDiagram(false)}
+              useDialogStyle={true}
+            />
+          </div>
         )}
         
-        {/* Hiển thị action buttons workflow từ transitions */}
+        {/* Workflow actions */}
         {workflowId && transitionsData && transitionsData.data?.core_core_dynamic_workflow_transitions?.length > 0 && (
-          <div className="px-6 py-3 bg-muted/20 border-y">
+          <div className="px-6 py-3 bg-muted/20 border-y flex-shrink-0">
             <div className="w-full mb-1 text-sm font-medium text-primary">
               {t('workflow.availableActions', 'Hành động có sẵn:')}
             </div>
@@ -298,137 +299,140 @@ export default function RecordDetailPage() {
           </div>
         )}
 
-        <CardContent className="pt-6">
-          <div className="space-y-6">
-            {/* Tạo bảng responsive cho mobile */}
+        <CardContent className="pt-6 flex-1 overflow-hidden">
+          <div className="h-full flex flex-col">
             {/* Desktop view - table format */}
-            <div className="hidden md:block w-full overflow-x-auto rounded-md">
-              <table className="w-full border-collapse min-w-[500px]">
-                <thead>
-                  <tr className="bg-muted/30">
-                    <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
-                      {t('recordDetail.fieldName', 'Tên trường')}
-                    </th>
-                    <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border whitespace-nowrap">
-                      {t('recordDetail.fieldValue', 'Giá trị')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {recordData.data && recordData.data.map((field: FieldData, index: number) => (
-                    <tr 
-                      key={`desktop-${field.id}`}
-                      className={`transition-colors duration-150 ${
-                        index % 2 === 0 ? 'bg-background/50' : 'bg-background/80'
-                      } hover:bg-primary/5`}
-                    >
-                      <td className="p-3 border-r border-border align-top">
-                        <div className="font-medium text-sm text-primary">
-                          {field.name}
-                          <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground inline-block">
-                            {field.field_type}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-3 border-border">
-                        <div className="text-sm py-3 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-md min-w-0">
-                          <div className="break-all whitespace-pre-wrap overflow-hidden">
-                            {typeof field.value === 'string' ? (
-                              <div className="text-muted-foreground">
-                                {field.field_type === 'PHOTO' ? (
-                                  <div className="text-xs">
-                                    {field.value || <span className="italic">Chưa có dữ liệu</span>}
+            <div className="hidden md:flex flex-1 overflow-hidden">
+              <div className="w-full overflow-auto rounded-md">
+                <table className="w-full border-collapse min-w-[500px]">
+                  <thead className="sticky top-0 z-10 bg-background">
+                    <tr className="bg-muted/30">
+                      <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
+                        {t('recordDetail.fieldName', 'Tên trường')}
+                      </th>
+                      <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border whitespace-nowrap">
+                        {t('recordDetail.fieldValue', 'Giá trị')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {recordData.data && recordData.data.map((field: FieldData, index: number) => (
+                      <tr 
+                        key={`desktop-${field.id}`}
+                        className={`transition-colors duration-150 ${
+                          index % 2 === 0 ? 'bg-background/50' : 'bg-background/80'
+                        } hover:bg-primary/5`}
+                      >
+                        <td className="p-3 border-r border-border align-top sticky left-0 bg-inherit">
+                          <div className="font-medium text-sm text-primary">
+                            {field.name}
+                            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground inline-block">
+                              {field.field_type}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-3 border-border min-w-[300px]">
+                          <div className="text-sm py-3 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-md">
+                            <div className="break-all whitespace-pre-wrap">
+                              {typeof field.value === 'string' ? (
+                                <div className="text-muted-foreground">
+                                  {field.field_type === 'PHOTO' ? (
+                                    <div className="text-xs">
+                                      {field.value || <span className="italic">Chưa có dữ liệu</span>}
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : Array.isArray(field.value) ? (
+                                field.value.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {field.value.map((v: string, i: number) => (
+                                      <span 
+                                        key={i} 
+                                        className="inline-flex items-center px-2 py-1 bg-primary/10 rounded break-all"
+                                      >
+                                        {v}
+                                      </span>
+                                    ))}
                                   </div>
                                 ) : (
-                                  <div>
-                                    {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
-                                  </div>
-                                )}
-                              </div>
-                            ) : Array.isArray(field.value) ? (
-                              field.value.length > 0 ? (
-                                <div className="flex flex-wrap gap-1.5">
-                                  {field.value.map((v: string, i: number) => (
-                                    <span 
-                                      key={i} 
-                                      className="inline-flex items-center px-2 py-1 bg-primary/10 rounded break-all"
-                                    >
-                                      {v}
-                                    </span>
-                                  ))}
-                                </div>
+                                  <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
+                                )
                               ) : (
-                                <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
-                              )
-                            ) : (
-                              <div className="text-muted-foreground">
-                                {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
-                              </div>
-                            )}
+                                <div className="text-muted-foreground">
+                                  {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
             
             {/* Mobile view - card format */}
-            <div className="md:hidden space-y-4">
-              {recordData.data && recordData.data.map((field: FieldData, index: number) => (
-                <div 
-                  key={`mobile-${field.id}`}
-                  className="border border-border rounded-md overflow-hidden"
-                >
-                  <div className="p-2 bg-muted/20 border-b border-border">
-                    <div className="font-medium text-sm text-primary flex items-center flex-wrap">
-                      {field.name}
-                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                        {field.field_type}
-                      </span>
+            <div className="md:hidden flex-1 overflow-auto">
+              <div className="space-y-4 pb-4">
+                {recordData.data && recordData.data.map((field: FieldData, index: number) => (
+                  <div 
+                    key={`mobile-${field.id}`}
+                    className="border border-border rounded-md overflow-hidden bg-card"
+                  >
+                    <div className="p-2 bg-muted/20 border-b border-border sticky top-0 z-10">
+                      <div className="font-medium text-sm text-primary flex items-center flex-wrap">
+                        {field.name}
+                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          {field.field_type}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-3">
-                    <div className="text-sm py-3 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-md min-w-0">
-                      <div className="break-all whitespace-pre-wrap overflow-hidden">
-                        {typeof field.value === 'string' ? (
-                          <div className="text-muted-foreground">
-                            {field.field_type === 'PHOTO' ? (
-                              <div className="text-xs">
-                                {field.value || <span className="italic">Chưa có dữ liệu</span>}
+                    <div className="p-3">
+                      <div className="text-sm py-3 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-md">
+                        <div className="break-all whitespace-pre-wrap">
+                          {typeof field.value === 'string' ? (
+                            <div className="text-muted-foreground">
+                              {field.field_type === 'PHOTO' ? (
+                                <div className="text-xs">
+                                  {field.value || <span className="italic">Chưa có dữ liệu</span>}
+                                </div>
+                              ) : (
+                                <div>
+                                  {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                                </div>
+                              )}
+                            </div>
+                          ) : Array.isArray(field.value) ? (
+                            field.value.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {field.value.map((v: string, i: number) => (
+                                  <span 
+                                    key={i} 
+                                    className="inline-flex items-center px-2 py-1 bg-primary/10 rounded break-all"
+                                  >
+                                    {v}
+                                  </span>
+                                ))}
                               </div>
                             ) : (
-                              <div>
-                                {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
-                              </div>
-                            )}
-                          </div>
-                        ) : Array.isArray(field.value) ? (
-                          field.value.length > 0 ? (
-                            <div className="flex flex-wrap gap-1.5">
-                              {field.value.map((v: string, i: number) => (
-                                <span 
-                                  key={i} 
-                                  className="inline-flex items-center px-2 py-1 bg-primary/10 rounded break-all"
-                                >
-                                  {v}
-                                </span>
-                              ))}
-                            </div>
+                              <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
+                            )
                           ) : (
-                            <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
-                          )
-                        ) : (
-                          <div className="text-muted-foreground">
-                            {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
-                          </div>
-                        )}
+                            <div className="text-muted-foreground">
+                              {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {(!recordData.data || recordData.data.length === 0) && (
@@ -439,7 +443,7 @@ export default function RecordDetailPage() {
           </div>
         </CardContent>
         
-        <CardFooter className="flex justify-end pt-4 border-t">
+        <CardFooter className="flex justify-end pt-4 border-t flex-shrink-0">
           <Button 
             variant="outline" 
             onClick={() => window.history.back()}

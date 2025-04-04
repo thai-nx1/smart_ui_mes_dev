@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  Sidebar, 
-  SidebarContent, 
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarFooter,
-  SidebarSeparator,
   SidebarProvider,
   SidebarTrigger,
-  SidebarGroupLabel
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette } from 'lucide-react';
+import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette, Sun, Moon, Loader2 } from 'lucide-react';
 import { fetchMainMenus, fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +26,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const [location] = useLocation();
   const screenSize = useScreenSize(); // Sử dụng hook để lấy kích thước màn hình hiện tại
+  const [showThemeDialog, setShowThemeDialog] = useState(false);
   
   // Fetch all menus from the API để xử lý parent/child relationship
   // Thêm retry và staleTime để đảm bảo dữ liệu luôn hiển thị sau khi mount
@@ -127,56 +126,41 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarHeader>
 
           <SidebarContent className="px-2 py-4">
-
-            {/* Dynamic Menus from API */}
-            <SidebarGroupLabel className="text-xs font-semibold text-primary mb-2 px-3 flex items-center">
-              <span className="w-1 h-1 bg-primary rounded-full mr-2 inline-block"></span>
-              {t('app.sidebar.applications', 'Ứng dụng')}
-            </SidebarGroupLabel>
-            
-            <SidebarMenu>
-              {isLoading ? (
-                <div className="p-4 text-sm text-muted-foreground flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {t('app.loading', 'Đang tải...')}
-                </div>
-              ) : error ? (
-                <div className="p-4 text-sm bg-destructive/10 border border-destructive/20 rounded-md text-destructive m-2">
-                  <div className="flex items-center mb-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="8" x2="12" y2="12" />
-                      <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
-                    {t('app.error', 'Lỗi khi tải dữ liệu')}
+            <SidebarGroup>
+              <div className="text-xs font-semibold text-primary mb-2 px-3 flex items-center">
+                <span className="w-1 h-1 bg-primary rounded-full mr-2 inline-block"></span>
+                {t('app.sidebar.applications', 'Ứng dụng')}
+              </div>
+              
+              <SidebarMenu>
+                {isLoading ? (
+                  <div className="p-4 text-sm text-muted-foreground flex items-center justify-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('loading.title', 'Đang tải...')}
                   </div>
-                  <div className="text-xs text-destructive/80">
-                    {t('app.errorRetry', 'Vui lòng thử lại sau.')}
-                  </div>
-                </div>
-              ) : (
-                menusData?.map((menu: MenuType) => (
-                  <DynamicMenuItem key={menu.id} menu={menu} />
-                ))
-              )}
-            </SidebarMenu>
+                ) : menusData?.length === 0 ? (
+                  <div className="p-4 text-sm text-muted-foreground">{t('menu.noItems', 'Không có menu nào')}</div>
+                ) : (
+                  menusData?.map((menu: MenuType) => (
+                    <DynamicMenuItem key={menu.id} menu={menu} />
+                  ))
+                )}
+              </SidebarMenu>
+            </SidebarGroup>
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-sidebar-border bg-sidebar-accent/20 p-2">
-            <div className="px-3 py-2 text-xs text-muted-foreground flex items-center justify-between">
-              <div>
-                <span>{t('app.copyright', '© 2025 DynamicForm')}</span>
-              </div>
-              <div>
-                <a href="#" className="text-primary hover:underline">
-                  {t('app.help', 'Trợ giúp')}
-                </a>
-              </div>
-            </div>
-          </SidebarFooter>
+          <div className="border-t border-sidebar-border bg-sidebar-accent/20 p-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowThemeDialog(true)}
+              className="w-full justify-start"
+            >
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="ml-2">{t('theme.title', 'Giao diện')}</span>
+            </Button>
+          </div>
         </Sidebar>
 
         {/* Main Content */}
@@ -271,18 +255,18 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
         <SidebarMenuButton
           asChild
           onClick={handleMobileMenuClick}
-          className={`transition-all ${
+          className={`transition-all whitespace-normal ${
             isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
           }`}
         >
           <Link href={`/menu/${menu.id}`} className="w-full flex items-center">
-            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2">
+            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2 flex-shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
                 <polyline points="14 2 14 8 20 8" />
               </svg>
             </div>
-            <span className="min-w-0 flex-1 overflow-hidden text-wrap hyphens-auto break-words py-1 leading-tight">{menu.name}</span>
+            <span className="min-w-0 flex-1 text-wrap break-words hyphens-auto leading-tight">{menu.name}</span>
             {menu.code && (
               <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
                 {menu.code}
@@ -298,22 +282,21 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
     <SidebarMenuItem>
       <SidebarMenuButton
         onClick={() => setIsOpen(!isOpen)}
-        className={`transition-all ${
+        className={`transition-all whitespace-normal ${
           isOpen || hasActiveChild ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
         }`}
       >
-        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2">
+        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2 flex-shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
           </svg>
         </div>
-        <span className="text-sm min-w-0 flex-1 overflow-hidden text-wrap hyphens-auto break-words py-1 leading-tight">{menu.name}</span>
+        <span className="text-sm min-w-0 flex-1 text-wrap break-words hyphens-auto leading-tight">{menu.name}</span>
         {menu.code && (
           <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
             {menu.code}
           </span>
         )}
-        {/* Đã loại bỏ ChevronDown icon theo yêu cầu */}
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
@@ -340,7 +323,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
               <SidebarMenuSubButton
                 key={subMenu.id}
                 asChild
-                className={`pl-8 flex items-center gap-1.5 transition-all text-sm w-full overflow-hidden ${
+                className={`pl-8 flex items-center gap-1.5 transition-all text-sm w-full overflow-visible whitespace-normal ${
                   isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
                 }`}
                 onClick={handleSubmenuClick}
@@ -364,7 +347,7 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
                       )}
                     </div>
                     <div className="flex min-w-0 flex-grow">
-                      <div className="text-sm font-medium hyphens-auto overflow-hidden text-wrap break-words py-1 leading-tight">{subMenu.name}</div>
+                      <div className="text-sm font-medium text-wrap break-words hyphens-auto leading-tight">{subMenu.name}</div>
                     </div>
                   </div>
                 </Link>
