@@ -8,9 +8,13 @@
   display: none !important;
 }
 
-/* Ẩn tất cả các phần tử ngoại trừ phần tử đầu tiên trong các nút menu sidebar */
-[data-sidebar="menu-button"] > :not(:first-child):not(svg),
-[data-sidebar="menu-sub-button"] > :not(:first-child):not(svg) {
+/* Chỉ ẩn các span riêng biệt có thể là nhãn New/Approved, không ẩn text chính */
+[data-sidebar="menu-button"] > span.ml-auto,
+[data-sidebar="menu-sub-button"] > span.ml-auto,
+[data-sidebar="menu-button"] > div.bg-yellow-100,
+[data-sidebar="menu-sub-button"] > div.bg-yellow-100,
+[data-sidebar="menu-button"] > div[class*="bg-yellow"],
+[data-sidebar="menu-sub-button"] > div[class*="bg-yellow"] {
   display: none !important;
 }
 
