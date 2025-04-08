@@ -38,9 +38,11 @@ export default function FormsPage() {
   } = useQuery({
     queryKey: ['/api/forms'],
     queryFn: async () => {
-      // Sử dụng menuId cố định của menu "Khiếu nại" để lấy form
-      const menuId = "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+      // Sử dụng menuId cố định của menu "Phê duyệt tài chính" để lấy form
+      const menuId = "81a0d5df-57b8-49ec-8514-6d6761b5c3c5"; // Menu "Phê duyệt tài chính"
+      console.log("Fetching forms for menuId:", menuId);
       const response = await fetchMenuForms(menuId, 'CREATE');
+      console.log("Forms response:", response);
       
       if (response.data && response.data.core_core_dynamic_menu_forms) {
         // Chuyển đổi dữ liệu để phù hợp với cấu trúc form đang dùng
