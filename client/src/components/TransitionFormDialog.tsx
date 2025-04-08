@@ -200,7 +200,7 @@ export function TransitionFormDialog({
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-primary">{field.name}</span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">TEXT</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Văn bản</span>
             </div>
             <Input
               placeholder="Nhập văn bản"
@@ -216,7 +216,7 @@ export function TransitionFormDialog({
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-primary">{field.name}</span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">PARAGRAPH</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Đoạn văn bản</span>
             </div>
             <Textarea
               placeholder="Nhập đoạn văn bản dài"
@@ -232,7 +232,7 @@ export function TransitionFormDialog({
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-primary">{field.name}</span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">NUMBER</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Số</span>
             </div>
             <Input
               type="number"
@@ -249,7 +249,7 @@ export function TransitionFormDialog({
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-primary">{field.name}</span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">DATE</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Ngày tháng</span>
             </div>
             <div className="flex items-center border rounded-md">
               <Calendar className="mr-2 h-4 w-4 ml-2" />
@@ -269,7 +269,7 @@ export function TransitionFormDialog({
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-primary">{field.name}</span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">SINGLE_CHOICE</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Chọn một</span>
             </div>
             <div className="space-y-2">
               {getChoices(field.field_type).map((choice) => (
@@ -303,7 +303,7 @@ export function TransitionFormDialog({
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-primary">{field.name}</span>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">MULTI_CHOICE</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Chọn nhiều</span>
             </div>
             <div className="space-y-2">
               {getChoices(field.field_type).map((choice) => (
