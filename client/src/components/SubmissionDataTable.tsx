@@ -692,25 +692,25 @@ export function SubmissionDataTable({
                 {/* Cố định cột code */}
                 <th className="sticky left-0 bg-muted/70 p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap z-10">
                   <div className="flex items-center">
-                    <span>Code</span>
+                    <span className="inline-block normal-case">Code</span>
                   </div>
                 </th>
                 <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
                   <div className="flex items-center">
-                    <span>Trạng thái</span>
+                    <span className="inline-block normal-case">Trạng thái</span>
                   </div>
                 </th>
                 {fieldNames.map((fieldName: string) => (
                   <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
                     <div className="flex items-center">
-                      <span>{fieldName}</span>
+                      <span className="inline-block normal-case">{fieldName}</span>
                     </div>
                   </th>
                 ))}
                 {/* Cố định cột thao tác bên phải */}
                 <th className="sticky right-0 bg-muted/70 p-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border whitespace-nowrap z-10">
                   <div className="flex items-center justify-center">
-                    {t('actions.actions', 'Thao tác')}
+                    <span className="inline-block normal-case">{t('actions.actions', 'Thao tác')}</span>
                   </div>
                 </th>
               </tr>
