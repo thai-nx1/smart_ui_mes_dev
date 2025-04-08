@@ -58,6 +58,7 @@ export function SubmissionDataTable({
   workflowId,
   formData
 }: SubmissionDataTableProps) {
+
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<FieldData[]>([]);
@@ -106,6 +107,7 @@ export function SubmissionDataTable({
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [dataChanged, setDataChanged] = useState(false);
+  const [filterFields, setFilterFields] = useState<{id: string, name: string, field_type: string, option_values?: any}[]>([]);
   
   // Lấy thông tin form từ API nếu có menuId và không có formData từ props
   const { data: formDataFromAPI } = useQuery({
@@ -113,6 +115,25 @@ export function SubmissionDataTable({
     queryFn: () => menuId ? fetchMenuViewForm(menuId) : Promise.resolve(null),
     enabled: !!menuId && !formData
   });
+  
+  // Cập nhật danh sách fields cho bộ lọc
+  useEffect(() => {
+    // Ưu tiên sử dụng formData từ prop, nếu không có thì dùng formDataFromAPI
+    const formDataToUse = formData || formDataFromAPI;
+    
+    if (formDataToUse?.data?.core_core_dynamic_menu_forms?.[0]?.core_dynamic_form?.core_dynamic_form_fields) {
+      const fields = formDataToUse.data.core_core_dynamic_menu_forms[0].core_dynamic_form.core_dynamic_form_fields
+        .filter((ff: any) => ff.core_dynamic_field && ff.core_dynamic_field.field_type)
+        .map((ff: any) => ({
+          id: ff.core_dynamic_field.id,
+          name: ff.core_dynamic_field.name,
+          field_type: ff.core_dynamic_field.field_type,
+          option_values: ff.core_dynamic_field.option_values
+        }));
+      
+      setFilterFields(fields);
+    }
+  }, [formData, formDataFromAPI]);
   
   // State cho thông tin transitions
   const [currentStatusId, setCurrentStatusId] = useState<string>("");
@@ -242,13 +263,103 @@ export function SubmissionDataTable({
     }
   };
 
-  // Mock data for choices, should come from API
-  const getChoices = (fieldType: string): { label: string; value: string }[] => {
-    return [
-      { label: 'Lựa chọn 1', value: '1' },
-      { label: 'Lựa chọn 2', value: '2' },
-      { label: 'Lựa chọn 3', value: '3' },
-      { label: 'Lựa chọn 4', value: '4' }
+  // Lấy các lựa chọn từ dữ liệu option_values hoặc từ dữ liệu trường form
+  const getChoices = (fieldType: string, fieldId?: string): { label: string; value: string }[] => {
+    // Tìm trong filterFields nếu có sẵn
+    if (fieldId && filterFields.length > 0) {
+      const field = filterFields.find(f => f.id === fieldId);
+      if (field?.option_values) {
+        try {
+          let options = field.option_values;
+          
+          // Nếu là chuỗi JSON thì parse
+          if (typeof options === 'string') {
+            options = JSON.parse(options);
+          }
+          
+          // Đảm bảo options có định dạng đúng {label, value}
+          if (Array.isArray(options)) {
+            if (options.length > 0 && typeof options[0] === 'object' && 'label' in options[0] && 'value' in options[0]) {
+              return options;
+            } else {
+              // Chuyển đổi mảng đơn giản thành định dạng {label, value}
+              return options.map((opt: any) => {
+                if (typeof opt === 'string') {
+                  return { label: opt, value: opt };
+                }
+                return { label: String(opt), value: String(opt) };
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error parsing option_values from filterFields:', error);
+        }
+      }
+    }
+    
+    // Nếu có dữ liệu form từ API
+    if (formData?.core_dynamic_form?.core_dynamic_form_fields) {
+      // Tìm trường trong form fields
+      const formField = formData.core_dynamic_form.core_dynamic_form_fields.find(
+        (ff: any) => ff.core_dynamic_field.id === fieldId || ff.core_dynamic_field.field_type === fieldType
+      );
+      
+      if (formField?.core_dynamic_field?.option_values) {
+        // Xử lý option_values có thể là chuỗi hoặc mảng
+        try {
+          let options = formField.core_dynamic_field.option_values;
+          
+          // Nếu là chuỗi JSON thì parse
+          if (typeof options === 'string') {
+            options = JSON.parse(options);
+          }
+          
+          // Đảm bảo options có định dạng đúng {label, value}
+          if (Array.isArray(options)) {
+            if (options.length > 0 && typeof options[0] === 'object' && 'label' in options[0] && 'value' in options[0]) {
+              return options;
+            } else {
+              // Chuyển đổi mảng đơn giản thành định dạng {label, value}
+              return options.map((opt: any) => {
+                if (typeof opt === 'string') {
+                  return { label: opt, value: opt };
+                }
+                return { label: String(opt), value: String(opt) };
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error parsing option_values:', error);
+        }
+      }
+    }
+    
+    // Duyệt qua tất cả các trường trong dữ liệu để tìm các lựa chọn
+    const uniqueValues = new Set<string>();
+    const result: { label: string; value: string }[] = [];
+    
+    data.forEach(submission => {
+      if (Array.isArray(submission.data)) {
+        submission.data.forEach((field: FieldData) => {
+          if (field.field_type === fieldType && field.value) {
+            if (typeof field.value === 'string' && !uniqueValues.has(field.value)) {
+              uniqueValues.add(field.value);
+              result.push({ label: field.value, value: field.value });
+            } else if (Array.isArray(field.value)) {
+              field.value.forEach(v => {
+                if (!uniqueValues.has(v)) {
+                  uniqueValues.add(v);
+                  result.push({ label: v, value: v });
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+    
+    return result.length > 0 ? result : [
+      { label: 'Không có dữ liệu', value: '' }
     ];
   };
 
@@ -875,30 +986,57 @@ export function SubmissionDataTable({
             </div>
             
             <div className="flex flex-wrap items-center gap-2 w-full">
-              {getUniqueFieldTypes().slice(0, 3).map((fieldName: string) => (
-                <Button 
-                  key={fieldName}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setActiveFilters(prev => 
-                      prev.includes(fieldName) 
-                        ? prev.filter(f => f !== fieldName)
-                        : [...prev, fieldName]
-                    );
-                  }}
-                  className={`text-xs border-border hover:bg-primary/5 transition-colors ${
-                    activeFilters.includes(fieldName) 
-                      ? 'bg-primary/10 text-primary border-primary/30' 
-                      : 'text-muted-foreground'
-                  }`}
-                >
-                  {fieldName}
-                  {activeFilters.includes(fieldName) && (
-                    <Check className="ml-1 h-3 w-3" />
-                  )}
-                </Button>
-              ))}
+              {/* Sử dụng filterFields thay vì getUniqueFieldTypes để lấy dữ liệu chính xác từ API */}
+              {filterFields.length > 0 
+                ? filterFields.filter(field => field.field_type === 'SINGLE_CHOICE' || field.field_type === 'MULTI_CHOICE').map((field) => (
+                  <Button 
+                    key={field.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setActiveFilters(prev => 
+                        prev.includes(field.name) 
+                          ? prev.filter(f => f !== field.name)
+                          : [...prev, field.name]
+                      );
+                    }}
+                    className={`text-xs border-border hover:bg-primary/5 transition-colors ${
+                      activeFilters.includes(field.name) 
+                        ? 'bg-primary/10 text-primary border-primary/30' 
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {field.name}
+                    {activeFilters.includes(field.name) && (
+                      <Check className="ml-1 h-3 w-3" />
+                    )}
+                  </Button>
+                ))
+                : getUniqueFieldTypes().slice(0, 3).map((fieldName: string) => (
+                  <Button 
+                    key={fieldName}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setActiveFilters(prev => 
+                        prev.includes(fieldName) 
+                          ? prev.filter(f => f !== fieldName)
+                          : [...prev, fieldName]
+                      );
+                    }}
+                    className={`text-xs border-border hover:bg-primary/5 transition-colors ${
+                      activeFilters.includes(fieldName) 
+                        ? 'bg-primary/10 text-primary border-primary/30' 
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {fieldName}
+                    {activeFilters.includes(fieldName) && (
+                      <Check className="ml-1 h-3 w-3" />
+                    )}
+                  </Button>
+                ))
+              }
               
               {activeFilters.length > 0 && (
                 <Button
