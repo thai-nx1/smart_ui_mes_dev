@@ -133,6 +133,40 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
               </div>
               
               <SidebarMenu>
+                {/* Home Menu Item */}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    onClick={() => {
+                      // Đóng sidebar trên thiết bị di động sau khi click
+                      if (window.innerWidth < 1024) {
+                        setTimeout(() => {
+                          const triggerButton = document.querySelector('[data-sidebar-trigger]');
+                          if (triggerButton) {
+                            (triggerButton as HTMLButtonElement).click();
+                          }
+                        }, 100);
+                      }
+                    }}
+                    className={`transition-all whitespace-normal ${
+                      location === '/' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
+                    }`}
+                  >
+                    <Link href="/" className="w-full flex items-center">
+                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2 flex-shrink-0">
+                        <Home className="size-3" />
+                      </div>
+                      <span className="min-w-0 flex-1 text-wrap break-words hyphens-auto leading-tight">
+                        {t('app.home', 'Trang chủ')}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                {/* Divider sau trang chủ */}
+                <div className="my-2 border-t border-sidebar-border/30"></div>
+                
+                {/* Dynamic Menu Items */}
                 {isLoading ? (
                   <div className="p-4 text-sm text-muted-foreground flex items-center justify-center">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
