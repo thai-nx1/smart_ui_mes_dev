@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ẩn các badge màu vàng và nhãn Approved, New trong sidebar */
+.bg-yellow-300, .bg-yellow-200, .bg-yellow-100, 
+[class*="bg-yellow"] {
+  display: none !important;
+}
+
+/* Ẩn tất cả các phần tử ngoại trừ phần tử đầu tiên trong các nút menu sidebar */
+[data-sidebar="menu-button"] > :not(:first-child):not(svg),
+[data-sidebar="menu-sub-button"] > :not(:first-child):not(svg) {
+  display: none !important;
+}
+
 @layer base {
   html {
     -webkit-hyphens: auto;
