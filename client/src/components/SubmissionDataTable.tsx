@@ -984,71 +984,7 @@ export function SubmissionDataTable({
                 </button>
               )}
             </div>
-            
-            <div className="flex flex-wrap items-center gap-2 w-full">
-              {/* Sử dụng filterFields thay vì getUniqueFieldTypes để lấy dữ liệu chính xác từ API */}
-              {filterFields.length > 0 
-                ? filterFields.filter(field => field.field_type === 'SINGLE_CHOICE' || field.field_type === 'MULTI_CHOICE').map((field) => (
-                  <Button 
-                    key={field.id}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setActiveFilters(prev => 
-                        prev.includes(field.name) 
-                          ? prev.filter(f => f !== field.name)
-                          : [...prev, field.name]
-                      );
-                    }}
-                    className={`text-xs border-border hover:bg-primary/5 transition-colors ${
-                      activeFilters.includes(field.name) 
-                        ? 'bg-primary/10 text-primary border-primary/30' 
-                        : 'text-muted-foreground'
-                    }`}
-                  >
-                    {field.name}
-                    {activeFilters.includes(field.name) && (
-                      <Check className="ml-1 h-3 w-3" />
-                    )}
-                  </Button>
-                ))
-                : getUniqueFieldTypes().slice(0, 3).map((fieldName: string) => (
-                  <Button 
-                    key={fieldName}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setActiveFilters(prev => 
-                        prev.includes(fieldName) 
-                          ? prev.filter(f => f !== fieldName)
-                          : [...prev, fieldName]
-                      );
-                    }}
-                    className={`text-xs border-border hover:bg-primary/5 transition-colors ${
-                      activeFilters.includes(fieldName) 
-                        ? 'bg-primary/10 text-primary border-primary/30' 
-                        : 'text-muted-foreground'
-                    }`}
-                  >
-                    {fieldName}
-                    {activeFilters.includes(fieldName) && (
-                      <Check className="ml-1 h-3 w-3" />
-                    )}
-                  </Button>
-                ))
-              }
-              
-              {activeFilters.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActiveFilters([])}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {t('filters.clear', 'Xóa bộ lọc')}
-                </Button>
-              )}
-            </div>
+
           </div>
           
           {/* Hiển thị kết quả tìm kiếm */}
