@@ -954,7 +954,7 @@ export function SubmissionDataTable({
 
   return (
     <>
-      <div className="bg-card w-full h-full flex flex-col border shadow-sm overflow-hidden">
+      <div className="bg-card w-full h-full flex flex-col border shadow-sm overflow-hidden overflow-x-hidden">
         <div className="py-3 px-4 bg-muted/30 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 flex-shrink-0">
           <h3 className="text-lg font-semibold text-primary">
             {t('submission.title', 'Dữ liệu đã nộp')}
@@ -1001,7 +1001,7 @@ export function SubmissionDataTable({
         {/* Hiển thị các action buttons */}
         {renderActionButtons()}
         
-        <div className="p-4 flex-1 overflow-auto">
+        <div className="p-4 flex-1 overflow-auto overflow-x-hidden">
           {isLoading ? (
           <div className="py-20 px-4 text-center h-full flex items-center justify-center">
             <div className="mx-auto max-w-md flex flex-col items-center">

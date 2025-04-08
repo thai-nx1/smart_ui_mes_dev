@@ -27,6 +27,17 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const screenSize = useScreenSize(); // Sử dụng hook để lấy kích thước màn hình hiện tại
   const [showThemeDialog, setShowThemeDialog] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  
+  // Toggle menu expand/collapse
+  const toggleMenu = (menuId: string) => {
+    if (expandedMenus.includes(menuId)) {
+      setExpandedMenus(expandedMenus.filter(id => id !== menuId));
+    } else {
+      setExpandedMenus([...expandedMenus, menuId]);
+    }
+  };
   
   // Fetch all menus from the API để xử lý parent/child relationship
   // Thêm retry và staleTime để đảm bảo dữ liệu luôn hiển thị sau khi mount
@@ -198,7 +209,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         </Sidebar>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto overflow-x-hidden">
           {children}
         </div>
       </div>
