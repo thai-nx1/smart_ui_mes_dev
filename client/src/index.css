@@ -8,6 +8,16 @@
     -ms-hyphens: auto;
     hyphens: auto;
   }
+  
+  /* Cải thiện cách xử lý xuống dòng cho chữ tiếng Việt */
+  .text-sm.text-muted-foreground, 
+  .text-muted-foreground {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+    hyphens: none !important;
+    white-space: normal !important;
+  }
 }
 
 :root {

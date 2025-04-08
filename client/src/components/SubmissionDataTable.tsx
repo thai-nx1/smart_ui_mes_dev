@@ -582,7 +582,7 @@ export function SubmissionDataTable({
 
   // Hiển thị giá trị của trường
   const renderFieldValue = (value: FieldValue, fieldType: string) => {
-    if (value === null || value === undefined) return '-';
+    if (value === null || value === undefined || value === '') return <span className="text-sm text-muted-foreground break-words">-</span>;
     
     switch (fieldType) {
       case 'DATE':
@@ -800,7 +800,7 @@ export function SubmissionDataTable({
                               )}
                             </div>
                           ) : (
-                            <span className="text-muted-foreground">-</span>
+                            <span className="text-muted-foreground break-words">-</span>
                           )}
                         </td>
                       );
