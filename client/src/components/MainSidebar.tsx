@@ -15,7 +15,8 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette, Sun, Moon, Loader2 } from 'lucide-react';
+import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette, Sun, Moon, Loader2, Search, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { fetchMainMenus, fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +30,8 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const [showThemeDialog, setShowThemeDialog] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
   
   // Toggle menu expand/collapse
   const toggleMenu = (menuId: string) => {
@@ -86,6 +89,67 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
     ? "flex min-h-screen sidebar-desktop-container" 
     : "flex min-h-screen";
 
+  // Hàm tìm kiếm menu dựa trên từ khóa
+  const searchMenus = (menus: MenuType[] = [], query: string = '') => {
+    if (!query.trim() || !menus?.length) return [];
+    
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    // Tìm kiếm trong menu cha
+    const matchingParentMenus = menus.filter(menu => 
+      menu.name.toLowerCase().includes(normalizedQuery) || 
+      (menu.code && menu.code.toLowerCase().includes(normalizedQuery))
+    );
+    
+    // Tìm kiếm trong menu con
+    const matchingChildMenus = menus.flatMap(menu => {
+      if (!menu.core_dynamic_child_menus?.length) return [];
+      
+      const matchingChildren = menu.core_dynamic_child_menus.filter(childMenu => 
+        childMenu.name.toLowerCase().includes(normalizedQuery) || 
+        (childMenu.code && childMenu.code.toLowerCase().includes(normalizedQuery))
+      );
+      
+      if (matchingChildren.length > 0) {
+        // Trả về menu cha kèm theo các menu con phù hợp
+        return [{
+          ...menu,
+          core_dynamic_child_menus: matchingChildren,
+          _isParentOfMatch: true // Đánh dấu là cha của menu con phù hợp
+        }];
+      }
+      
+      return [];
+    });
+    
+    // Kết hợp kết quả, ưu tiên menu cha trùng khớp trước
+    return [...matchingParentMenus, ...matchingChildMenus].filter((menu, index, self) => 
+      // Loại bỏ menu trùng lặp
+      index === self.findIndex(m => m.id === menu.id)
+    );
+  };
+  
+  // Kết quả tìm kiếm menu
+  const searchResults = searchQuery.trim() 
+    ? searchMenus(menusData, searchQuery) 
+    : [];
+    
+  // Xử lý tìm kiếm
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    if (e.target.value.trim()) {
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
+  };
+  
+  // Xoá tìm kiếm
+  const clearSearch = () => {
+    setSearchQuery('');
+    setShowSearchResults(false);
+  };
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className={containerClass}>
@@ -133,6 +197,28 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
+            </div>
+            
+            {/* Thanh tìm kiếm menu */}
+            <div className="mt-3 relative search-box-container">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder={t('menu.search', 'Tìm kiếm menu...')}
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  className="pl-9 pr-8 py-1.5 h-9 text-sm bg-sidebar-accent/20 border-sidebar-border focus-visible:ring-primary oxii-transition"
+                />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                {searchQuery && (
+                  <button
+                    onClick={clearSearch}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-sidebar-border/60 hover:bg-sidebar-border flex items-center justify-center oxii-transition"
+                  >
+                    <X className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
             </div>
           </SidebarHeader>
 
@@ -185,7 +271,41 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   </div>
                 ) : menusData?.length === 0 ? (
                   <div className="p-4 text-sm text-muted-foreground">{t('menu.noItems', 'Không có menu nào')}</div>
+                ) : showSearchResults && searchQuery ? (
+                  // Hiển thị kết quả tìm kiếm
+                  <>
+                    <div className="text-xs font-medium text-muted-foreground mb-2 px-2 py-1 flex items-center justify-between bg-sidebar-accent/30 rounded">
+                      <div className="flex items-center">
+                        <Search className="h-3 w-3 mr-1.5" />
+                        {t('menu.searchResults', 'Kết quả tìm kiếm')} ({searchResults.length})
+                      </div>
+                      <button 
+                        onClick={clearSearch}
+                        className="text-muted-foreground hover:text-sidebar-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                    
+                    {searchResults.length === 0 ? (
+                      <div className="p-4 text-sm text-muted-foreground text-center">
+                        {t('menu.noSearchResults', 'Không tìm thấy kết quả nào cho "{{query}}"', { query: searchQuery })}
+                      </div>
+                    ) : (
+                      <div className="search-results-container py-1 pl-1 pr-1.5">
+                        {searchResults.map((menu: MenuType) => (
+                          <DynamicMenuItem key={menu.id} menu={menu} />
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="my-2 border-t border-sidebar-border/30"></div>
+                    <div className="text-xs text-muted-foreground mb-2 px-2">
+                      {t('menu.allMenus', 'Tất cả các menu')}
+                    </div>
+                  </>
                 ) : (
+                  // Hiển thị menu bình thường
                   menusData?.map((menu: MenuType) => (
                     <DynamicMenuItem key={menu.id} menu={menu} />
                   ))

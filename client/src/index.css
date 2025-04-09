@@ -18,6 +18,24 @@
   display: none !important;
 }
 
+/* Styles cho ô tìm kiếm và kết quả */
+.search-box-container input::placeholder {
+  color: var(--text-color-secondary);
+  opacity: 0.7;
+}
+
+.search-results-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-match {
+  background-color: rgba(0, 177, 210, 0.1);
+  border-radius: 2px;
+  padding: 0 2px;
+  font-weight: 500;
+}
+
 @layer base {
   html {
     -webkit-hyphens: auto;
