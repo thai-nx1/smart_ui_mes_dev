@@ -1,10 +1,22 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import { sessionConfig } from "./config/oauth";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// Thiết lập session
+app.use(session({
+  secret: sessionConfig.secret,
+  resave: sessionConfig.resave,
+  saveUninitialized: sessionConfig.saveUninitialized,
+  cookie: sessionConfig.cookie
+}));
 
 app.use((req, res, next) => {
   const start = Date.now();

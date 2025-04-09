@@ -7,20 +7,51 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+interface ApiRequestOptions {
+  method: string;
+  data?: unknown;
+  headers?: Record<string, string>;
+}
+
 export async function apiRequest(
-  method: string,
   url: string,
-  data?: unknown | undefined,
-): Promise<Response> {
+  options?: ApiRequestOptions,
+): Promise<any> {
+  // Lấy token từ localStorage
+  const token = localStorage.getItem('token');
+  
+  // Tạo headers mặc định
+  const defaultHeaders: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+  
+  // Thêm token vào header nếu có
+  if (token) {
+    defaultHeaders['Authorization'] = `Bearer ${token}`;
+  }
+  
+  // Gộp headers tùy chỉnh với headers mặc định
+  const headers = {
+    ...defaultHeaders,
+    ...options?.headers
+  };
+  
   const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
+    method: options?.method || 'GET',
+    headers,
+    body: options?.data ? JSON.stringify(options.data) : undefined,
     credentials: "include",
   });
 
   await throwIfResNotOk(res);
-  return res;
+  
+  // Kiểm tra xem có dữ liệu trả về không
+  const contentType = res.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    return await res.json();
+  }
+  
+  return await res.text();
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -29,7 +60,17 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Lấy token từ localStorage
+    const token = localStorage.getItem('token');
+    
+    // Tạo headers mặc định, thêm token vào header nếu có
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const res = await fetch(queryKey[0] as string, {
+      headers,
       credentials: "include",
     });
 
@@ -38,7 +79,14 @@ export const getQueryFn: <T>(options: {
     }
 
     await throwIfResNotOk(res);
-    return await res.json();
+    
+    // Kiểm tra xem có dữ liệu trả về không
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await res.json();
+    }
+    
+    return await res.text();
   };
 
 export const queryClient = new QueryClient({
