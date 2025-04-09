@@ -45,12 +45,20 @@ export function setupPassport() {
   ));
 
   // Xác thực Google
+  console.log("Google OAuth config:", {
+    clientID: googleOAuth.clientID ? "✓ Set" : "❌ Not set",
+    clientSecret: googleOAuth.clientSecret ? "✓ Set" : "❌ Not set",
+    callbackURL: googleOAuth.callbackURL
+  });
+  
   if (googleOAuth.clientID && googleOAuth.clientSecret) {
+    console.log("Setting up Google Strategy");
     passport.use(new GoogleStrategy(
       {
         clientID: googleOAuth.clientID,
         clientSecret: googleOAuth.clientSecret,
         callbackURL: googleOAuth.callbackURL,
+        proxy: googleOAuth.proxy
       },
       async (accessToken, refreshToken, profile, done) => {
         try {

@@ -3,7 +3,6 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
 import passport from "passport";
-import { setupPassport } from "./config/passport";
 import { redirectUrls } from "./config/oauth";
 import * as jwt from "jsonwebtoken";
 import { jwtConfig } from "./config/oauth";
@@ -39,8 +38,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup Passport
-  const passportInstance = setupPassport();
+  // Khởi tạo passport
   app.use(passport.initialize());
   app.use(passport.session());
   

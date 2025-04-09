@@ -2,7 +2,9 @@
 export const googleOAuth = {
   clientID: process.env.GOOGLE_CLIENT_ID || "",
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-  callbackURL: "/auth/google/callback"
+  callbackURL: "/auth/google/callback",
+  // Thêm property này để đảm bảo URL callback đầy đủ khi chạy trên Replit
+  proxy: true
 };
 
 // JWT cấu hình

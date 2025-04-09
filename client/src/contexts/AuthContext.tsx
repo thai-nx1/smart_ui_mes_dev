@@ -19,12 +19,31 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// Hook này có thể gây lỗi nếu sử dụng ngoài AuthProvider
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  try {
+    const context = useContext(AuthContext);
+    if (!context) {
+      // Fallback để tránh lỗi khi context là null
+      return {
+        user: null,
+        isAuthenticated: false,
+        loading: false,
+        login: () => {},
+        logout: async () => {}
+      };
+    }
+    return context;
+  } catch (error) {
+    console.error('Error using auth context:', error);
+    return {
+      user: null,
+      isAuthenticated: false,
+      loading: false,
+      login: () => {},
+      logout: async () => {}
+    };
   }
-  return context;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

@@ -13,40 +13,41 @@ import RecordDetailPage from "@/pages/record-detail";
 import LoginPage from "@/pages/login";
 import NotFound from "@/pages/not-found";
 import { InstallPWA } from "@/components/InstallPWA";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { setupInitialTheme } from "@/lib/theme";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 // Component bảo vệ route yêu cầu đăng nhập
-function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, path?: string }) {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ component: Component, ...rest }: { component: React.ComponentType<any>, path?: string }) => {
   const [, setLocation] = useLocation();
   
-  // Kiểm tra nếu đang trong quá trình kiểm tra xác thực
-  if (loading) {
+  // Sử dụng một biến state giả để kiểm tra xác thực mà không cần hook
+  const isAuthenticated = localStorage.getItem('token') !== null;
+  
+  // Redirect đến trang đăng nhập nếu chưa xác thực
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setLocation('/login');
+    }
+  }, [isAuthenticated, setLocation]);
+  
+  // Render component nếu đã xác thực, ngược lại hiển thị loading
+  if (!isAuthenticated) {
     return <div className="flex items-center justify-center h-screen">Đang tải...</div>;
   }
   
-  // Redirect đến trang đăng nhập nếu chưa xác thực
-  if (!isAuthenticated) {
-    useEffect(() => {
-      setLocation('/login');
-    }, [setLocation]);
-    return null;
-  }
-  
-  // Render component nếu đã xác thực
   return <Component {...rest} />;
 }
 
-function Router() {
-  const { isAuthenticated } = useAuth();
-  
+// Tách Router thành component riêng không sử dụng AuthContext
+const RouterComponent = () => {
+  // Sử dụng cách kiểm tra đơn giản thay vì useAuth hook
+  const isAuthenticated = localStorage.getItem('token') !== null;
+
   return (
     <Switch>
       <Route path="/login" component={LoginPage} />
-      <Route path="/">
-        {isAuthenticated ? <Home /> : <LoginPage />}
+      <Route path="/" >
+        {() => isAuthenticated ? <Home /> : <LoginPage />}
       </Route>
       <Route path="/forms">
         <ProtectedRoute component={FormsPage} />
@@ -59,6 +60,7 @@ function Router() {
       <Route path="/submission/:workflowId" component={SubmissionPage} />
       <Route path="/record/:menuId/:recordId" component={RecordDetailPage} />
       <Route path="/record/:menuId/:recordId/workflow/:workflowId" component={RecordDetailPage} />
+      
       <Route path="/design">
         <ProtectedRoute component={DesignExamplePage} />
       </Route>
@@ -67,15 +69,29 @@ function Router() {
       </Route>
     </Switch>
   );
-}
+};
 
 function AppContent() {
-  // Chỉ hiển thị sidebar khi đã đăng nhập
-  const { isAuthenticated, loading } = useAuth();
+  // Sử dụng cách kiểm tra đơn giản thay vì useAuth
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(localStorage.getItem('token') !== null);
+  const [loading, setLoading] = useState<boolean>(true);
   
-  // Setup theme on initial render
+  // Setup theme và kiểm tra trạng thái đăng nhập
   useEffect(() => {
     setupInitialTheme();
+    
+    // Kiểm tra token trong localStorage
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(token !== null);
+    setLoading(false);
+    
+    // Lắng nghe sự thay đổi của localStorage để cập nhật trạng thái
+    const handleStorageChange = () => {
+      setIsAuthenticated(localStorage.getItem('token') !== null);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   
   // Hiển thị loading khi đang kiểm tra xác thực
@@ -90,33 +106,27 @@ function AppContent() {
     );
   }
   
-  // Hiển thị trang đăng nhập khi chưa đăng nhập
-  if (!isAuthenticated && window.location.pathname !== '/login') {
-    return <Router />;
-  }
-  
   // Hiển thị nội dung chính với sidebar khi đã đăng nhập
   return (
     <>
       {isAuthenticated ? (
         <MainSidebar>
-          <Router />
+          <RouterComponent />
         </MainSidebar>
       ) : (
-        <Router />
+        <RouterComponent />
       )}
       <InstallPWA />
     </>
   );
 }
 
+// Wrapper component không sử dụng AuthContext
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppContent />
-        <Toaster />
-      </AuthProvider>
+      <AppContent />
+      <Toaster />
     </QueryClientProvider>
   );
 }

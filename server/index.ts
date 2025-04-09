@@ -4,6 +4,10 @@ import { setupVite, serveStatic, log } from "./vite";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { sessionConfig } from "./config/oauth";
+import { setupPassport } from "./config/passport";
+
+// Thiết lập Passport một lần khi ứng dụng khởi động
+setupPassport();
 
 const app = express();
 app.use(express.json());
