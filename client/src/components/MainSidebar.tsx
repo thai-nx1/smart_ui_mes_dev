@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LogoutButton } from "@/components/LogoutButton";
 import { useLocation, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -346,16 +347,21 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarContent>
 
           <div className="border-t border-sidebar-border bg-sidebar-accent/20 p-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowThemeDialog(true)}
-              className="w-full justify-start"
-            >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="ml-2">{t('theme.title', 'Giao diện')}</span>
-            </Button>
+            <div className="flex flex-col gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowThemeDialog(true)}
+                className="w-full justify-start"
+              >
+                <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="ml-2">{t('theme.title', 'Giao diện')}</span>
+              </Button>
+              
+              {/* Thêm nút đăng xuất */}
+              <LogoutButton />
+            </div>
           </div>
         </Sidebar>
 

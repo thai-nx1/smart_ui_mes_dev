@@ -72,26 +72,42 @@ const RouterComponent = () => {
 };
 
 function AppContent() {
-  // Sử dụng cách kiểm tra đơn giản thay vì useAuth
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(localStorage.getItem('token') !== null);
+  // Kiểm tra trạng thái đăng nhập từ localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   
-  // Setup theme và kiểm tra trạng thái đăng nhập
+  // Kiểm tra trạng thái đăng nhập khi component mount
   useEffect(() => {
-    setupInitialTheme();
-    
     // Kiểm tra token trong localStorage
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(token !== null);
-    setLoading(false);
+    const checkAuth = () => {
+      const token = localStorage.getItem('token');
+      setIsAuthenticated(!!token);
+      setLoading(false);
+    };
     
-    // Lắng nghe sự thay đổi của localStorage để cập nhật trạng thái
-    const handleStorageChange = () => {
-      setIsAuthenticated(localStorage.getItem('token') !== null);
+    // Setup theme và kiểm tra trạng thái đăng nhập
+    setupInitialTheme();
+    checkAuth();
+    
+    // Lắng nghe sự thay đổi của localStorage (khi đăng nhập/đăng xuất ở tab khác)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'token') {
+        setIsAuthenticated(!!e.newValue);
+      }
+    };
+    
+    // Tạo event listener tùy chỉnh để thông báo thay đổi trạng thái đăng nhập
+    const authChangeListener = () => {
+      checkAuth();
     };
     
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('auth-change', authChangeListener);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-change', authChangeListener);
+    };
   }, []);
   
   // Hiển thị loading khi đang kiểm tra xác thực

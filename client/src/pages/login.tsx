@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { AuthUtils } from "@/contexts/AuthUtils";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -44,9 +45,8 @@ export default function LoginPage() {
         displayName: "Demo User",
       };
       
-      // Lưu token giả vào localStorage
-      localStorage.setItem("token", "demo-token-123");
-      localStorage.setItem("user", JSON.stringify(demoUser));
+      // Sử dụng AuthUtils để đăng nhập
+      AuthUtils.login("demo-token-123", demoUser);
 
       toast({
         title: "Thành công",
@@ -136,8 +136,8 @@ export default function LoginPage() {
                   profilePicture: "https://lh3.googleusercontent.com/a/default-user"
                 };
                 
-                localStorage.setItem("token", "google-token-456");
-                localStorage.setItem("user", JSON.stringify(googleUser));
+                // Sử dụng AuthUtils để đăng nhập bằng Google
+                AuthUtils.login("google-token-456", googleUser);
                 
                 toast({
                   title: "Thành công",
