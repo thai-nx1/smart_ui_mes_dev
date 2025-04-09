@@ -19,11 +19,12 @@ import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette, Sun,
 import { Input } from '@/components/ui/input';
 import { fetchMainMenus, fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useScreenSize } from '@/hooks/use-mobile';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { ThemeType, ThemeStyle, themeManager } from '@/lib/theme';
+import { useTranslation } from 'react-i18next';
 
 export function MainSidebar({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -203,16 +204,32 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  // Đóng sidebar theo cách khác
-                  const sidebar = document.querySelector('[data-sidebar-content]');
-                  if (sidebar) {
-                    sidebar.setAttribute('data-sidebar-opened', 'false');
-                    // Cũng remove overlay nếu có
-                    const overlay = document.getElementById('sidebar-overlay');
-                    if (overlay) {
-                      overlay.classList.add('animate-out', 'fade-out-0');
-                      setTimeout(() => overlay.remove(), 200);
+                  
+                  try {
+                    // Đóng sidebar theo cách khác
+                    const sidebar = document.querySelector('[data-sidebar-content]');
+                    if (sidebar) {
+                      sidebar.setAttribute('data-sidebar-opened', 'false');
+                      // Cũng remove overlay nếu có
+                      const overlay = document.getElementById('sidebar-overlay');
+                      if (overlay) {
+                        overlay.classList.add('animate-out', 'fade-out-0');
+                        setTimeout(() => {
+                          try {
+                            overlay.remove();
+                          } catch (err) {
+                            console.error('Error removing overlay in X button:', err);
+                          }
+                        }, 200);
+                      }
                     }
+                  } catch (err) {
+                    console.error('Error closing sidebar with X button:', err);
+                    // Fallback method
+                    try {
+                      const overlay = document.getElementById('sidebar-overlay');
+                      if (overlay) overlay.remove();
+                    } catch (e) {}
                   }
                 }}
               >
@@ -262,16 +279,31 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                       // Đóng sidebar trên thiết bị di động sau khi click
                       if (window.innerWidth < 1024) {
                         setTimeout(() => {
-                          // Sử dụng cách tiếp cận đóng trực tiếp sidebar
-                          const sidebar = document.querySelector('[data-sidebar-content]');
-                          if (sidebar) {
-                            sidebar.setAttribute('data-sidebar-opened', 'false');
-                            // Cũng remove overlay nếu có
-                            const overlay = document.getElementById('sidebar-overlay');
-                            if (overlay) {
-                              overlay.classList.add('animate-out', 'fade-out-0');
-                              setTimeout(() => overlay.remove(), 200);
+                          try {
+                            // Sử dụng cách tiếp cận đóng trực tiếp sidebar
+                            const sidebar = document.querySelector('[data-sidebar-content]');
+                            if (sidebar) {
+                              sidebar.setAttribute('data-sidebar-opened', 'false');
+                              // Cũng remove overlay nếu có
+                              const overlay = document.getElementById('sidebar-overlay');
+                              if (overlay) {
+                                overlay.classList.add('animate-out', 'fade-out-0');
+                                setTimeout(() => {
+                                  try {
+                                    overlay.remove();
+                                  } catch (err) {
+                                    console.error('Error removing overlay in home click:', err);
+                                  }
+                                }, 200);
+                              }
                             }
+                          } catch (err) {
+                            console.error('Error closing sidebar in home click:', err);
+                            // Fallback - cố gắng loại bỏ overlay
+                            try {
+                              const overlay = document.getElementById('sidebar-overlay');
+                              if (overlay) overlay.remove(); 
+                            } catch (e) {}
                           }
                         }, 100);
                       }
@@ -504,26 +536,49 @@ function useOverlay() {
             overlay.id = 'sidebar-overlay';
             overlay.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm z-0 lg:hidden animate-in fade-in-0 duration-200';
             overlay.onclick = () => {
-              // Đóng sidebar trực tiếp thay vì thông qua nút trigger
-              const sidebar = document.querySelector('[data-sidebar-content]');
-              if (sidebar) {
-                sidebar.setAttribute('data-sidebar-opened', 'false');
-                // Remove overlay
-                const overlay = document.getElementById('sidebar-overlay');
-                if (overlay) {
-                  overlay.classList.add('animate-out', 'fade-out-0');
-                  setTimeout(() => overlay.remove(), 200);
+              try {
+                // Đóng sidebar trực tiếp thay vì thông qua nút trigger
+                const sidebar = document.querySelector('[data-sidebar-content]');
+                if (sidebar) {
+                  sidebar.setAttribute('data-sidebar-opened', 'false');
+                  // Remove overlay
+                  const overlay = document.getElementById('sidebar-overlay');
+                  if (overlay) {
+                    overlay.classList.add('animate-out', 'fade-out-0');
+                    setTimeout(() => {
+                      try {
+                        overlay.remove();
+                      } catch (err) {
+                        console.error('Error removing overlay:', err);
+                      }
+                    }, 200);
+                  }
                 }
+              } catch (err) {
+                console.error('Error closing sidebar:', err);
+                // Fallback method
+                try {
+                  const overlay = document.getElementById('sidebar-overlay');
+                  if (overlay) overlay.remove();
+                } catch (e) {}
               }
             };
             document.body.appendChild(overlay);
           } else {
-            const overlay = document.getElementById('sidebar-overlay');
-            if (overlay) {
-              overlay.classList.add('animate-out', 'fade-out-0');
-              setTimeout(() => {
-                overlay.remove();
-              }, 200);
+            try {
+              const overlay = document.getElementById('sidebar-overlay');
+              if (overlay) {
+                overlay.classList.add('animate-out', 'fade-out-0');
+                setTimeout(() => {
+                  try {
+                    overlay.remove();
+                  } catch (err) {
+                    console.error('Error removing overlay when sidebar is closing:', err);
+                  }
+                }, 200);
+              }
+            } catch (err) {
+              console.error('Error handling overlay when sidebar is closing:', err);
             }
           }
         }
@@ -564,16 +619,31 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
   const handleMobileMenuClick = () => {
     if (window.innerWidth < 1024) { // 1024px là điểm ngắt cho lg (large) trong Tailwind
       setTimeout(() => {
-        // Sử dụng cách tiếp cận đóng trực tiếp sidebar
-        const sidebar = document.querySelector('[data-sidebar-content]');
-        if (sidebar) {
-          sidebar.setAttribute('data-sidebar-opened', 'false');
-          // Cũng remove overlay nếu có
-          const overlay = document.getElementById('sidebar-overlay');
-          if (overlay) {
-            overlay.classList.add('animate-out', 'fade-out-0');
-            setTimeout(() => overlay.remove(), 200);
+        try {
+          // Sử dụng cách tiếp cận đóng trực tiếp sidebar
+          const sidebar = document.querySelector('[data-sidebar-content]');
+          if (sidebar) {
+            sidebar.setAttribute('data-sidebar-opened', 'false');
+            // Cũng remove overlay nếu có
+            const overlay = document.getElementById('sidebar-overlay');
+            if (overlay) {
+              overlay.classList.add('animate-out', 'fade-out-0');
+              setTimeout(() => {
+                try {
+                  overlay.remove();
+                } catch (err) {
+                  console.error('Error removing overlay in menu click:', err);
+                }
+              }, 200);
+            }
           }
+        } catch (err) {
+          console.error('Error closing sidebar in menu click:', err);
+          // Fallback - cố gắng loại bỏ overlay
+          try {
+            const overlay = document.getElementById('sidebar-overlay');
+            if (overlay) overlay.remove();
+          } catch (e) {}
         }
       }, 100);
     }
