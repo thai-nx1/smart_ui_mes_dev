@@ -17,7 +17,6 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
-// Field types
 export const FieldTypeEnum = z.enum([
   "TEXT", "PARAGRAPH", "NUMBER", "SINGLE_CHOICE", "MULTI_CHOICE", "DATE",
   "INPUT", "CACHE", "AUDIO_RECORD", "SCREEN_RECORD", "IMPORT", "EXPORT",
@@ -26,7 +25,6 @@ export const FieldTypeEnum = z.enum([
 
 export type FieldType = z.infer<typeof FieldTypeEnum>;
 
-// Dynamic form schema
 export const forms = pgTable("forms", {
   id: uuid("id").primaryKey().notNull(),
   name: text("name").notNull(),
@@ -45,7 +43,6 @@ export const insertFormSchema = createInsertSchema(forms).omit({
 export type InsertForm = z.infer<typeof insertFormSchema>;
 export type Form = typeof forms.$inferSelect;
 
-// Dynamic field schema
 export const fields = pgTable("fields", {
   id: uuid("id").primaryKey().notNull(),
   formId: uuid("form_id").notNull(),
@@ -65,7 +62,6 @@ export const insertFieldSchema = createInsertSchema(fields).omit({
 export type InsertField = z.infer<typeof insertFieldSchema>;
 export type Field = typeof fields.$inferSelect;
 
-// Form submission schema
 export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
   formId: uuid("form_id").notNull(),
