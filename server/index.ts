@@ -6,6 +6,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Middleware để đảm bảo JavaScript modules có MIME type đúng
+app.use((req, res, next) => {
+  if (req.url.endsWith('.js') || req.url.includes('.js?')) {
+    res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+  }
+  next();
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
