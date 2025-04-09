@@ -11,7 +11,6 @@ import SubmissionPage from "@/pages/submission";
 import DesignExamplePage from "@/pages/design-example";
 import RecordDetailPage from "@/pages/record-detail";
 import NotFound from "@/pages/not-found";
-import { InstallPWA } from "@/components/InstallPWA";
 import { useEffect } from "react";
 import { setupInitialTheme } from "@/lib/theme";
 
@@ -43,7 +42,6 @@ function App() {
       <MainSidebar>
         <Router />
       </MainSidebar>
-      <InstallPWA />
       <Toaster />
     </QueryClientProvider>
   );

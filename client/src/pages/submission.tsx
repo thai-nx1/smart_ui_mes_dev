@@ -258,8 +258,8 @@ export default function SubmissionPage() {
   const title = currentSubmenu?.name || t('submission.title', 'Dữ liệu đã nộp');
 
   return (
-    <div className="h-full flex flex-col">
-      <Card className="overflow-hidden w-full border-0 rounded-none flex flex-col flex-1">
+    <div className="h-full">
+      <Card className="overflow-hidden w-full border-0 rounded-none h-full flex flex-col">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-2 px-6">
           <div>
             <CardTitle className="text-xl sm:text-2xl">{title}</CardTitle>
@@ -272,13 +272,13 @@ export default function SubmissionPage() {
             workflowId={workflowId}
           />
         </CardHeader>
-        <CardContent className="p-0 overflow-auto flex-1 max-h-[calc(100vh-130px)]">
+        <CardContent className="p-0 flex-1 overflow-auto">
           {data.length === 0 ? (
             <div className="p-4 sm:p-8 text-center">
               <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi qua workflow này')}</p>
             </div>
           ) : (
-            <div className="h-full">
+            <div className="overflow-auto h-full">
               <SubmissionDataTable 
                 data={data}
                 onSave={async (editedData) => {
