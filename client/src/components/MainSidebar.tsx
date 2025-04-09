@@ -198,12 +198,24 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
               {/* Chỉ hiển thị nút đóng trên mobile */}
-              <button className="ml-auto lg:hidden text-muted-foreground hover:text-sidebar-foreground p-1 rounded-full hover:bg-primary/10" onClick={() => {
-                const triggerButton = document.querySelector('[data-sidebar-trigger]');
-                if (triggerButton) {
-                  (triggerButton as HTMLButtonElement).click();
-                }
-              }}>
+              <button 
+                className="ml-auto lg:hidden text-muted-foreground hover:text-sidebar-foreground p-1 rounded-full hover:bg-primary/10" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  // Đóng sidebar theo cách khác
+                  const sidebar = document.querySelector('[data-sidebar-content]');
+                  if (sidebar) {
+                    sidebar.setAttribute('data-sidebar-opened', 'false');
+                    // Cũng remove overlay nếu có
+                    const overlay = document.getElementById('sidebar-overlay');
+                    if (overlay) {
+                      overlay.classList.add('animate-out', 'fade-out-0');
+                      setTimeout(() => overlay.remove(), 200);
+                    }
+                  }
+                }}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
@@ -250,9 +262,16 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                       // Đóng sidebar trên thiết bị di động sau khi click
                       if (window.innerWidth < 1024) {
                         setTimeout(() => {
-                          const triggerButton = document.querySelector('[data-sidebar-trigger]');
-                          if (triggerButton) {
-                            (triggerButton as HTMLButtonElement).click();
+                          // Sử dụng cách tiếp cận đóng trực tiếp sidebar
+                          const sidebar = document.querySelector('[data-sidebar-content]');
+                          if (sidebar) {
+                            sidebar.setAttribute('data-sidebar-opened', 'false');
+                            // Cũng remove overlay nếu có
+                            const overlay = document.getElementById('sidebar-overlay');
+                            if (overlay) {
+                              overlay.classList.add('animate-out', 'fade-out-0');
+                              setTimeout(() => overlay.remove(), 200);
+                            }
                           }
                         }, 100);
                       }
@@ -485,9 +504,16 @@ function useOverlay() {
             overlay.id = 'sidebar-overlay';
             overlay.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm z-0 lg:hidden animate-in fade-in-0 duration-200';
             overlay.onclick = () => {
-              const triggerButton = document.querySelector('[data-sidebar-trigger]');
-              if (triggerButton) {
-                (triggerButton as HTMLButtonElement).click();
+              // Đóng sidebar trực tiếp thay vì thông qua nút trigger
+              const sidebar = document.querySelector('[data-sidebar-content]');
+              if (sidebar) {
+                sidebar.setAttribute('data-sidebar-opened', 'false');
+                // Remove overlay
+                const overlay = document.getElementById('sidebar-overlay');
+                if (overlay) {
+                  overlay.classList.add('animate-out', 'fade-out-0');
+                  setTimeout(() => overlay.remove(), 200);
+                }
               }
             };
             document.body.appendChild(overlay);
@@ -538,9 +564,16 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
   const handleMobileMenuClick = () => {
     if (window.innerWidth < 1024) { // 1024px là điểm ngắt cho lg (large) trong Tailwind
       setTimeout(() => {
-        const triggerButton = document.querySelector('[data-sidebar-trigger]');
-        if (triggerButton) {
-          (triggerButton as HTMLButtonElement).click();
+        // Sử dụng cách tiếp cận đóng trực tiếp sidebar
+        const sidebar = document.querySelector('[data-sidebar-content]');
+        if (sidebar) {
+          sidebar.setAttribute('data-sidebar-opened', 'false');
+          // Cũng remove overlay nếu có
+          const overlay = document.getElementById('sidebar-overlay');
+          if (overlay) {
+            overlay.classList.add('animate-out', 'fade-out-0');
+            setTimeout(() => overlay.remove(), 200);
+          }
         }
       }, 100);
     }
