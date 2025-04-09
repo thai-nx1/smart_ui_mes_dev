@@ -15,13 +15,15 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette, Sun, Moon, Loader2, Search, X } from 'lucide-react';
+import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette, Sun, Moon, Loader2, Search, X, Laptop } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { fetchMainMenus, fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useScreenSize } from '@/hooks/use-mobile';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { ThemeType, ThemeStyle, themeManager } from '@/lib/theme';
 
 export function MainSidebar({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
@@ -32,6 +34,16 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(themeManager.getTheme());
+  
+  // Subscribe to theme changes
+  useEffect(() => {
+    const unsubscribe = themeManager.subscribe((themeSettings) => {
+      setCurrentTheme(themeSettings);
+    });
+    
+    return () => unsubscribe();
+  }, []);
   
   // Toggle menu expand/collapse
   const toggleMenu = (menuId: string) => {
@@ -333,6 +345,127 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </div>
+
+      {/* Hộp thoại chủ đề */}
+      <Dialog open={showThemeDialog} onOpenChange={setShowThemeDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">
+              {t('theme.dialog.title', 'Thiết lập giao diện')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('theme.dialog.description', 'Tùy chỉnh giao diện theo sở thích của bạn.')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">{t('theme.mode', 'Chế độ hiển thị')}</h3>
+              <div className="grid grid-cols-3 gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    themeManager.setTheme({ theme: 'light' });
+                  }}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
+                    currentTheme.theme === 'light' && "border-primary bg-primary/5"
+                  )}
+                >
+                  <Sun className="h-5 w-5" />
+                  <span>{t('theme.light', 'Sáng')}</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    themeManager.setTheme({ theme: 'dark' });
+                  }}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
+                    currentTheme.theme === 'dark' && "border-primary bg-primary/5"
+                  )}
+                >
+                  <Moon className="h-5 w-5" />
+                  <span>{t('theme.dark', 'Tối')}</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    themeManager.setTheme({ theme: 'system' });
+                  }}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
+                    currentTheme.theme === 'system' && "border-primary bg-primary/5"
+                  )}
+                >
+                  <Laptop className="h-5 w-5" />
+                  <span>{t('theme.system', 'Tự động')}</span>
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">{t('theme.style', 'Phong cách')}</h3>
+              <div className="grid grid-cols-3 gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    themeManager.setTheme({ themeStyle: 'professional' });
+                  }}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
+                    currentTheme.themeStyle === 'professional' && "border-primary bg-primary/5"
+                  )}
+                >
+                  <div className="size-5 flex items-center justify-center">
+                    <div className="size-4 bg-primary rounded-md"></div>
+                  </div>
+                  <span>{t('theme.professional', 'Tiêu chuẩn')}</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    themeManager.setTheme({ themeStyle: 'tint' });
+                  }}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
+                    currentTheme.themeStyle === 'tint' && "border-primary bg-primary/5"
+                  )}
+                >
+                  <div className="size-5 flex items-center justify-center">
+                    <div className="size-4 bg-primary/20 rounded-md border border-primary"></div>
+                  </div>
+                  <span>{t('theme.tint', 'Màu nhẹ')}</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    themeManager.setTheme({ themeStyle: 'vibrant' });
+                  }}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
+                    currentTheme.themeStyle === 'vibrant' && "border-primary bg-primary/5"
+                  )}
+                >
+                  <div className="size-5 flex items-center justify-center">
+                    <div className="size-4 bg-gradient-to-br from-primary to-blue-400 rounded-md"></div>
+                  </div>
+                  <span>{t('theme.vibrant', 'Nổi bật')}</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button>{t('common.done', 'Hoàn tất')}</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 }
