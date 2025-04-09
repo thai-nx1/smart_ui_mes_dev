@@ -521,86 +521,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Xử lý che phủ màn hình khi sidebar đang mở trên thiết bị di động
-function useOverlay() {
-  useEffect(() => {
-    const sidebarContent = document.querySelector('[data-sidebar-content]');
-    if (!sidebarContent) return;
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'data-sidebar-opened') {
-          const isOpen = sidebarContent.getAttribute('data-sidebar-opened') === 'true';
-          if (isOpen) {
-            const overlay = document.createElement('div');
-            overlay.id = 'sidebar-overlay';
-            overlay.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm z-0 lg:hidden animate-in fade-in-0 duration-200';
-            overlay.onclick = () => {
-              try {
-                // Đóng sidebar trực tiếp thay vì thông qua nút trigger
-                const sidebar = document.querySelector('[data-sidebar-content]');
-                if (sidebar) {
-                  sidebar.setAttribute('data-sidebar-opened', 'false');
-                  // Remove overlay
-                  const overlay = document.getElementById('sidebar-overlay');
-                  if (overlay) {
-                    overlay.classList.add('animate-out', 'fade-out-0');
-                    setTimeout(() => {
-                      try {
-                        overlay.remove();
-                      } catch (err) {
-                        console.error('Error removing overlay:', err);
-                      }
-                    }, 200);
-                  }
-                }
-              } catch (err) {
-                console.error('Error closing sidebar:', err);
-                // Fallback method
-                try {
-                  const overlay = document.getElementById('sidebar-overlay');
-                  if (overlay) overlay.remove();
-                } catch (e) {}
-              }
-            };
-            document.body.appendChild(overlay);
-          } else {
-            try {
-              const overlay = document.getElementById('sidebar-overlay');
-              if (overlay) {
-                overlay.classList.add('animate-out', 'fade-out-0');
-                setTimeout(() => {
-                  try {
-                    overlay.remove();
-                  } catch (err) {
-                    console.error('Error removing overlay when sidebar is closing:', err);
-                  }
-                }, 200);
-              }
-            } catch (err) {
-              console.error('Error handling overlay when sidebar is closing:', err);
-            }
-          }
-        }
-      });
-    });
-
-    observer.observe(sidebarContent, { attributes: true });
-
-    return () => {
-      observer.disconnect();
-      const overlay = document.getElementById('sidebar-overlay');
-      if (overlay) overlay.remove();
-    };
-  }, []);
-}
+// Chúng ta sẽ không sử dụng useOverlay hook nữa
+// Mà thay vào đó, xử lý trực tiếp trong các sự kiện click
 
 // Dynamic Menu Item Component
 function DynamicMenuItem({ menu }: { menu: MenuType }) {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const hasChildren = menu.core_dynamic_child_menus && menu.core_dynamic_child_menus.length > 0;
-  useOverlay(); // Sử dụng overlay
 
   // Kiểm tra xem có submenu đang được chọn không
   const hasActiveChild = menu.core_dynamic_child_menus?.some(
