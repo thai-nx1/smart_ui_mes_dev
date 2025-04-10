@@ -391,7 +391,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         </Sidebar>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto overflow-x-hidden">
+        <div className="h-screen flex-1 overflow-auto">
           {children}
         </div>
       </div>
