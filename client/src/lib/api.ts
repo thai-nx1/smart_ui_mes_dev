@@ -684,6 +684,7 @@ export async function fetchTransitionForm(
             id
             is_required
             position
+            option_id
             core_dynamic_field {
               id
               code

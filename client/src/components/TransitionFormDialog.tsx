@@ -85,6 +85,8 @@ export function TransitionFormDialog({
           configuration: field.core_dynamic_field.configuration // Lấy configuration của field
         }));
 
+        console.log("Initial Values:", initialValues);
+
         setFormValues(initialValues);
       }
     } catch (error) {
@@ -443,7 +445,7 @@ function SearchableSelect({ field, value, onChange }: SearchableSelectProps) {
     const loadOptions = async () => {
       try {
         setIsLoading(true);
-        
+        console.log("Field:", field);
         // Check if field has option_id 
         // Option ID to get in configuration with key 'option_id'
         const optionId = field.option_id || JSON.parse(field.configuration || '{}').option_id;
