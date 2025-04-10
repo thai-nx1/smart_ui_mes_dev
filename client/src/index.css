@@ -3,18 +3,20 @@
 @tailwind utilities;
 
 /* Ẩn các badge màu vàng và nhãn Approved, New trong sidebar */
-.bg-yellow-300, .bg-yellow-200, .bg-yellow-100, 
+.bg-yellow-300,
+.bg-yellow-200,
+.bg-yellow-100,
 [class*="bg-yellow"] {
   display: none !important;
 }
 
 /* Chỉ ẩn các span riêng biệt có thể là nhãn New/Approved, không ẩn text chính */
-[data-sidebar="menu-button"] > span.ml-auto,
-[data-sidebar="menu-sub-button"] > span.ml-auto,
-[data-sidebar="menu-button"] > div.bg-yellow-100,
-[data-sidebar="menu-sub-button"] > div.bg-yellow-100,
-[data-sidebar="menu-button"] > div[class*="bg-yellow"],
-[data-sidebar="menu-sub-button"] > div[class*="bg-yellow"] {
+[data-sidebar="menu-button"]>span.ml-auto,
+[data-sidebar="menu-sub-button"]>span.ml-auto,
+[data-sidebar="menu-button"]>div.bg-yellow-100,
+[data-sidebar="menu-sub-button"]>div.bg-yellow-100,
+[data-sidebar="menu-button"]>div[class*="bg-yellow"],
+[data-sidebar="menu-sub-button"]>div[class*="bg-yellow"] {
   display: none !important;
 }
 
@@ -42,9 +44,9 @@
     -ms-hyphens: auto;
     hyphens: auto;
   }
-  
+
   /* Cải thiện cách xử lý xuống dòng cho chữ tiếng Việt */
-  .text-sm.text-muted-foreground, 
+  .text-sm.text-muted-foreground,
   .text-muted-foreground {
     word-break: break-word !important;
     overflow-wrap: break-word !important;
@@ -60,7 +62,7 @@
   --text-color-secondary: #73798D;
   --primary-color: #00B1D2;
   --primary-color-text: #ffffff;
-  
+
   /* Surface colors */
   --surface-0: #ffffff;
   --surface-50: #FAFAFA;
@@ -78,24 +80,25 @@
   --surface-card: #ffffff;
   --surface-overlay: #ffffff;
   --surface-border: #dee2e6;
-  
+
   /* Layout variables */
   --content-padding: 1rem;
   --inline-spacing: 0.5rem;
   --border-radius: 0.5rem;
-  
+
   /* Blue color palette */
   --blue-50: #f4fafe;
   --blue-100: #cae6fc;
   --blue-200: #a0d2fa;
-  --blue-300: #00B1D2; /* Primary color */
+  --blue-300: #00B1D2;
+  /* Primary color */
   --blue-400: #4baaf5;
   --blue-500: #2196f3;
   --blue-600: #1c80cf;
   --blue-700: #1769aa;
   --blue-800: #125386;
   --blue-900: #0d3c61;
-  
+
   /* Green color palette */
   --green-50: #f6fbf6;
   --green-100: #d4ecd5;
@@ -107,7 +110,7 @@
   --green-700: #357b38;
   --green-800: #2a602c;
   --green-900: #1e4620;
-  
+
   /* Orange color palette */
   --orange-50: #fff8f2;
   --orange-100: #fde0c2;
@@ -119,7 +122,7 @@
   --orange-700: #ac5700;
   --orange-800: #874400;
   --orange-900: #623200;
-  
+
   /* Gray color palette */
   --gray-50: #FAFAFA;
   --gray-100: #F5F5F5;
@@ -131,7 +134,7 @@
   --gray-700: #616161;
   --gray-800: #323232;
   --gray-900: #1D1D1D;
-  
+
   /* Red color palette */
   --red-50: #fff5f5;
   --red-100: #ffd1ce;
@@ -143,7 +146,7 @@
   --red-700: #b32d23;
   --red-800: #8c231c;
   --red-900: #661a14;
-  
+
   /* Light mode */
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -151,15 +154,18 @@
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  --primary: 190 100% 42%;  /* #00B1D2 in HSL */
+  --primary: 190 100% 42%;
+  /* #00B1D2 in HSL */
   --primary-foreground: 0 0% 100%;
-  --secondary: 174 97% 44%;  /* #03DAC6 in HSL */
+  --secondary: 174 97% 44%;
+  /* #03DAC6 in HSL */
   --secondary-foreground: 0 0% 0%;
   --muted: 210 40% 96.1%;
   --muted-foreground: 215.4 16.3% 46.9%;
   --accent: 210 40% 96.1%;
   --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 346 87% 36%; /* #B00020 in HSL */
+  --destructive: 346 87% 36%;
+  /* #B00020 in HSL */
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
@@ -197,7 +203,7 @@
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
   --ring: 190 100% 42%;
-  
+
   /* Sidebar Colors - Dark Mode */
   --sidebar-background: 222 47% 11%;
   --sidebar-foreground: 210 40% 98%;
@@ -222,7 +228,7 @@
   --accent: 180 50% 97%;
   --accent-foreground: 190 100% 32%;
   --ring: var(--oxii-primary);
-  
+
   /* Sidebar Colors - Vibrant Light */
   --sidebar-background: 0 0% 100%;
   --sidebar-foreground: 222.2 84% 4.9%;
@@ -242,7 +248,7 @@
   --accent: 190 70% 20%;
   --accent-foreground: 210 40% 98%;
   --ring: var(--oxii-primary);
-  
+
   /* Sidebar Colors - Vibrant Dark */
   --sidebar-background: 222.2 47% 10%;
   --sidebar-foreground: 210 40% 98%;
@@ -258,7 +264,7 @@
   --secondary: 174 97% 44%;
   --accent: 190 30% 96%;
   --ring: var(--oxii-primary);
-  
+
   /* Sidebar Colors - Tint Light */
   --sidebar-background: 190 30% 97%;
   --sidebar-foreground: 222.2 84% 4.9%;
@@ -272,7 +278,7 @@
   --secondary: 174 97% 44%;
   --accent: 190 30% 15%;
   --ring: var(--oxii-primary);
-  
+
   /* Sidebar Colors - Tint Dark */
   --sidebar-background: 190 30% 8%;
   --sidebar-foreground: 210 40% 98%;
@@ -288,36 +294,38 @@
   body {
     @apply font-sans antialiased bg-background text-foreground transition-colors duration-300 overflow-x-hidden;
   }
-  
+
   /* Fix for horizontal scrolling issues */
   .overflow-x-hidden {
     overflow-x: hidden !important;
   }
-  
+
   /* Make tables horizontally scrollable without breaking layout */
   table {
     max-width: 100%;
     display: block;
     overflow-x: auto;
   }
-  
+
   /* Animation for QR code scanning */
   @keyframes qrScanLine {
     0% {
       top: 0%;
     }
+
     50% {
       top: 100%;
     }
+
     100% {
       top: 0%;
     }
   }
-  
+
   .animate-qrScanLine {
     animation: qrScanLine 2s linear infinite;
   }
-  
+
   /* Material Design style animations */
   @keyframes ripple {
     to {
@@ -325,38 +333,38 @@
       opacity: 0;
     }
   }
-  
+
   /* Material Design inputs */
   .oxii-input-animated {
     @apply relative transition-all duration-300;
   }
-  
+
   .oxii-input-animated label {
     @apply absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none transition-all duration-200;
   }
-  
-  .oxii-input-animated input:focus ~ label,
-  .oxii-input-animated input:not(:placeholder-shown) ~ label {
+
+  .oxii-input-animated input:focus~label,
+  .oxii-input-animated input:not(:placeholder-shown)~label {
     @apply text-xs top-0 -translate-y-1/2 text-primary;
   }
-  
+
   /* Material Design ripple effect */
   .oxii-ripple {
     @apply relative overflow-hidden;
   }
-  
+
   .oxii-ripple::after {
     content: '';
     @apply absolute w-5 h-5 rounded-full bg-primary/20 scale-0 opacity-100 pointer-events-none;
     transform-origin: center;
     animation: ripple 0.6s ease-out;
   }
-  
+
   /* Material Design cards */
   .oxii-card-hover {
     @apply transition-all duration-300 hover:shadow-lg;
   }
-  
+
   /* Material Design smooth transitions */
   .oxii-transition {
     @apply transition-all duration-300 ease-in-out;
@@ -367,25 +375,39 @@
   .clip-path-hexagon {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   }
-  
+
   /* Material Design elevation levels */
   .elevation-1 {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   }
-  
+
   .elevation-2 {
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   }
-  
+
   .elevation-3 {
-    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   }
-  
+
   .elevation-4 {
-    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
   }
-  
+
   .elevation-5 {
-    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+  }
+
+  /* Với phần tử bất kỳ */
+  .none-scroll {
+    overflow: auto;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE 10+ */
+  }
+
+  .none-scroll::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
   }
 }

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Sidebar,
   SidebarContent,
@@ -14,16 +13,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Menu, ChevronDown, Home, Settings, FormInput, ListChecks, Palette, Sun, Moon, Loader2, Search, X, Laptop } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { fetchMainMenus, fetchAllMenus } from '@/lib/api';
+import { fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
+import { useQuery } from '@tanstack/react-query';
+import { Home, Laptop, Loader2, Menu, Moon, Search, Sun, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'wouter';
 // import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useScreenSize } from '@/hooks/use-mobile';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { ThemeType, ThemeStyle, themeManager } from '@/lib/theme';
+import { themeManager } from '@/lib/theme';
+import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
 export function MainSidebar({ children }: { children: React.ReactNode }) {
@@ -32,7 +32,6 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   const screenSize = useScreenSize(); // Sử dụng hook để lấy kích thước màn hình hiện tại
   const [showThemeDialog, setShowThemeDialog] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(themeManager.getTheme());
@@ -165,7 +164,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className={containerClass}>
+      <div className={containerClass + ' h-screen flex items-start justify-start overflow-auto'}>
         {/* Mobile Sidebar Trigger - Chỉ hiển thị trên mobile */}
         <div className="fixed z-20 top-4 left-4 lg:hidden">
           <SidebarTrigger>
@@ -177,7 +176,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
         {/* Sidebar - Bắt buộc always open trên desktop */}
         <Sidebar 
-          className="z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground"
+          className="h-screen flex flex-col items-center justify-start overflow-auto z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground"
           collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
         >
           <SidebarHeader className="p-4 border-b">
@@ -263,7 +262,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
             </div>
           </SidebarHeader>
 
-          <SidebarContent className="px-2 py-4">
+          <SidebarContent className="px-2 py-4 flex-1 overflow-auto none-scroll">
             <SidebarGroup>
               <div className="text-xs font-semibold text-primary mb-2 px-3 flex items-center">
                 <span className="w-1 h-1 bg-primary rounded-full mr-2 inline-block"></span>
@@ -596,11 +595,6 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
               </svg>
             </div>
             <span className="min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">{menu.name}</span>
-            {menu.code && (
-              <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
-                {menu.code}
-              </span>
-            )}
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -621,11 +615,6 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
           </svg>
         </div>
         <span className="text-sm min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">{menu.name}</span>
-        {menu.code && (
-          <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/5 text-primary-foreground/70 whitespace-nowrap flex-shrink-0">
-            {menu.code}
-          </span>
-        )}
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
