@@ -73,7 +73,13 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         // Thêm submenu vào mỗi menu cha
         const menuWithChildren = parentMenus.map(parentMenu => {
           // Tìm tất cả các menu con của menu cha hiện tại
-          const childMenus = allMenus.filter(menu => menu.parent_id === parentMenu.id);
+          const childMenus = allMenus.filter(menu => menu.parent_id === parentMenu.id).reduce((arr:any, submenu)=>{
+            arr.push({
+              ...submenu,
+              parent_code: parentMenu.code
+            })
+            return arr
+          },[]);
           console.log(`Menu '${parentMenu.name}' has ${childMenus.length} child menus`);
           return {
             ...parentMenu,
@@ -619,13 +625,13 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
 
       {isOpen && menu.core_dynamic_child_menus && (
         <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200">
-          {menu.core_dynamic_child_menus.map((subMenu) => {
+          {menu.core_dynamic_child_menus.map((subMenu: any) => {
             let href = "";
             // Xử lý đặc biệt cho tất cả các submenu
             if (subMenu.workflow_id) {
-              href = `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}`;
+              href = `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}&parentCode=${subMenu.parent_code}`;
             } else {
-              href = `/menu/${menu.id}/submenu/${subMenu.id}`;
+              href = `/menu/${menu.id}/submenu/${subMenu.id}?menuId=${subMenu.id}&parentCode=${subMenu.parent_code}`;
             }
             const isActive = location === href || location.startsWith(`/submission/${subMenu.workflow_id}`);
             

@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'wouter';
-import { MainLayout } from '@/components/MainLayout';
-import { fetchMenuRecords, updateSubmissionForm, submitFormData, fetchAllMenus, fetchMenuViewForm } from '@/lib/api';
-import { SubmissionForm, FormSubmission, Menu } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useTranslation } from 'react-i18next';
-import { SubmissionDataTable } from '@/components/SubmissionDataTable';
 import { AddSubmissionDialog } from '@/components/AddSubmissionDialog';
+import { SubmissionDataTable } from '@/components/SubmissionDataTable';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { fetchAllMenus, fetchMenuRecords, fetchMenuViewForm, submitFormData, updateSubmissionForm } from '@/lib/api';
+import { FormSubmission, Menu } from '@/lib/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useParams } from 'wouter';
 
 export default function SubmissionPage() {
   const { t } = useTranslation();
