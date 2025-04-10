@@ -1,34 +1,38 @@
-import { 
-  GraphQLResponse, 
-  FormsListResponse, 
-  FormDetailsResponse, 
+import {
+  GraphQLResponse,
+  FormsListResponse,
+  FormDetailsResponse,
   FormSubmission,
   MenusResponse,
   MenusWithChildrenResponse,
   WorkflowResponse,
   SubmissionFormsResponse,
   DEFAULT_ORGANIZATION_ID,
-  DEFAULT_USER_ID
-} from './types';
+  DEFAULT_USER_ID,
+} from "./types";
 
 // Dựa vào kiểm tra schema, backend đã hoạt động và có các trường cần thiết
-const GRAPHQL_ENDPOINT = 'https://delicate-herring-66.hasura.app/v1/graphql';
+const GRAPHQL_ENDPOINT = "https://delicate-herring-66.hasura.app/v1/graphql";
 // Sử dụng token xác thực
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJ1c2VyVHlwZSI6IlNZU1RFTV9VU0VSIiwidXNlcklkIjoiOTViZDhhMTMtOTE0Zi00ZDAyLTg3ZTMtMGMyNjIyYjg4MmFlIiwic2VydmljZUlkIjoiZTQ2NDU5YzItZTkxMy00MGMxLTgzODMtOGY5YmYzZTdhZGEwIiwib3JnYW5pemF0aW9uSWQiOiJhOWU5ODczNC1lNWQyLTQ4NTEtODRmMy01ZjFjOWE5Y2QyYTciLCJidXNpbmVzc1JvbGVJZHMiOlsiYzk0MGU2MjgtNmFmZC00MzRhLTgwZjMtZGJkNjdiN2ZiNGEyIl19LCJpYXQiOjE3NDMzOTg2OTAsImV4cCI6MjA1ODc1ODY5MH0.RYMF__ddVq4T6CWCNfM6sD0LHr_OpvVvJgoKW5zAhgQ';
-console.log('Using GraphQL endpoint:', GRAPHQL_ENDPOINT);
+const AUTH_TOKEN =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJ1c2VyVHlwZSI6IlNZU1RFTV9VU0VSIiwidXNlcklkIjoiOTViZDhhMTMtOTE0Zi00ZDAyLTg3ZTMtMGMyNjIyYjg4MmFlIiwic2VydmljZUlkIjoiZTQ2NDU5YzItZTkxMy00MGMxLTgzODMtOGY5YmYzZTdhZGEwIiwib3JnYW5pemF0aW9uSWQiOiJhOWU5ODczNC1lNWQyLTQ4NTEtODRmMy01ZjFjOWE5Y2QyYTciLCJidXNpbmVzc1JvbGVJZHMiOlsiYzk0MGU2MjgtNmFmZC00MzRhLTgwZjMtZGJkNjdiN2ZiNGEyIl19LCJpYXQiOjE3NDMzOTg2OTAsImV4cCI6MjA1ODc1ODY5MH0.RYMF__ddVq4T6CWCNfM6sD0LHr_OpvVvJgoKW5zAhgQ";
+console.log("Using GraphQL endpoint:", GRAPHQL_ENDPOINT);
 
 /**
  * Execute a GraphQL query
  */
-export async function executeGraphQLQuery<T>(query: string, variables?: Record<string, any>): Promise<T> {
+export async function executeGraphQLQuery<T>(
+  query: string,
+  variables?: Record<string, any>,
+): Promise<T> {
   try {
-    console.log('Executing GraphQL query with variables:', variables);
-    
+    console.log("Executing GraphQL query with variables:", variables);
+
     const response = await fetch(GRAPHQL_ENDPOINT, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AUTH_TOKEN}` // Thêm header xác thực
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${AUTH_TOKEN}`, // Thêm header xác thực
       },
       body: JSON.stringify({
         query,
@@ -41,18 +45,43 @@ export async function executeGraphQLQuery<T>(query: string, variables?: Record<s
     }
 
     const result = await response.json();
-    console.log('GraphQL result:', result);
+    console.log("GraphQL result:", result);
 
     if (result.errors) {
-      console.error('GraphQL errors:', result.errors);
-      throw new Error(result.errors.map((e: any) => e.message).join('\n'));
+      console.error("GraphQL errors:", result.errors);
+      throw new Error(result.errors.map((e: any) => e.message).join("\n"));
     }
 
     return result as T;
   } catch (error) {
-    console.error('GraphQL query error:', error);
+    console.error("GraphQL query error:", error);
     throw error;
   }
+}
+
+/**
+ * Fetch options for SEARCH field type
+ */
+export async function fetchSearchOptions(
+  optionId: string,
+): Promise<GraphQLResponse<any>> {
+  const query = `
+    query getAllOptions($optionId: uuid!) {
+      core_core_options(
+        where: {deleted_at: {_is_null: true}, parent_id: { _eq: $optionId }}
+        order_by: {created_at: desc}
+      ) {
+        id
+        code
+        name
+        parent_id
+        __typename
+      }
+    }
+  `;
+
+  console.log("Fetching search options for parent ID:", optionId);
+  return executeGraphQLQuery(query, { optionId });
 }
 
 /**
@@ -85,12 +114,12 @@ export async function createField(field: {
  * Cập nhật thông tin trường (field)
  */
 export async function updateField(
-  fieldId: string, 
+  fieldId: string,
   updates: {
     name?: string;
     description?: string;
     status?: string;
-  }
+  },
 ): Promise<GraphQLResponse<any>> {
   const query = `
     mutation UpdateField($fieldId: uuid!, $updates: core_core_dynamic_fields_set_input!) {
@@ -114,7 +143,9 @@ export async function updateField(
 /**
  * Xóa một trường (field) khỏi một form cụ thể
  */
-export async function removeFieldFromForm(formFieldId: string): Promise<GraphQLResponse<any>> {
+export async function removeFieldFromForm(
+  formFieldId: string,
+): Promise<GraphQLResponse<any>> {
   const query = `
     mutation RemoveFieldFromForm($formFieldId: uuid!) {
       delete_core_core_dynamic_form_fields_by_pk(id: $formFieldId) {
@@ -131,7 +162,9 @@ export async function removeFieldFromForm(formFieldId: string): Promise<GraphQLR
 /**
  * Đọc thông tin chi tiết của một trường (field)
  */
-export async function fetchFieldDetails(fieldId: string): Promise<GraphQLResponse<any>> {
+export async function fetchFieldDetails(
+  fieldId: string,
+): Promise<GraphQLResponse<any>> {
   const query = `
     query GetFieldDetails($fieldId: uuid!) {
       core_core_dynamic_fields_by_pk(id: $fieldId) {
@@ -154,19 +187,27 @@ export async function fetchFieldDetails(fieldId: string): Promise<GraphQLRespons
  * Fetch all forms - Deprecated, use fetchMenuForms instead
  * This function is now disabled as per user request
  */
-export async function fetchForms(limit = 20, offset = 0): Promise<GraphQLResponse<FormsListResponse>> {
-  console.warn('fetchForms is deprecated and disabled. Use fetchMenuForms instead.');
+export async function fetchForms(
+  limit = 20,
+  offset = 0,
+): Promise<GraphQLResponse<FormsListResponse>> {
+  console.warn(
+    "fetchForms is deprecated and disabled. Use fetchMenuForms instead.",
+  );
   return Promise.resolve({
     data: {
-      core_core_dynamic_forms: []
-    }
+      core_core_dynamic_forms: [],
+    },
   } as GraphQLResponse<FormsListResponse>);
 }
 
 /**
  * Fetch forms by menu ID and form type (CREATE/EDIT/VIEW)
  */
-export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT' | 'VIEW'): Promise<GraphQLResponse<any>> {
+export async function fetchMenuForms(
+  menuId: string,
+  formType: "CREATE" | "EDIT" | "VIEW",
+): Promise<GraphQLResponse<any>> {
   // Sử dụng đúng tên field theo query mẫu bạn cung cấp
   const query = `
     query GetFormsByMenu($menuId: uuid!, $formType: String!) {
@@ -183,6 +224,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
             id
             is_required
             position
+            option_id
             core_dynamic_field {
               id
               code
@@ -202,7 +244,7 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
   // Chỉ sử dụng các tham số cần thiết theo yêu cầu
   const variables = {
     menuId,
-    formType
+    formType,
   };
 
   console.log("Fetching menu forms with:", variables);
@@ -212,7 +254,9 @@ export async function fetchMenuForms(menuId: string, formType: 'CREATE' | 'EDIT'
 /**
  * Fetch form fields by form ID
  */
-export async function fetchFormFields(formId: string): Promise<GraphQLResponse<FormDetailsResponse>> {
+export async function fetchFormFields(
+  formId: string,
+): Promise<GraphQLResponse<FormDetailsResponse>> {
   // Sử dụng đúng format truy vấn GraphQL từ mẫu được cung cấp
   const query = `
     query FormDetail($id: uuid!) {
@@ -244,13 +288,21 @@ export async function fetchFormFields(formId: string): Promise<GraphQLResponse<F
   `;
 
   console.log("Fetching form details with ID:", formId);
-  return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query, { id: formId });
+  return executeGraphQLQuery<GraphQLResponse<FormDetailsResponse>>(query, {
+    id: formId,
+  });
 }
 
 /**
  * Submit form data using GraphQL mutation
  */
-export async function submitFormData(submission: FormSubmission & { workflowId?: string, menuId?: string, formId?: string }): Promise<GraphQLResponse<any>> {
+export async function submitFormData(
+  submission: FormSubmission & {
+    workflowId?: string;
+    menuId?: string;
+    formId?: string;
+  },
+): Promise<GraphQLResponse<any>> {
   // Áp dụng logic cho tất cả submenu, giống như cách xử lý cho submenu khiếu nại (ID: "ss")
   const query = `
     mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
@@ -273,34 +325,40 @@ data
   `;
 
   // Biến đổi dữ liệu cho phù hợp với định dạng mutation mới
-  const submissionFields = Object.entries(submission.data).map(([fieldId, fieldData]) => {
-    // fieldData giờ đây là một đối tượng có chứa value, name, và field_type
-    return {
-      id: fieldId,
-      name: fieldData.name,
-      field_type: fieldData.field_type,
-      value: fieldData.value
-    };
-  });
+  const submissionFields = Object.entries(submission.data).map(
+    ([fieldId, fieldData]) => {
+      // fieldData giờ đây là một đối tượng có chứa value, name, và field_type
+      return {
+        id: fieldId,
+        name: fieldData.name,
+        field_type: fieldData.field_type,
+        value: fieldData.value,
+      };
+    },
+  );
 
   // Tạo tiêu đề từ dữ liệu đã nhập hoặc sử dụng tiêu đề mặc định
   // Tìm field có tên hoặc field_type là TEXT để dùng làm tiêu đề
   let title = "Khiếu nại mới";
-  const titleField = Object.values(submission.data).find(field => 
-    field.name.toLowerCase().includes("tiêu đề") || 
-    field.name.toLowerCase().includes("title")
+  const titleField = Object.values(submission.data).find(
+    (field) =>
+      field.name.toLowerCase().includes("tiêu đề") ||
+      field.name.toLowerCase().includes("title"),
   );
-  
+
   if (titleField && titleField.value) {
     title = String(titleField.value);
   }
 
   // QUAN TRỌNG: Cần sử dụng ID của submenu thay vì workflowId
   // Theo yêu cầu, cần sử dụng menuId từ tham số truyền vào
-  const menuId = submission.menuId || submission.workflowId || "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
-  
+  const menuId =
+    submission.menuId ||
+    submission.workflowId ||
+    "7ffe9691-7f9b-430d-a945-16e0d9b173c4";
+
   console.log("Using menuId for submission:", menuId);
-  
+
   // Nếu có formId từ tham số, sử dụng nó
   const formId = submission.formId;
 
@@ -314,7 +372,7 @@ data
     userId: DEFAULT_USER_ID, // Sử dụng hằng số từ types.ts
     organizationId: DEFAULT_ORGANIZATION_ID, // Sử dụng hằng số từ types.ts
     title: title,
-    submissionData: submissionFields
+    submissionData: submissionFields,
   };
 
   console.log("Submitting form with data:", variables);
@@ -324,7 +382,9 @@ data
 /**
  * Fetch main menus (parent menus)
  */
-export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildrenResponse>> {
+export async function fetchMainMenus(): Promise<
+  GraphQLResponse<MenusWithChildrenResponse>
+> {
   const query = `
     query GetMainMenus {
       core_core_dynamic_menus(
@@ -343,7 +403,7 @@ export async function fetchMainMenus(): Promise<GraphQLResponse<MenusWithChildre
 }
 
 /**
- * Fetch all menus 
+ * Fetch all menus
  */
 export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
   const query = `
@@ -360,15 +420,22 @@ export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
   `;
 
   console.log("Fetching all menus from API...");
-  const response = await executeGraphQLQuery<GraphQLResponse<MenusResponse>>(query);
-  console.log("Successfully fetched menus:", response.data?.core_core_dynamic_menus?.length || 0, "items");
+  const response =
+    await executeGraphQLQuery<GraphQLResponse<MenusResponse>>(query);
+  console.log(
+    "Successfully fetched menus:",
+    response.data?.core_core_dynamic_menus?.length || 0,
+    "items",
+  );
   return response;
 }
 
 /**
  * Fetch workflows related to a specific menu
  */
-export async function fetchMenuWorkflows(menuId: string): Promise<GraphQLResponse<WorkflowResponse>> {
+export async function fetchMenuWorkflows(
+  menuId: string,
+): Promise<GraphQLResponse<WorkflowResponse>> {
   const query = `
     query GetWorkflowsByMenu($menuId: uuid!) {
       core_core_dynamic_workflows(
@@ -383,13 +450,17 @@ export async function fetchMenuWorkflows(menuId: string): Promise<GraphQLRespons
     }
   `;
 
-  return executeGraphQLQuery<GraphQLResponse<WorkflowResponse>>(query, { menuId });
+  return executeGraphQLQuery<GraphQLResponse<WorkflowResponse>>(query, {
+    menuId,
+  });
 }
 
 /**
  * Fetch submission forms for a specific workflow
  */
-export async function fetchSubmissionForms(workflowId: string): Promise<GraphQLResponse<SubmissionFormsResponse>> {
+export async function fetchSubmissionForms(
+  workflowId: string,
+): Promise<GraphQLResponse<SubmissionFormsResponse>> {
   const query = `
     query GetSubmissionForms($workflowId: uuid!, $organizationId: uuid!, $userId: uuid!) {
       core_core_submission_forms(where: {
@@ -405,20 +476,26 @@ export async function fetchSubmissionForms(workflowId: string): Promise<GraphQLR
       }
     }
   `;
-  
+
   const variables = {
     workflowId,
     organizationId: DEFAULT_ORGANIZATION_ID,
-    userId: DEFAULT_USER_ID
+    userId: DEFAULT_USER_ID,
   };
 
-  return executeGraphQLQuery<GraphQLResponse<SubmissionFormsResponse>>(query, variables);
+  return executeGraphQLQuery<GraphQLResponse<SubmissionFormsResponse>>(
+    query,
+    variables,
+  );
 }
 
 /**
  * Update submission form data
  */
-export async function updateSubmissionForm(submissionId: string, updatedData: any[]): Promise<GraphQLResponse<any>> {
+export async function updateSubmissionForm(
+  submissionId: string,
+  updatedData: any[],
+): Promise<GraphQLResponse<any>> {
   const query = `
     mutation UpdateMenuRecord($recordId: uuid!, $data: jsonb!) {
       update_core_core_menu_records_by_pk(
@@ -435,7 +512,7 @@ export async function updateSubmissionForm(submissionId: string, updatedData: an
 
   const variables = {
     recordId: submissionId,
-    data: updatedData
+    data: updatedData,
   };
 
   return executeGraphQLQuery(query, variables);
@@ -445,14 +522,14 @@ export async function updateSubmissionForm(submissionId: string, updatedData: an
  * Fetch menu records by menu ID
  */
 export async function fetchMenuRecords(
-  menuId: string, 
-  limit: number | null = null, 
+  menuId: string,
+  limit: number | null = null,
   offset: number | null = null,
-  recordId?: string
+  recordId?: string,
 ): Promise<GraphQLResponse<any>> {
   // Tạo câu truy vấn GraphQL với hoặc không có điều kiện recordId
   let query;
-  
+
   if (recordId) {
     // Nếu có recordId, tìm chính xác record và lọc deleted_at is null
     query = `
@@ -515,7 +592,7 @@ export async function fetchMenuRecords(
     menuId,
     limit,
     offset,
-    ...(recordId && { recordId })
+    ...(recordId && { recordId }),
   };
 
   return executeGraphQLQuery(query, variables);
@@ -526,20 +603,23 @@ export async function fetchMenuRecords(
  */
 export async function fetchWorkflowTransitionsByStatus(
   workflowId: string,
-  fromStatusId: string
+  fromStatusId: string,
 ): Promise<GraphQLResponse<any>> {
-  console.log('Calling API fetchWorkflowTransitionsByStatus with workflowId:', workflowId);
-  console.log('Menu information:', {
+  console.log(
+    "Calling API fetchWorkflowTransitionsByStatus with workflowId:",
+    workflowId,
+  );
+  console.log("Menu information:", {
     menuIdFromQuery: workflowId,
     currentSubmenuId: workflowId,
     menuIdToUse: workflowId,
-    workflowId: workflowId
+    workflowId: workflowId,
   });
-  
+
   // Xử lý 2 trường hợp cho query:
   // 1. Nếu có fromStatusId: lấy các transitions từ status này
   // 2. Nếu không có fromStatusId: lấy các transitions có from_status_id là null (trạng thái khởi tạo)
-  const query = fromStatusId 
+  const query = fromStatusId
     ? `
       query GetTransitionByStatus($workflowId: uuid!, $fromStatusId: uuid!) {
         core_core_dynamic_workflow_transitions(
@@ -579,14 +659,16 @@ export async function fetchWorkflowTransitionsByStatus(
     ? { workflowId, fromStatusId }
     : { workflowId };
 
-  console.log('Fetching transitions with variables:', variables);
+  console.log("Fetching transitions with variables:", variables);
   return executeGraphQLQuery(query, variables);
 }
 
 /**
  * Fetch form by transition ID
  */
-export async function fetchTransitionForm(transitionId: string): Promise<GraphQLResponse<any>> {
+export async function fetchTransitionForm(
+  transitionId: string,
+): Promise<GraphQLResponse<any>> {
   const query = `
     query MyQuery2($transitionId: uuid!) {
       core_core_dynamic_workflow_transitions_by_pk(id: $transitionId) {
@@ -631,7 +713,7 @@ export async function submitTransitionForm(
   recordId: string,
   userId: string = DEFAULT_USER_ID, // Sử dụng giá trị mặc định từ constants
   name: string,
-  submissionData: any[]
+  submissionData: any[],
 ): Promise<GraphQLResponse<any>> {
   const query = `
     mutation insert_submission_form($transitionId: String!, $recordId: String!, $userId: String!, $name: String!, $submissionData: JSON) {
@@ -656,9 +738,9 @@ export async function submitTransitionForm(
     recordId,
     userId,
     name,
-    submissionData
+    submissionData,
   };
-  
+
   console.log("Submitting transition form with data:", variables);
   return executeGraphQLQuery(query, variables);
 }
@@ -666,7 +748,9 @@ export async function submitTransitionForm(
 /**
  * Fetch menu view form fields for column headers
  */
-export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse<any>> {
+export async function fetchMenuViewForm(
+  menuId: string,
+): Promise<GraphQLResponse<any>> {
   const query = `
     query FetchMenuViewForm($menuId: uuid!) {
       core_core_dynamic_menu_forms(
@@ -684,6 +768,7 @@ export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse
             id
             is_required
             position
+            option_id
             core_dynamic_field {
               id
               code
@@ -701,7 +786,7 @@ export async function fetchMenuViewForm(menuId: string): Promise<GraphQLResponse
   `;
 
   const variables = {
-    menuId
+    menuId,
   };
 
   return executeGraphQLQuery(query, variables);
@@ -717,9 +802,9 @@ export async function apiRequest(
 ): Promise<Response> {
   const res = await fetch(url, {
     method,
-    headers: data ? { 'Content-Type': 'application/json' } : {},
+    headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: 'include',
+    credentials: "include",
   });
 
   if (!res.ok) {

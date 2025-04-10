@@ -10,10 +10,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2, Check } from 'lucide-react';
-import { fetchForms, fetchFormFields, fetchMenuForms, fetchAllMenus } from '@/lib/api';
+import { fetchForms, fetchFormFields, fetchMenuForms, fetchAllMenus, fetchSearchOptions } from '@/lib/api';
 import { Form, Field, FormField, FieldSubmission, FormSubmission } from '@/lib/types';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/hooks/use-toast';
+import Select, { SingleValue, ActionMeta } from 'react-select';
 
 interface AddSubmissionDialogProps {
   onSubmit: (submission: FormSubmission) => Promise<void>;
@@ -185,7 +186,8 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
           (formField: any) => ({
             ...formField.core_dynamic_field,
             position: formField.position,
-            is_required: formField.is_required
+            is_required: formField.is_required,
+            option_id: formField.option_id
           })
         );
         
@@ -256,6 +258,10 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
             } else {
               defaultValue = 'option1';
             }
+            break;
+          case 'SEARCH':
+            // For SEARCH field type, default value is null or empty object
+            defaultValue = null;
             break;
           case 'MULTI_CHOICE':
             defaultValue = [];
@@ -535,6 +541,14 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
                       className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                       value={fieldValues[field.id] ? new Date(fieldValues[field.id]).toISOString().slice(0, 10) : ''}
                       onChange={(e) => handleFieldValueChange(field.id, new Date(e.target.value).getTime())}
+                    />
+                  )}
+                  
+                  {field.field_type === 'SEARCH' && (
+                    <SearchableSelect 
+                      field={field}
+                      value={fieldValues[field.id]}
+                      onChange={(value) => handleFieldValueChange(field.id, value)}
                     />
                   )}
                   
@@ -1151,5 +1165,76 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// SearchableSelect component for SEARCH field type
+interface SearchableSelectProps {
+  field: Field | any;
+  value: any;
+  onChange: (value: any) => void;
+}
+
+function SearchableSelect({ field, value, onChange }: SearchableSelectProps) {
+  const [options, setOptions] = useState<{value: string, label: string}[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    // Extract the option_id from the field's configuration 
+    const loadOptions = async () => {
+      console.log("Field:", field);
+      try {
+        setIsLoading(true);
+        
+        // Check if configuration exists and has option_id
+        if (!field.option_id) {
+          console.error("Field configuration is missing for SEARCH field:", field.id);
+          setOptions([]);
+          return;
+        }
+        
+        // Fetch search options from API
+        const response = await fetchSearchOptions(field.option_id);
+        
+        if (response.data && response.data.core_core_options) {
+          const fetchedOptions = response.data.core_core_options.map((option: any) => ({
+            value: option.id,
+            label: option.name || option.code
+          }));
+          setOptions(fetchedOptions);
+        } else {
+          console.error("Failed to fetch options or empty response");
+          setOptions([]);
+        }
+      } catch (error) {
+        console.error("Error loading search options:", error);
+        setOptions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadOptions();
+  }, [field.id]);
+  
+  // Find the selected option based on the current value
+  const selectedOption = options.find(option => option.value === value) || null;
+  
+  const handleChange = (selected: SingleValue<{value: string, label: string}>, action: ActionMeta<{value: string, label: string}>) => {
+    onChange(selected ? selected.value : null);
+  };
+  
+  return (
+    <Select
+      className="w-full rounded-md focus:outline-none"
+      value={selectedOption}
+      onChange={handleChange}
+      options={options}
+      isLoading={isLoading}
+      isClearable
+      placeholder="Chọn hoặc tìm kiếm..."
+      noOptionsMessage={() => "Không có tùy chọn"}
+      loadingMessage={() => "Đang tải..."}
+    />
   );
 }
