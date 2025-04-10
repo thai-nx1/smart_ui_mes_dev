@@ -183,7 +183,7 @@ export function SubmissionDataTable({
       }
     }
     
-    // Xác định URL điều hướng đến trang chi tiết
+    // Xác định URL điều hướng đến trang chi tiết    
     let redirectUrl = `/record/${menuId}/${submission.id}`;
     
     // Nếu có workflowId, thêm vào URL
