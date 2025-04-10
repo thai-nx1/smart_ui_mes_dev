@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Calendar, ChevronRight } from 'lucide-react';
+import Select, { SingleValue, ActionMeta } from 'react-select';
 
 import {
   Dialog,
@@ -16,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { fetchTransitionForm, submitTransitionForm } from '@/lib/api';
+import { fetchTransitionForm, submitTransitionForm, fetchSearchOptions } from '@/lib/api';
 
 interface TransitionFormDialogProps {
   transitionId: string;
@@ -33,6 +34,15 @@ interface FormField {
   value: any;
   field_type: string;
   is_required?: boolean;
+  option_id?: string; // ID của option cho trường SEARCH
+  configuration?: string; // Configuration của field dưới dạng JSON string
+}
+
+// Interface cho SearchableSelect
+interface SearchableSelectProps {
+  field: FormField;
+  value: any;
+  onChange: (value: any) => void;
 }
 
 export function TransitionFormDialog({
@@ -70,7 +80,9 @@ export function TransitionFormDialog({
           name: field.core_dynamic_field.name,
           field_type: field.core_dynamic_field.field_type,
           value: getDefaultValueByType(field.core_dynamic_field.field_type),
-          is_required: field.is_required
+          is_required: field.is_required,
+          option_id: field.option_id, // Lấy option_id cho trường SEARCH
+          configuration: field.core_dynamic_field.configuration // Lấy configuration của field
         }));
 
         setFormValues(initialValues);
@@ -185,8 +197,6 @@ export function TransitionFormDialog({
   const renderFieldInput = (field: FormField) => {
     switch (field.field_type) {
       case 'SEARCH':
-        // Chúng ta sẽ sử dụng SearchableSelect từ AddSubmissionDialog
-        // Cần import và thêm vào component TransitionFormDialog
         return (
           <div className="grid gap-2">
             <div className="flex justify-between items-center">
@@ -194,13 +204,10 @@ export function TransitionFormDialog({
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Tìm kiếm</span>
             </div>
             <div className="w-full">
-              {/* Ở đây chúng ta render Input tạm thời. Trong tương lai sẽ thay bằng SearchableSelect */}
-              <Input
-                placeholder="Tìm kiếm..."
-                value={field.value as string}
-                onChange={(e) => handleValueChange(field.id, e.target.value)}
-                className="w-full"
-                required={field.is_required}
+              <SearchableSelect 
+                field={field}
+                value={field.value}
+                onChange={(value) => handleValueChange(field.id, value)}
               />
             </div>
           </div>
@@ -423,5 +430,72 @@ export function TransitionFormDialog({
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+// Component SearchableSelect dùng react-select
+function SearchableSelect({ field, value, onChange }: SearchableSelectProps) {
+  const [options, setOptions] = useState<{value: string, label: string}[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    // Extract the option_id from the field 
+    const loadOptions = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Check if field has option_id 
+        // Option ID to get in configuration with key 'option_id'
+        const optionId = field.option_id || JSON.parse(field.configuration || '{}').option_id;
+        
+        if (!optionId) {
+          console.error("Option ID is missing for SEARCH field:", field.id);
+          setOptions([]);
+          return;
+        }
+        
+        // Fetch search options from API
+        const response = await fetchSearchOptions(optionId);
+        
+        if (response.data && response.data.core_core_option_items) {
+          const fetchedOptions = response.data.core_core_option_items.map((option: any) => ({
+            value: option.id,
+            label: option.name || option.code
+          }));
+          setOptions(fetchedOptions);
+        } else {
+          console.error("Failed to fetch options or empty response");
+          setOptions([]);
+        }
+      } catch (error) {
+        console.error("Error loading search options:", error);
+        setOptions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadOptions();
+  }, [field.id]);
+  
+  // Find the selected option based on the current value
+  const selectedOption = options.find(option => option.value === value) || null;
+  
+  const handleChange = (selected: SingleValue<{value: string, label: string}>, action: ActionMeta<{value: string, label: string}>) => {
+    onChange(selected ? selected.value : null);
+  };
+  
+  return (
+    <Select
+      className="w-full rounded-md focus:outline-none"
+      value={selectedOption}
+      onChange={handleChange}
+      options={options}
+      isLoading={isLoading}
+      isClearable
+      placeholder="Chọn hoặc tìm kiếm..."
+      noOptionsMessage={() => "Không có tùy chọn"}
+      loadingMessage={() => "Đang tải..."}
+    />
   );
 }
