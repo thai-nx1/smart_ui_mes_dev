@@ -79,7 +79,7 @@ export async function fetchSearchOptions(
     }
   `;
 
-  console.log("Fetching search options for parent ID:", optionId);
+  console.log("Fetching search options for option ID:", optionId);
   return executeGraphQLQuery(query, { optionId });
 }
 
