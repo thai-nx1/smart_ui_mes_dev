@@ -135,22 +135,9 @@ export function TransitionFormDialog({
   const handleOpen = (open: boolean) => {
     setIsOpen(open);
 
-    // Khởi tạo formValues từ dữ liệu API khi dialog mở
-    if (open && formData?.data?.core_core_dynamic_workflow_transitions_by_pk?.core_dynamic_form?.core_dynamic_form_fields) {
-      const fields = formData.data.core_core_dynamic_workflow_transitions_by_pk.core_dynamic_form.core_dynamic_form_fields;
-
-      // Map các field từ API sang định dạng formValues
-      // Sử dụng id của form_field để đảm bảo keys luôn unique ngay cả khi có trùng field
-      const initialValues = fields.map((field: any) => ({
-        id: field.core_dynamic_field.id,
-        form_field_id: field.id, // Thêm ID của form_field để tạo key duy nhất
-        name: field.core_dynamic_field.name,
-        field_type: field.core_dynamic_field.field_type,
-        value: getDefaultValueByType(field.core_dynamic_field.field_type),
-        is_required: field.is_required
-      }));
-
-      setFormValues(initialValues);
+    // Khi mở dialog, gọi ngay fetchAndSetFormFields để lấy dữ liệu và hiển thị
+    if (open && transitionId) {
+      fetchAndSetFormFields(transitionId);
     }
   };
 
@@ -168,6 +155,8 @@ export function TransitionFormDialog({
         return "1";
       case "MULTI_CHOICE":
         return ["1"];
+      case "SEARCH":
+        return null; // Giá trị mặc định cho SEARCH là null
       default:
         return "";
     }
@@ -195,6 +184,27 @@ export function TransitionFormDialog({
   // Render field input dựa vào loại
   const renderFieldInput = (field: FormField) => {
     switch (field.field_type) {
+      case 'SEARCH':
+        // Chúng ta sẽ sử dụng SearchableSelect từ AddSubmissionDialog
+        // Cần import và thêm vào component TransitionFormDialog
+        return (
+          <div className="grid gap-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-primary">{field.name}</span>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Tìm kiếm</span>
+            </div>
+            <div className="w-full">
+              {/* Ở đây chúng ta render Input tạm thời. Trong tương lai sẽ thay bằng SearchableSelect */}
+              <Input
+                placeholder="Tìm kiếm..."
+                value={field.value as string}
+                onChange={(e) => handleValueChange(field.id, e.target.value)}
+                className="w-full"
+                required={field.is_required}
+              />
+            </div>
+          </div>
+        );
       case 'TEXT':
         return (
           <div className="grid gap-2">
@@ -381,20 +391,7 @@ export function TransitionFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-2 border-b">
-          <h3 className="text-base font-medium">Hành động có sẵn:</h3>
-          <div className="mt-2 flex space-x-2">
-            <span 
-              className="px-3 py-1 border border-blue-300 text-blue-300 rounded-full text-sm cursor-pointer hover:bg-blue-300/10 transition-colors duration-200"
-              onClick={() => {
-                // Tự động chọn transition hiện tại để hiện form
-                fetchAndSetFormFields(transitionId);
-              }}
-            >
-              {transitionName} →
-            </span>
-          </div>
-        </div>
+        {/* Đã tự động gọi fetchAndSetFormFields khi dialog mở */}
 
         {isLoading ? (
           <div className="py-6">
