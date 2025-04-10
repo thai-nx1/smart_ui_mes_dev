@@ -144,8 +144,8 @@ export function WorkflowDiagram({
         // Thêm nhãn hành động từ trường name của transition
         const transitionName = transition.name || '';
         if (transitionName) {
-          // Nếu có tên transition, hiển thị làm nhãn trên mũi tên
-          mermaidCode += `  ${fromId} -- "${transitionName}" --> ${toId}\n`;
+          // Hiển thị tên hành động trực tiếp trên mũi tên
+          mermaidCode += `  ${fromId} -->|${transitionName}| ${toId}\n`;
         } else {
           mermaidCode += `  ${fromId} --> ${toId}\n`;
         }
@@ -154,7 +154,7 @@ export function WorkflowDiagram({
         const toId = transition.to_status_id.replace(/-/g, '_');
         const transitionName = transition.name || '';
         if (transitionName) {
-          mermaidCode += `  Start((Bắt đầu)) -- "${transitionName}" --> ${toId}\n`;
+          mermaidCode += `  Start((Bắt đầu)) -->|${transitionName}| ${toId}\n`;
         } else {
           mermaidCode += `  Start((Bắt đầu)) --> ${toId}\n`;
         }
@@ -164,7 +164,7 @@ export function WorkflowDiagram({
         const fromId = transition.from_status_id.replace(/-/g, '_');
         const transitionName = transition.name || '';
         if (transitionName) {
-          mermaidCode += `  ${fromId} -- "${transitionName}" --> End((Kết thúc))\n`;
+          mermaidCode += `  ${fromId} -->|${transitionName}| End((Kết thúc))\n`;
         } else {
           mermaidCode += `  ${fromId} --> End((Kết thúc))\n`;
         }
