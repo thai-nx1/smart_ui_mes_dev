@@ -67,15 +67,14 @@ export async function fetchSearchOptions(
 ): Promise<GraphQLResponse<any>> {
   const query = `
     query getAllOptions($optionId: uuid!) {
-      core_core_options(
-        where: {deleted_at: {_is_null: true}, parent_id: { _eq: $optionId }}
-        order_by: {created_at: desc}
+      core_core_option_items(
+        where: { deleted_at: { _is_null: true }, option_id: { _eq: $optionId } }
+        order_by: { created_at: desc }
       ) {
         id
         code
         name
         parent_id
-        __typename
       }
     }
   `;

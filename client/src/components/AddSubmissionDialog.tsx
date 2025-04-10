@@ -1196,8 +1196,8 @@ function SearchableSelect({ field, value, onChange }: SearchableSelectProps) {
         // Fetch search options from API
         const response = await fetchSearchOptions(field.option_id);
         
-        if (response.data && response.data.core_core_options) {
-          const fetchedOptions = response.data.core_core_options.map((option: any) => ({
+        if (response.data && response.data.core_core_option_items) {
+          const fetchedOptions = response.data.core_core_option_items.map((option: any) => ({
             value: option.id,
             label: option.name || option.code
           }));
