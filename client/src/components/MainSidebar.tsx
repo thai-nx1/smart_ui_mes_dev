@@ -629,9 +629,9 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
             let href = "";
             // Xử lý đặc biệt cho tất cả các submenu
             if (subMenu.workflow_id) {
-              href = `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}&parentCode=${subMenu.parent_code}`;
+              href = `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}`;
             } else {
-              href = `/menu/${menu.id}/submenu/${subMenu.id}?menuId=${subMenu.id}&parentCode=${subMenu.parent_code}`;
+              href = `/menu/${menu.id}/submenu/${subMenu.id}`;
             }
             const isActive = location === href || location.startsWith(`/submission/${subMenu.workflow_id}`);
             
