@@ -204,7 +204,7 @@ export async function takePhoto(): Promise<FieldHandlerResponse> {
     });
 
     // Hàm cleanup để dừng stream và xóa modal
-    function cleanup() {
+    const cleanup = () => {
       // Dừng stream nếu có
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());

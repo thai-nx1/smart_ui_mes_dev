@@ -21,7 +21,7 @@ export default function SubmissionCreatePage() {
     setIsSubmitting(true);
     try {
       // Gọi API để tạo submission mới
-      const response = await submitFormData(submission);
+      await submitFormData(submission);
       
       // Hiển thị thông báo thành công
       toast({
@@ -31,8 +31,6 @@ export default function SubmissionCreatePage() {
       
       // Quay lại trang danh sách sau khi tạo thành công
       navigate(`/submission/${workflowId}`);
-      
-      return response;
     } catch (error) {
       console.error("Error creating submission:", error);
       
@@ -42,8 +40,6 @@ export default function SubmissionCreatePage() {
         description: t('error.tryAgain', 'Vui lòng thử lại sau'),
         variant: 'destructive',
       });
-      
-      throw error;
     } finally {
       setIsSubmitting(false);
     }
