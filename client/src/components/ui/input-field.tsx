@@ -124,7 +124,7 @@ export function InputField({
             id={id}
             value={value || ""}
             onChange={handleChange}
-            className={cn(error && "border-red-500")}
+            className={cn(error && "ring-2 ring-red-500")}
             placeholder="Nhập đoạn văn bản dài"
             rows={3}
             required={required}
@@ -138,7 +138,7 @@ export function InputField({
             type="number"
             value={value || ""}
             onChange={handleChange}
-            className={cn(error && "border-red-500")}
+            className={cn(error && "ring-2 ring-red-500")}
             placeholder="0"
             required={required}
           />
@@ -230,7 +230,7 @@ export function InputField({
             id={id}
             value={value || ""}
             onChange={handleChange}
-            className={cn(error && "border-red-500")}
+            className={cn(error && "ring-2 ring-red-500")}
             placeholder="Nhập dữ liệu đầu vào"
             required={required}
           />
@@ -287,7 +287,7 @@ export function InputField({
                 value={value?.value || ""}
                 onChange={handleCacheChange}
                 className={cn(
-                  error && "border-red-500",
+                  error && "ring-2 ring-red-500",
                   "pr-10"
                 )}
                 placeholder="Dữ liệu sẽ được lưu cache"
