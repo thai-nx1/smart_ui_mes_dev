@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import FormsPage from "@/pages/forms";
 import WorkflowPage from "@/pages/workflow";
 import SubmissionPage from "@/pages/submission";
+import SubmissionCreatePage from "@/pages/submission-create";
 import DesignExamplePage from "@/pages/design-example";
 import RecordDetailPage from "@/pages/record-detail";
 import NotFound from "@/pages/not-found";
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/submission/:workflowId" component={SubmissionPage} />
       <Route path="/record/:menuId/:recordId" component={RecordDetailPage} />
       <Route path="/record/:menuId/:recordId/workflow/:workflowId" component={RecordDetailPage} />
+      <Route path="/submission-create/:workflowId" component={SubmissionCreatePage} />
       <Route path="/design" component={DesignExamplePage} />
       <Route component={NotFound} />
     </Switch>

@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, PlusCircle } from 'lucide-react';
 import { SubmissionDataTable } from '@/components/SubmissionDataTable';
 import { AddSubmissionDialog } from '@/components/AddSubmissionDialog';
 import { useParams, useLocation } from 'wouter';
@@ -126,7 +126,13 @@ export default function WorkflowPage() {
             </CardDescription>
           </div>
           {workflowId && (
-            <AddSubmissionDialog onSubmit={handleSubmitForm} workflowId={workflowId} />
+            <Button 
+              onClick={() => window.location.assign(`/submission-create/${workflowId}`)}
+              className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
+            >
+              <PlusCircle className="h-4 w-4" />
+              <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
+            </Button>
           )}
         </CardHeader>
         
