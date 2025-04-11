@@ -47,6 +47,7 @@ function App() {
         <Router />
       </MainSidebar>
       <CameraPermission />
+      <PwaOfflineAlert />
       <Toaster />
     </QueryClientProvider>
   );
