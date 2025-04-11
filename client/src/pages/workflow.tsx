@@ -123,11 +123,11 @@ export default function WorkflowPage() {
   };
 
   return (
-    <div className="container py-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <div className="w-full px-5 py-6">
+      <Card className="w-full border-none shadow-none">
+        <CardHeader className="flex flex-row items-center justify-between pb-2 px-6">
           <div>
-            <CardTitle>{currentSubmenu?.name || "Phê duyệt tài chính"}</CardTitle>
+            <CardTitle className="text-xl">{currentSubmenu?.name || "Phê duyệt tài chính"}</CardTitle>
             <CardDescription>
               Danh sách các biểu mẫu đã được gửi qua workflow này
             </CardDescription>
@@ -144,7 +144,7 @@ export default function WorkflowPage() {
           )}
         </CardHeader>
         
-        <CardContent>
+        <CardContent className="px-6 py-4">
           <div className="mb-4">
             <h3 className="text-lg font-medium mb-2">Dữ liệu đã nộp</h3>
             <div className="relative w-full max-w-md">
@@ -152,7 +152,7 @@ export default function WorkflowPage() {
               <Input
                 type="text"
                 placeholder="Tìm kiếm trong dữ liệu..."
-                className="w-full pl-9 pr-4 py-2 border rounded-md"
+                className="w-full pl-9 pr-4 py-2"
               />
             </div>
           </div>
