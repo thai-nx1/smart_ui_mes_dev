@@ -8,8 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { themeManager } from '@/lib/theme';
-import { useLocation } from 'wouter';
-import { MenuSidebar } from '@/components/MenuSidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -19,10 +17,8 @@ interface MainLayoutProps {
 export function MainLayout({ children, title }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
-  const [location] = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(themeManager.getIsDarkMode());
-  const [menuSidebarOpen, setMenuSidebarOpen] = useState(false);
   
   // Theo dõi cuộn trang để thêm shadow cho header
   useEffect(() => {
@@ -58,12 +54,17 @@ export function MainLayout({ children, title }: MainLayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-x-3">
-              {/* Nút menu cho mobile hiển thị ở tất cả các trang */}
+              {/* Nút menu cho mobile, chỉ hiện trên trang chủ */}
               <Button 
                 variant="ghost" 
                 size="icon" 
                 className="md:hidden mr-1" 
-                onClick={() => setMenuSidebarOpen(true)}
+                onClick={() => {
+                  const triggerButton = document.querySelector('[data-sidebar-trigger]');
+                  if (triggerButton) {
+                    (triggerButton as HTMLButtonElement).click();
+                  }
+                }}
               >
                 <Menu className="h-5 w-5" />
               </Button>
@@ -146,12 +147,6 @@ export function MainLayout({ children, title }: MainLayoutProps) {
           </div>
         </div>
       </footer>
-      
-      {/* Menu Sidebar cho mobile */}
-      <MenuSidebar 
-        isOpen={menuSidebarOpen} 
-        onClose={() => setMenuSidebarOpen(false)} 
-      />
     </div>
   );
 }
