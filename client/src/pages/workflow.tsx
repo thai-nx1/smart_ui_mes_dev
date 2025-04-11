@@ -16,6 +16,7 @@ import { fetchMenuRecords, fetchAllMenus, submitFormData } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 
 import { useTranslation } from 'react-i18next';
+import { MainLayout } from '@/components/MainLayout';
 
 // Dữ liệu mẫu các bản ghi phê duyệt
 const sampleSubmissions = [
@@ -123,6 +124,7 @@ export default function WorkflowPage() {
   };
 
   return (
+    <MainLayout title={t('submission.createTitle', currentSubmenu?.name || "Phê duyệt tài chính")}>
     <div className="container py-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -180,5 +182,6 @@ export default function WorkflowPage() {
         </CardContent>
       </Card>
     </div>
+    </MainLayout>
   );
 }
