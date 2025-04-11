@@ -540,7 +540,6 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   
   // Xử lý đóng sidebar khi click vào menu trên thiết bị di động
   const handleMobileMenuClick = () => {
-    toggleSidebar()
     if (window.innerWidth < 1024) { // 1024px là điểm ngắt cho lg (large) trong Tailwind
       setTimeout(() => {
         try {

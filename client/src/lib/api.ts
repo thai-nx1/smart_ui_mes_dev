@@ -30,7 +30,7 @@ export async function executeGraphQLQuery<T>(
     
     // Lấy token từ local storage qua Auth service
     const authTokens = getAuthTokens();
-    const accessToken = authTokens?.accessToken || '';
+    const accessToken = authTokens?.accessToken || DEFAULT_AUTH_TOKEN;
     
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
