@@ -80,7 +80,7 @@ export default function LoginPage() {
       const response = await fetch('https://delicate-herring-66.hasura.app/v1/graphql', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(graphqlQuery),
       });

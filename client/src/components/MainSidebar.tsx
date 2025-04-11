@@ -578,7 +578,10 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
       <SidebarMenuItem>
         <SidebarMenuButton
           asChild
-          onClick={handleMobileMenuClick}
+          onClick={()=>{
+            handleMobileMenuClick()
+            toggleSidebar()
+          }}
           className={`transition-all whitespace-normal ${
             isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
           }`}
