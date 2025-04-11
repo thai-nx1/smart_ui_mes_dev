@@ -822,42 +822,56 @@ export async function apiRequest(
 
 /**
  * Lấy các form của workflow từ API (bao gồm cả form fields)
+ * Sử dụng cùng cách query như trong AddSubmissionDialog - thông qua menuId
  */
-export async function fetchFormsByWorkflow(workflowId: string): Promise<GraphQLResponse<FormsListResponse>> {
-  const query = `
-    query GetWorkflowForms($workflowId: uuid!) {
-      core_core_dynamic_forms(
-        where: {
-          _and: [
-            { workflow_id: { _eq: $workflowId } },
-            { status: { _eq: "ACTIVE" } }
-          ]
-        }
-      ) {
-        id
-        name
-        description
-        status
-        __typename
-        core_dynamic_form_fields {
-          id
-          is_required
-          position
-          option_id
-          core_dynamic_field {
-            id
-            code
-            field_type
-            configuration
-            description
-            name
-            status
-            option_values
-          }
-        }
+export async function fetchFormsByWorkflow(workflowId: string): Promise<GraphQLResponse<any>> {
+  // Tìm menuId từ workflowId
+  const findMenuIdFromWorkflow = async (wfId: string) => {
+    try {
+      const allMenusResponse = await fetchAllMenus();
+      const allMenus = allMenusResponse.data.core_core_dynamic_menus;
+      
+      // Tìm menu với workflow_id trùng khớp
+      const currentMenu = allMenus.find((menu: any) => menu.workflow_id === wfId);
+      
+      if (currentMenu) {
+        console.log("Found menu for workflow:", currentMenu.id);
+        return currentMenu.id;
       }
+      
+      // Mặc định nếu không tìm thấy (có thể thay đổi tùy context)
+      console.log("Menu not found for workflow ID:", wfId);
+      return null;
+    } catch (err) {
+      console.error("Error finding menu by workflow:", err);
+      return null;
     }
-  `;
+  };
 
-  return executeGraphQLQuery<GraphQLResponse<FormsListResponse>>(query, { workflowId });
+  // Lấy menuId dựa trên workflowId 
+  const menuId = await findMenuIdFromWorkflow(workflowId);
+  
+  if (!menuId) {
+    console.error("No menu found for workflow:", workflowId);
+    return { data: { core_core_dynamic_forms: [] } };
+  }
+  
+  // Sử dụng fetchMenuForms để lấy form với loại CREATE
+  const response = await fetchMenuForms(menuId, 'CREATE');
+  
+  // Chuyển đổi từ định dạng menu forms sang định dạng forms để tương thích
+  if (response.data && response.data.core_core_dynamic_menu_forms) {
+    const forms = response.data.core_core_dynamic_menu_forms.map((menuForm: any) => ({
+      id: menuForm.core_dynamic_form.id,
+      name: menuForm.core_dynamic_form.name,
+      description: menuForm.core_dynamic_form.description || '',
+      status: 'ACTIVE',
+      __typename: 'core_core_dynamic_forms',
+      core_dynamic_form_fields: menuForm.core_dynamic_form.core_dynamic_form_fields
+    }));
+    
+    return { data: { core_core_dynamic_forms: forms } };
+  }
+  
+  return { data: { core_core_dynamic_forms: [] } };
 }

@@ -184,26 +184,67 @@ export default function SubmissionCreatePage() {
     setIsSubmitting(true);
     
     try {
-      // Chuyển đổi dữ liệu từ form.data sang định dạng yêu cầu của API
-      const fieldData: Record<string, any> = {};
-      data.fields.forEach(field => {
-        const matchingField = formFields.find(ff => ff.core_dynamic_field.id === field.id);
-        if (matchingField) {
-          fieldData[field.id] = {
+      // Kiểm tra các trường bắt buộc
+      const requiredFields = formFields.filter(field => field.is_required);
+      const missingFields = [];
+      
+      for (const requiredField of requiredFields) {
+        const fieldId = requiredField.core_dynamic_field.id;
+        const fieldData = data.fields.find(f => f.id === fieldId);
+        const fieldValue = fieldData?.value;
+        
+        const isEmpty = 
+          fieldValue === undefined || 
+          fieldValue === null || 
+          fieldValue === '' || 
+          (Array.isArray(fieldValue) && fieldValue.length === 0);
+        
+        if (isEmpty) {
+          missingFields.push(requiredField.core_dynamic_field.name);
+        }
+      }
+      
+      if (missingFields.length > 0) {
+        toast({
+          title: t('Thiếu thông tin'),
+          description: t('Vui lòng điền các trường bắt buộc: ') + missingFields.join(', '),
+          variant: 'destructive',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Biến đổi dữ liệu thành định dạng mong muốn cho API
+      // Vì cần chuyển từ cấu trúc fields[] sang một object với fieldId làm key
+      const fieldSubmissions: Record<string, any> = {};
+      
+      // Lặp qua tất cả các fields từ form
+      for (const field of data.fields) {
+        // Tìm thông tin chi tiết của field để lấy name và field_type
+        const fieldInfo = formFields.find(f => f.core_dynamic_field.id === field.id);
+        
+        if (fieldInfo) {
+          // Thêm vào đối tượng fieldSubmissions
+          fieldSubmissions[field.id] = {
             value: field.value,
-            name: matchingField.core_dynamic_field.name,
-            field_type: matchingField.core_dynamic_field.field_type
+            name: fieldInfo.core_dynamic_field.name,
+            field_type: fieldInfo.core_dynamic_field.field_type
           };
         }
-      });
+      }
       
-      // Dữ liệu submission
+      // Tìm menuId từ workflowId
+      const menuId = workflowMenu?.id;
+      
+      // Chuẩn bị đối tượng submission để gửi đi
       const submission: FormSubmission = {
         formId: selectedFormId,
-        data: fieldData,
+        data: fieldSubmissions, 
         workflowId: workflowId,
-        menuId: workflowMenu?.id
+        menuId: menuId
       };
+      
+      console.log('Submitting form data:', submission);
       
       // Gửi dữ liệu lên server
       await submitFormData(submission);
@@ -215,11 +256,11 @@ export default function SubmissionCreatePage() {
         variant: 'default',
       });
       
-      // Quay lại trang trước
-      setLocation(`/submission/${workflowId}`);
+      // Quay lại trang workflow
+      setLocation(`/workflow/${menuId}/${menuId}`);
       
       // Invalidate queries để reload dữ liệu
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-records'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-records', menuId] });
       
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -251,7 +292,16 @@ export default function SubmissionCreatePage() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setLocation(`/submission/${workflowId}`)}
+              onClick={() => {
+                // Chuyển hướng về trang workflow - sử dụng menuId nếu có để định tuyến đúng
+                const menuId = workflowMenu?.id;
+                if (menuId) {
+                  setLocation(`/workflow/${menuId}/${menuId}`);
+                } else {
+                  // Fallback nếu không tìm thấy menuId
+                  window.history.back();
+                }
+              }}
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
