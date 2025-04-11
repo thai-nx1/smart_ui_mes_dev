@@ -178,14 +178,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <div className={containerClass + ' h-screen flex items-start justify-start overflow-auto'}>
-        {/* Mobile Sidebar Trigger - Chỉ hiển thị trên mobile */}
-        <div className="fixed z-20 top-4 left-4 lg:hidden">
-          <SidebarTrigger>
-            <Button size="icon" variant="outline" className="shadow-sm hover:bg-primary/10 transition-colors bg-white dark:bg-gray-900">
-              <Menu className="size-4" />
-            </Button>
-          </SidebarTrigger>
-        </div>
+
 
         {/* Sidebar - Bắt buộc always open trên desktop */}
         <Sidebar 
@@ -194,6 +187,12 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         >
           <SidebarHeader className="p-4 border-b">
             <div className="flex items-center">
+              {/* Nút menu trong header mobile - Hiển thị trong header */}
+              <SidebarTrigger className="mr-2 lg:hidden">
+                <Button size="icon" variant="ghost" className="relative -ml-2 h-8 w-8 text-muted-foreground hover:bg-primary/5">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SidebarTrigger>
               <div className="mr-3 flex items-center justify-center h-9 w-9 rounded-md bg-primary text-primary-foreground">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
