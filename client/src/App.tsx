@@ -126,7 +126,7 @@ function App() {
           <Router />
         </MainSidebar>
       )}
-      <CameraPermission />
+      {/* Đã bỏ CameraPermission theo yêu cầu */}
       <PwaOfflineAlert />
       <Toaster />
     </QueryClientProvider>
