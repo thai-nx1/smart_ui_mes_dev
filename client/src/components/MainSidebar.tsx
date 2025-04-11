@@ -70,7 +70,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         console.log("Fetched", allMenusFromAPI.length, "menus from API, filtered to", allMenus.length, "active menus");
         
         // Hàm đệ quy để xây dựng cây menu nhiều cấp
-        const buildMenuTree = (menuItems: any[], parentId: string | null = null): Menu[] => {
+        const buildMenuTree = (menuItems: any[], parentId: string | null = null): MenuType[] => {
           return menuItems
             .filter(item => item.parent_id === parentId)
             .map(item => {
@@ -535,17 +535,30 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 // Chúng ta sẽ không sử dụng useOverlay hook nữa
 // Mà thay vào đó, xử lý trực tiếp trong các sự kiện click
 
-// Dynamic Menu Item Component
-function DynamicMenuItem({ menu }: { menu: MenuType }) {
+// Dynamic Menu Item Component - Hỗ trợ đa cấp thông qua tham số level
+function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }) {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const hasChildren = menu.core_dynamic_child_menus && menu.core_dynamic_child_menus.length > 0;
 
-  // Kiểm tra xem có submenu đang được chọn không
-  const hasActiveChild = menu.core_dynamic_child_menus?.some(
-    subMenu => location === `/submission/${subMenu.workflow_id}` || 
-               location === `/menu/${menu.id}/submenu/${subMenu.id}`
-  );
+  // Kiểm tra xem có submenu đang được chọn không - hỗ trợ đệ quy đa cấp
+  const checkForActiveChild = (items: MenuType[] = []): boolean => {
+    return items.some(item => {
+      // Kiểm tra menu con này có được chọn không
+      const isActive = location === `/submission/${item.workflow_id}` || 
+                      location === `/menu/${item.id}` ||
+                      location === `/menu/${menu.id}/submenu/${item.id}`;
+                      
+      // Nếu menu con này có menu con khác, kiểm tra đệ quy
+      if (item.core_dynamic_child_menus?.length) {
+        return isActive || checkForActiveChild(item.core_dynamic_child_menus);
+      }
+      
+      return isActive;
+    });
+  };
+  
+  const hasActiveChild = checkForActiveChild(menu.core_dynamic_child_menus);
 
   // Tự động mở menu có menu con đang được chọn
   useEffect(() => {
@@ -631,59 +644,10 @@ function DynamicMenuItem({ menu }: { menu: MenuType }) {
 
       {isOpen && menu.core_dynamic_child_menus && (
         <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200">
-          {menu.core_dynamic_child_menus.map((subMenu: any) => {
-            let href = "";
-            // Xử lý đặc biệt cho tất cả các submenu
-            if (subMenu.workflow_id) {
-              href = `/submission/${subMenu.workflow_id}?menuId=${subMenu.id}`;
-            } else {
-              href = `/menu/${menu.id}/submenu/${subMenu.id}`;
-            }
-            const isActive = location === href || location.startsWith(`/submission/${subMenu.workflow_id}`);
-            
-            const handleSubmenuClick = (e: React.MouseEvent) => {
-              // Xử lý đã được thực hiện trong component Submission thông qua menuId param
-              console.log(`Navigating to submenu: ${subMenu.name}, ID: ${subMenu.id}, workflowId: ${subMenu.workflow_id}`);
-              
-              // Đóng sidebar trên thiết bị di động sau khi chọn submenu
-              handleMobileMenuClick();
-            };
-            
-            return (
-              <SidebarMenuSubButton
-                key={subMenu.id}
-                asChild
-                className={`pl-8 flex items-center gap-1.5 transition-all text-sm w-full ${
-                  isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
-                }`}
-                onClick={handleSubmenuClick}
-              >
-                <Link href={href} className="py-1.5 w-full flex items-start">
-                  <div className="flex items-center w-full">
-                    <div className="flex-shrink-0 mr-1">
-                      {subMenu.workflow_id ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                          <circle cx="9" cy="7" r="4"></circle>
-                          <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M2 9V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1"></path>
-                          <path d="M2 13h10"></path>
-                          <path d="m9 16 3-3-3-3"></path>
-                        </svg>
-                      )}
-                    </div>
-                    <div className="flex min-w-0 flex-grow">
-                      <div className="text-sm font-medium overflow-hidden break-words hyphens-auto leading-tight">{subMenu.name}</div>
-                    </div>
-                  </div>
-                </Link>
-              </SidebarMenuSubButton>
-            );
-          })}
+          {menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
+            // Gọi đệ quy DynamicMenuItem cho menu con, tăng cấp độ lên 1
+            <DynamicMenuItem key={subMenu.id} menu={subMenu} level={level + 1} />
+          ))}
         </SidebarMenuSub>
       )}
     </SidebarMenuItem>
