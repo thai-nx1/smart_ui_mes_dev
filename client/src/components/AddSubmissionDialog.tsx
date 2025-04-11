@@ -1041,42 +1041,23 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         )}
         
         <DialogFooter className="border-t p-4 flex-row justify-between gap-2">
-          {step === 'select_form' ? (
-            <>
-              <Button 
-                variant="outline" 
-                onClick={() => setIsOpen(false)}
-                className="border-gray-300 hover:bg-background flex items-center gap-1"
-              >
-                <span>{t('actions.cancel', 'Hủy')}</span>
-              </Button>
-              <Button
-                onClick={handleNextStep}
-                disabled={!selectedFormId || isLoadingFields}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
-              >
-                <span>{t('actions.next', 'Tiếp theo')}</span>
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                onClick={handleCreateSubmission}
-                disabled={isSubmitting}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
-              >
-                {isSubmitting ? (
-                  <div className="relative">
-                    <Loader2 className="h-4 w-4 animate-spin text-white/30 absolute" />
-                    <Loader2 className="h-4 w-4 animate-spin text-white absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
-                  </div>
-                ) : (
-                  <PlusCircle className="h-4 w-4" />
-                )}
-                <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
-              </Button>
-            </>
-          )}
+          <div className="flex justify-end w-full">
+            <Button
+              onClick={handleCreateSubmission}
+              disabled={isSubmitting}
+              className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
+            >
+              {isSubmitting ? (
+                <div className="relative">
+                  <Loader2 className="h-4 w-4 animate-spin text-white/30 absolute" />
+                  <Loader2 className="h-4 w-4 animate-spin text-white absolute animate-delay-100" style={{animationDelay: "0.1s"}} />
+                </div>
+              ) : (
+                <PlusCircle className="h-4 w-4" />
+              )}
+              <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
