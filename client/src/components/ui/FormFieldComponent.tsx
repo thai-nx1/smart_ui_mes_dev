@@ -147,7 +147,6 @@ function SearchableSelect({ field, value, onChange, optionId }: SearchableSelect
       styles={{
         control: (base) => ({
           ...base,
-          borderWidth: 0,
           backgroundColor: 'rgb(248 250 252)',
           boxShadow: 'none',
           '&:hover': {

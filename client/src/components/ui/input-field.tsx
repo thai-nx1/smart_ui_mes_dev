@@ -112,7 +112,7 @@ export function InputField({
             id={id}
             value={value || ""}
             onChange={handleChange}
-            className={cn(error && "ring-2 ring-red-500")}
+            className={cn(error && "ring-2 ring-red-500" && "border border-gray-200")}
             placeholder="Nhập văn bản"
             required={required}
           />
@@ -1568,7 +1568,7 @@ export function InputField({
 
   return (
     <>
-      <div className="mb-6 p-4 border border-gray-200 rounded-lg hover:border-primary-300 transition-colors">
+      <div className="mb-6 p-4 transition-colors">
         <div className="flex items-start justify-between mb-2">
           <div>
             {fieldType !== "SINGLE_CHOICE" && fieldType !== "MULTI_CHOICE" && (
