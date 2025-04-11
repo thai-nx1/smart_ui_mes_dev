@@ -8,9 +8,8 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, PlusCircle } from 'lucide-react';
 import { SubmissionDataTable } from '@/components/SubmissionDataTable';
-import { AddSubmissionDialog } from '@/components/AddSubmissionDialog';
 import { useParams, useLocation } from 'wouter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchMenuRecords, fetchAllMenus, submitFormData } from '@/lib/api';
@@ -115,6 +114,14 @@ export default function WorkflowPage() {
     }
   };
 
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  // Handler cho nút tạo biểu mẫu mới
+  const handleCreateSubmission = () => {
+    setIsNavigating(true);
+    window.location.href = `/submission/${workflowId}/create`;
+  };
+
   return (
     <div className="container py-6">
       <Card>
@@ -126,7 +133,14 @@ export default function WorkflowPage() {
             </CardDescription>
           </div>
           {workflowId && (
-            <AddSubmissionDialog onSubmit={handleSubmitForm} workflowId={workflowId} />
+            <Button 
+              onClick={handleCreateSubmission} 
+              disabled={isNavigating}
+              className="gap-1 bg-primary hover:bg-primary/90 transition-colors"
+            >
+              <PlusCircle className="h-4 w-4" />
+              <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
+            </Button>
           )}
         </CardHeader>
         
