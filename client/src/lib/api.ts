@@ -414,6 +414,7 @@ export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
         parent_id
         workflow_id
         description
+        status
       }
     }
   `;
