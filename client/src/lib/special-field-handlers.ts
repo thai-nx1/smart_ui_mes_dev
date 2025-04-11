@@ -1,239 +1,225 @@
-// @ts-ignore
-import QRCode from 'qrcode';
-// @ts-ignore
-import jsQR from 'jsqr';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
-
 /**
- * Xử lý các trường dữ liệu đặc biệt như SCREEN_RECORD, PHOTO, IMPORT, EXPORT, v.v.
+ * Các hàm xử lý cho các field đặc biệt như GPS, PHOTO, AUDIO_RECORD, SCREEN_RECORD
  */
 
-export interface SpecialFieldResult {
+interface FieldHandlerResponse {
   success: boolean;
   data?: any;
   message?: string;
 }
 
 /**
- * Chụp ảnh từ camera của thiết bị
+ * Lấy vị trí GPS hiện tại
  */
-export async function capturePhoto(): Promise<SpecialFieldResult> {
-  try {
-    // Kiểm tra nếu trình duyệt hỗ trợ mediaDevices API
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      return {
+export async function getGPSLocation(): Promise<FieldHandlerResponse> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve({
         success: false,
-        message: 'Trình duyệt không hỗ trợ truy cập camera.',
-      };
+        message: "Trình duyệt của bạn không hỗ trợ định vị",
+      });
+      return;
     }
 
-    // Tạo stream từ camera
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    
-    // Tạo video element để hiển thị stream
-    const videoElement = document.createElement('video');
-    videoElement.srcObject = stream;
-    
-    // Đợi video đã sẵn sàng
-    await new Promise<void>((resolve) => {
-      videoElement.onloadedmetadata = () => {
-        videoElement.play();
-        resolve();
-      };
-    });
-    
-    // Tạo canvas để chụp ảnh từ video
-    const canvas = document.createElement('canvas');
-    canvas.width = videoElement.videoWidth;
-    canvas.height = videoElement.videoHeight;
-    
-    // Vẽ frame từ video lên canvas
-    const context = canvas.getContext('2d');
-    if (!context) {
-      return {
-        success: false,
-        message: 'Không thể tạo context cho canvas.',
-      };
-    }
-    
-    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-    
-    // Dừng stream camera sau khi đã chụp
-    stream.getTracks().forEach(track => track.stop());
-    
-    // Chuyển đổi canvas thành data URL (base64)
-    const dataUrl = canvas.toDataURL('image/jpeg');
-    
-    return {
-      success: true,
-      data: dataUrl,
-    };
-  } catch (error) {
-    console.error('Lỗi khi chụp ảnh:', error);
-    return {
-      success: false,
-      message: `Lỗi khi chụp ảnh: ${error instanceof Error ? error.message : String(error)}`,
-    };
-  }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          success: true,
+          data: {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            timestamp: position.timestamp,
+          },
+        });
+      },
+      (error) => {
+        let errorMessage = "Không thể xác định vị trí";
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Người dùng từ chối cấp quyền truy cập vị trí";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Thông tin vị trí không khả dụng";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Quá thời gian xác định vị trí";
+            break;
+        }
+        
+        resolve({
+          success: false,
+          message: errorMessage,
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  });
 }
 
 /**
- * Quét QR code từ camera của thiết bị
+ * Chụp ảnh từ camera (video element)
  */
-export async function scanQRCode(): Promise<SpecialFieldResult> {
+export async function takePhoto(): Promise<FieldHandlerResponse> {
   try {
-    // Kiểm tra nếu trình duyệt hỗ trợ mediaDevices API
+    // Kiểm tra xem trình duyệt có hỗ trợ mediaDevices không
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       return {
         success: false,
-        message: 'Trình duyệt không hỗ trợ truy cập camera.',
+        message: "Trình duyệt của bạn không hỗ trợ chụp ảnh",
       };
     }
 
-    // Tạo stream từ camera
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    
-    // Tạo video element để hiển thị stream
-    const videoElement = document.createElement('video');
-    videoElement.srcObject = stream;
-    
-    // Đợi video đã sẵn sàng
-    await new Promise<void>((resolve) => {
-      videoElement.onloadedmetadata = () => {
-        videoElement.play();
-        resolve();
-      };
-    });
-    
-    // Thiết lập quét QR code từ video stream
-    return new Promise<SpecialFieldResult>((resolve) => {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      
-      if (!context) {
-        resolve({
-          success: false,
-          message: 'Không thể tạo context cho canvas.',
+    // Tạo hộp thoại chụp ảnh
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    modal.style.zIndex = "9999";
+    modal.style.display = "flex";
+    modal.style.flexDirection = "column";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+
+    // Tạo video element để hiển thị camera
+    const video = document.createElement("video");
+    video.style.width = "100%";
+    video.style.maxWidth = "640px";
+    video.style.maxHeight = "480px";
+    video.style.backgroundColor = "#000";
+    video.style.borderRadius = "8px";
+    video.autoplay = true;
+    video.playsInline = true;
+    modal.appendChild(video);
+
+    // Tạo canvas để chụp ảnh từ video
+    const canvas = document.createElement("canvas");
+    canvas.style.display = "none";
+    modal.appendChild(canvas);
+
+    // Tạo div chứa các nút
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.marginTop = "20px";
+    buttonContainer.style.gap = "10px";
+    modal.appendChild(buttonContainer);
+
+    // Tạo nút chụp
+    const captureButton = document.createElement("button");
+    captureButton.textContent = "Chụp ảnh";
+    captureButton.style.padding = "10px 20px";
+    captureButton.style.backgroundColor = "#0ea5e9";
+    captureButton.style.color = "white";
+    captureButton.style.border = "none";
+    captureButton.style.borderRadius = "4px";
+    captureButton.style.cursor = "pointer";
+    buttonContainer.appendChild(captureButton);
+
+    // Tạo nút hủy
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Hủy";
+    cancelButton.style.padding = "10px 20px";
+    cancelButton.style.backgroundColor = "#f43f5e";
+    cancelButton.style.color = "white";
+    cancelButton.style.border = "none";
+    cancelButton.style.borderRadius = "4px";
+    cancelButton.style.cursor = "pointer";
+    buttonContainer.appendChild(cancelButton);
+
+    // Thêm modal vào body
+    document.body.appendChild(modal);
+
+    // Khởi tạo stream
+    let stream: MediaStream | null = null;
+
+    return new Promise<FieldHandlerResponse>(async (resolve) => {
+      try {
+        // Yêu cầu quyền truy cập camera
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "environment", // Ưu tiên camera sau
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
         });
-        return;
-      }
-      
-      // Hàm quét QR trong frame
-      const scanFrame = () => {
-        if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-          canvas.width = videoElement.videoWidth;
-          canvas.height = videoElement.videoHeight;
-          
-          context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-          const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-          
-          // Phân tích QR code
-          const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: 'dontInvert',
-          });
-          
-          if (code) {
-            // Dừng stream và trả về kết quả
-            stream.getTracks().forEach(track => track.stop());
+
+        // Gán stream cho video
+        video.srcObject = stream;
+
+        // Xử lý sự kiện khi người dùng nhấn nút chụp
+        captureButton.onclick = () => {
+          // Đặt kích thước canvas bằng với kích thước thực của video
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+
+          // Vẽ frame hiện tại của video lên canvas
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Chuyển đổi canvas thành base64 data URL
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+
+            // Dừng stream và đóng modal
+            cleanup();
+
+            // Trả về kết quả thành công với dữ liệu ảnh
             resolve({
               success: true,
-              data: code.data,
+              data: dataUrl,
             });
-          } else {
-            // Tiếp tục quét nếu chưa tìm thấy QR code
-            requestAnimationFrame(scanFrame);
           }
-        } else {
-          requestAnimationFrame(scanFrame);
-        }
-      };
-      
-      // Bắt đầu quét
-      scanFrame();
-      
-      // Đặt timeout để dừng quét sau 30 giây
-      setTimeout(() => {
-        stream.getTracks().forEach(track => track.stop());
-        resolve({
-          success: false,
-          message: 'Quá thời gian quét QR, vui lòng thử lại.',
-        });
-      }, 30000);
-    });
-  } catch (error) {
-    console.error('Lỗi khi quét QR code:', error);
-    return {
-      success: false,
-      message: `Lỗi khi quét QR code: ${error instanceof Error ? error.message : String(error)}`,
-    };
-  }
-}
+        };
 
-/**
- * Ghi màn hình
- */
-export async function recordScreen(): Promise<SpecialFieldResult> {
-  try {
-    // Kiểm tra nếu trình duyệt hỗ trợ getDisplayMedia API
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-      return {
-        success: false,
-        message: 'Trình duyệt không hỗ trợ ghi màn hình.',
-      };
-    }
+        // Xử lý sự kiện khi người dùng nhấn nút hủy
+        cancelButton.onclick = () => {
+          // Dừng stream và đóng modal
+          cleanup();
 
-    // Tạo stream từ màn hình
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: false,
-    });
-    
-    // Tạo MediaRecorder để ghi stream
-    const mediaRecorder = new MediaRecorder(stream);
-    
-    const chunks: Blob[] = [];
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        chunks.push(event.data);
-      }
-    };
-    
-    // Xử lý khi ghi hoàn tất
-    const recordingPromise = new Promise<SpecialFieldResult>((resolve) => {
-      mediaRecorder.onstop = () => {
-        // Kết hợp các chunks thành một blob
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        
-        // Chuyển đổi blob thành data URL
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64data = reader.result;
+          // Trả về kết quả hủy
           resolve({
-            success: true,
-            data: base64data,
+            success: false,
+            message: "Người dùng đã hủy chụp ảnh",
           });
         };
-        
-        reader.readAsDataURL(blob);
-      };
+      } catch (error) {
+        console.error("Lỗi khi truy cập camera:", error);
+        // Đóng modal
+        cleanup();
+
+        // Trả về kết quả lỗi
+        resolve({
+          success: false,
+          message: "Không thể truy cập camera",
+        });
+      }
     });
-    
-    // Bắt đầu ghi
-    mediaRecorder.start();
-    
-    // Dừng ghi khi người dùng dừng chia sẻ màn hình
-    stream.getVideoTracks()[0].onended = () => {
-      mediaRecorder.stop();
-    };
-    
-    // Trả về promise để đợi kết quả từ quá trình ghi
-    return recordingPromise;
+
+    // Hàm cleanup để dừng stream và xóa modal
+    function cleanup() {
+      // Dừng stream nếu có
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+
+      // Xóa modal
+      if (modal && modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+      }
+    }
   } catch (error) {
-    console.error('Lỗi khi ghi màn hình:', error);
+    console.error("Lỗi khi chụp ảnh:", error);
     return {
       success: false,
-      message: `Lỗi khi ghi màn hình: ${error instanceof Error ? error.message : String(error)}`,
+      message: "Đã xảy ra lỗi khi chụp ảnh",
     };
   }
 }
@@ -241,386 +227,418 @@ export async function recordScreen(): Promise<SpecialFieldResult> {
 /**
  * Ghi âm
  */
-export async function recordAudio(): Promise<SpecialFieldResult> {
+export async function recordAudio(): Promise<FieldHandlerResponse> {
   try {
-    // Kiểm tra nếu trình duyệt hỗ trợ getUserMedia API với audio
+    // Kiểm tra xem trình duyệt có hỗ trợ mediaDevices không
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       return {
         success: false,
-        message: 'Trình duyệt không hỗ trợ ghi âm.',
+        message: "Trình duyệt của bạn không hỗ trợ ghi âm",
       };
     }
 
-    // Tạo stream từ mic
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    
-    // Tạo MediaRecorder để ghi stream
-    const mediaRecorder = new MediaRecorder(stream);
-    
-    const chunks: Blob[] = [];
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        chunks.push(event.data);
-      }
-    };
-    
-    // Bắt đầu ghi
-    mediaRecorder.start();
-    
-    // Đặt thời gian ghi (tối đa 1 phút)
-    const MAX_RECORDING_TIME = 60000; // 1 phút
-    
-    // Xử lý khi ghi hoàn tất
-    const recordingPromise = new Promise<SpecialFieldResult>((resolve) => {
-      mediaRecorder.onstop = () => {
-        // Dừng stream
-        stream.getTracks().forEach(track => track.stop());
-        
-        // Kết hợp các chunks thành một blob
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        
-        // Chuyển đổi blob thành data URL
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          resolve({
-            success: true,
-            data: base64data,
-          });
+    // Tạo hộp thoại ghi âm
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    modal.style.zIndex = "9999";
+    modal.style.display = "flex";
+    modal.style.flexDirection = "column";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+
+    // Tạo div hiển thị thời gian
+    const timerDisplay = document.createElement("div");
+    timerDisplay.style.fontSize = "48px";
+    timerDisplay.style.color = "white";
+    timerDisplay.style.marginBottom = "20px";
+    timerDisplay.textContent = "00:00";
+    modal.appendChild(timerDisplay);
+
+    // Tạo div hiển thị trạng thái
+    const statusDisplay = document.createElement("div");
+    statusDisplay.style.fontSize = "18px";
+    statusDisplay.style.color = "white";
+    statusDisplay.style.marginBottom = "30px";
+    statusDisplay.textContent = "Nhấn 'Bắt đầu' để ghi âm";
+    modal.appendChild(statusDisplay);
+
+    // Tạo div chứa các nút
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.gap = "10px";
+    modal.appendChild(buttonContainer);
+
+    // Tạo nút bắt đầu/dừng
+    const recordButton = document.createElement("button");
+    recordButton.textContent = "Bắt đầu";
+    recordButton.style.padding = "10px 20px";
+    recordButton.style.backgroundColor = "#0ea5e9";
+    recordButton.style.color = "white";
+    recordButton.style.border = "none";
+    recordButton.style.borderRadius = "4px";
+    recordButton.style.cursor = "pointer";
+    buttonContainer.appendChild(recordButton);
+
+    // Tạo nút hủy
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Hủy";
+    cancelButton.style.padding = "10px 20px";
+    cancelButton.style.backgroundColor = "#f43f5e";
+    cancelButton.style.color = "white";
+    cancelButton.style.border = "none";
+    cancelButton.style.borderRadius = "4px";
+    cancelButton.style.cursor = "pointer";
+    buttonContainer.appendChild(cancelButton);
+
+    // Thêm modal vào body
+    document.body.appendChild(modal);
+
+    // Khởi tạo các biến
+    let stream: MediaStream | null = null;
+    let mediaRecorder: MediaRecorder | null = null;
+    let audioChunks: Blob[] = [];
+    let startTime: number = 0;
+    let timerInterval: NodeJS.Timeout | null = null;
+    let isRecording = false;
+
+    return new Promise<FieldHandlerResponse>(async (resolve) => {
+      try {
+        // Yêu cầu quyền truy cập microphone
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // Tạo MediaRecorder
+        mediaRecorder = new MediaRecorder(stream);
+
+        // Xử lý sự kiện khi có dữ liệu
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
         };
-        
-        reader.readAsDataURL(blob);
-      };
-    });
-    
-    // Tạo giao diện điều khiển ghi âm
-    const recordingControl = document.createElement('div');
-    recordingControl.style.position = 'fixed';
-    recordingControl.style.bottom = '20px';
-    recordingControl.style.left = '50%';
-    recordingControl.style.transform = 'translateX(-50%)';
-    recordingControl.style.padding = '10px 20px';
-    recordingControl.style.backgroundColor = '#00B1D2';
-    recordingControl.style.color = 'white';
-    recordingControl.style.borderRadius = '20px';
-    recordingControl.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-    recordingControl.style.zIndex = '9999';
-    recordingControl.style.cursor = 'pointer';
-    recordingControl.innerHTML = 'Đang ghi âm... Nhấn để dừng';
-    
-    document.body.appendChild(recordingControl);
-    
-    // Dừng ghi khi người dùng bấm vào control
-    recordingControl.onclick = () => {
-      mediaRecorder.stop();
-      document.body.removeChild(recordingControl);
-    };
-    
-    // Tự động dừng sau thời gian tối đa
-    setTimeout(() => {
-      if (mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-        if (document.body.contains(recordingControl)) {
-          document.body.removeChild(recordingControl);
-        }
-      }
-    }, MAX_RECORDING_TIME);
-    
-    // Trả về promise để đợi kết quả từ quá trình ghi
-    return recordingPromise;
-  } catch (error) {
-    console.error('Lỗi khi ghi âm:', error);
-    return {
-      success: false,
-      message: `Lỗi khi ghi âm: ${error instanceof Error ? error.message : String(error)}`,
-    };
-  }
-}
 
-/**
- * Lấy vị trí GPS
- */
-export async function getGPSLocation(): Promise<SpecialFieldResult> {
-  try {
-    // Kiểm tra nếu trình duyệt hỗ trợ Geolocation API
-    if (!navigator.geolocation) {
-      return {
-        success: false,
-        message: 'Trình duyệt không hỗ trợ xác định vị trí GPS.',
-      };
-    }
+        // Xử lý sự kiện khi ghi âm kết thúc
+        mediaRecorder.onstop = () => {
+          // Tạo blob từ các chunk
+          const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
 
-    // Lấy vị trí hiện tại
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      });
-    });
-    
-    // Lấy tọa độ từ kết quả
-    const { latitude, longitude, accuracy } = position.coords;
-    
-    return {
-      success: true,
-      data: {
-        latitude,
-        longitude,
-        accuracy,
-        timestamp: position.timestamp,
-      },
-    };
-  } catch (error) {
-    console.error('Lỗi khi lấy vị trí GPS:', error);
-    return {
-      success: false,
-      message: `Lỗi khi lấy vị trí GPS: ${error instanceof Error ? error.message : String(error)}`,
-    };
-  }
-}
+          // Chuyển đổi blob thành base64 data URL
+          const reader = new FileReader();
+          reader.readAsDataURL(audioBlob);
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
 
-/**
- * Import dữ liệu từ file
- */
-export async function importData(): Promise<SpecialFieldResult> {
-  try {
-    // Tạo input type=file ẩn và kích hoạt click để mở hộp thoại chọn file
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.json,.csv,.txt,.xlsx,.xls';
-    fileInput.style.display = 'none';
-    document.body.appendChild(fileInput);
-    
-    // Trigger click trên input để mở dialog chọn file
-    fileInput.click();
-    
-    // Đợi người dùng chọn file
-    const fileSelected = await new Promise<SpecialFieldResult>((resolve) => {
-      fileInput.onchange = (event) => {
-        const target = event.target as HTMLInputElement;
-        const file = target.files?.[0];
-        
-        if (!file) {
+            // Dừng stream và đóng modal
+            cleanup();
+
+            // Trả về kết quả thành công với dữ liệu âm thanh
+            resolve({
+              success: true,
+              data: base64data,
+            });
+          };
+        };
+
+        // Xử lý sự kiện khi người dùng nhấn nút ghi âm/dừng
+        recordButton.onclick = () => {
+          if (!isRecording) {
+            // Bắt đầu ghi âm
+            audioChunks = [];
+            mediaRecorder?.start();
+            isRecording = true;
+            recordButton.textContent = "Dừng";
+            recordButton.style.backgroundColor = "#ef4444";
+            statusDisplay.textContent = "Đang ghi âm...";
+
+            // Bắt đầu đếm thời gian
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+              const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+              const minutes = Math.floor(elapsedTime / 60)
+                .toString()
+                .padStart(2, "0");
+              const seconds = (elapsedTime % 60).toString().padStart(2, "0");
+              timerDisplay.textContent = `${minutes}:${seconds}`;
+            }, 1000);
+          } else {
+            // Dừng ghi âm
+            mediaRecorder?.stop();
+            isRecording = false;
+            statusDisplay.textContent = "Đang xử lý...";
+
+            // Dừng đếm thời gian
+            if (timerInterval) {
+              clearInterval(timerInterval);
+            }
+          }
+        };
+
+        // Xử lý sự kiện khi người dùng nhấn nút hủy
+        cancelButton.onclick = () => {
+          // Dừng ghi âm nếu đang ghi
+          if (isRecording && mediaRecorder) {
+            mediaRecorder.stop();
+            isRecording = false;
+          }
+
+          // Dừng đếm thời gian
+          if (timerInterval) {
+            clearInterval(timerInterval);
+          }
+
+          // Dừng stream và đóng modal
+          cleanup();
+
+          // Trả về kết quả hủy
           resolve({
             success: false,
-            message: 'Không có file nào được chọn.',
-          });
-          return;
-        }
-        
-        // Đọc nội dung file
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
-          const content = e.target?.result;
-          resolve({
-            success: true,
-            data: {
-              fileName: file.name,
-              fileType: file.type,
-              fileSize: file.size,
-              content,
-            },
+            message: "Người dùng đã hủy ghi âm",
           });
         };
-        
-        reader.onerror = () => {
-          resolve({
-            success: false,
-            message: 'Lỗi khi đọc file.',
-          });
-        };
-        
-        // Đọc file theo định dạng thích hợp
-        if (file.type === 'application/json' || file.name.endsWith('.json')) {
-          reader.readAsText(file);
-        } else if (file.type === 'text/csv' || file.name.endsWith('.csv') || file.type === 'text/plain' || file.name.endsWith('.txt')) {
-          reader.readAsText(file);
-        } else {
-          reader.readAsDataURL(file);
-        }
-      };
-      
-      // Xử lý trường hợp người dùng đóng dialog mà không chọn file
-      fileInput.onabort = () => {
+      } catch (error) {
+        console.error("Lỗi khi truy cập microphone:", error);
+        // Đóng modal
+        cleanup();
+
+        // Trả về kết quả lỗi
         resolve({
           success: false,
-          message: 'Người dùng đã hủy chọn file.',
+          message: "Không thể truy cập microphone",
         });
-      };
+      }
     });
-    
-    // Dọn dẹp
-    document.body.removeChild(fileInput);
-    
-    return fileSelected;
+
+    // Hàm cleanup để dừng stream và xóa modal
+    function cleanup() {
+      // Dừng đếm thời gian
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+
+      // Dừng stream nếu có
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+
+      // Xóa modal
+      if (modal && modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+      }
+    }
   } catch (error) {
-    console.error('Lỗi khi import dữ liệu:', error);
+    console.error("Lỗi khi ghi âm:", error);
     return {
       success: false,
-      message: `Lỗi khi import dữ liệu: ${error instanceof Error ? error.message : String(error)}`,
+      message: "Đã xảy ra lỗi khi ghi âm",
     };
   }
 }
 
 /**
- * Export dữ liệu ra file
+ * Ghi màn hình
  */
-export async function exportData(data: any, fileType: 'json' | 'csv' | 'pdf' = 'json', fileName?: string): Promise<SpecialFieldResult> {
+export async function recordScreen(): Promise<FieldHandlerResponse> {
   try {
-    let content = '';
-    let mimeType = '';
-    let extension = '';
-    
-    // Xử lý theo định dạng được chọn
-    if (fileType === 'json') {
-      content = JSON.stringify(data, null, 2);
-      mimeType = 'application/json';
-      extension = 'json';
-    } else if (fileType === 'csv') {
-      // Chuyển đổi dữ liệu thành CSV
-      if (Array.isArray(data)) {
-        // Lấy header từ keys của object đầu tiên
-        const headers = Object.keys(data[0] || {});
-        const csvContent = [
-          headers.join(','), // Header row
-          ...data.map(row => 
-            headers.map(header => {
-              const cellValue = row[header];
-              // Xử lý trường hợp chuỗi có chứa dấu phẩy
-              return typeof cellValue === 'string' && cellValue.includes(',') 
-                ? `"${cellValue}"` 
-                : cellValue;
-            }).join(',')
-          )
-        ].join('\n');
-        
-        content = csvContent;
-      } else {
-        // Nếu không phải array, chuyển đổi thành CSV đơn giản
-        const entries = Object.entries(data);
-        content = entries.map(([key, value]) => `${key},${value}`).join('\n');
-      }
-      
-      mimeType = 'text/csv';
-      extension = 'csv';
-    } else if (fileType === 'pdf') {
-      // Sử dụng html2pdf để tạo PDF
-      // Tạo một div tạm thời chứa dữ liệu HTML để chuyển thành PDF
-      const tempDiv = document.createElement('div');
-      
-      if (typeof data === 'string') {
-        // Nếu là HTML string
-        tempDiv.innerHTML = data;
-      } else {
-        // Nếu là object hoặc array, tạo bảng HTML
-        let htmlContent = '<h2>Exported Data</h2>';
-        
-        if (Array.isArray(data)) {
-          htmlContent += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">';
-          
-          // Headers
-          if (data.length > 0) {
-            const headers = Object.keys(data[0]);
-            htmlContent += '<tr>';
-            headers.forEach(header => {
-              htmlContent += `<th>${header}</th>`;
-            });
-            htmlContent += '</tr>';
-            
-            // Rows
-            data.forEach(row => {
-              htmlContent += '<tr>';
-              headers.forEach(header => {
-                htmlContent += `<td>${row[header]}</td>`;
-              });
-              htmlContent += '</tr>';
-            });
-          }
-          
-          htmlContent += '</table>';
-        } else {
-          // Object
-          htmlContent += '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">';
-          htmlContent += '<tr><th>Key</th><th>Value</th></tr>';
-          
-          Object.entries(data).forEach(([key, value]) => {
-            htmlContent += `<tr><td>${key}</td><td>${value}</td></tr>`;
-          });
-          
-          htmlContent += '</table>';
-        }
-        
-        tempDiv.innerHTML = htmlContent;
-      }
-      
-      document.body.appendChild(tempDiv);
-      
-      // Tạo PDF từ div
-      const pdfOutput = await html2pdf()
-        .from(tempDiv)
-        .outputPdf();
-      
-      // Dọn dẹp div tạm
-      document.body.removeChild(tempDiv);
-      
+    // Kiểm tra xem trình duyệt có hỗ trợ getDisplayMedia không
+    if (!navigator.mediaDevices || !(navigator.mediaDevices as any).getDisplayMedia) {
       return {
-        success: true,
-        data: pdfOutput,
+        success: false,
+        message: "Trình duyệt của bạn không hỗ trợ ghi màn hình",
       };
     }
-    
-    // Tạo Blob từ nội dung
-    const blob = new Blob([content], { type: mimeType });
-    
-    // Tạo URL từ Blob
-    const url = URL.createObjectURL(blob);
-    
-    // Tạo thẻ a và kích hoạt download
-    const downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = fileName || `export_${new Date().getTime()}.${extension}`;
-    downloadLink.style.display = 'none';
-    
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    
-    // Dọn dẹp
-    setTimeout(() => {
-      document.body.removeChild(downloadLink);
-      URL.revokeObjectURL(url);
-    }, 100);
-    
-    return {
-      success: true,
-      data: url,
-    };
-  } catch (error) {
-    console.error('Lỗi khi export dữ liệu:', error);
-    return {
-      success: false,
-      message: `Lỗi khi export dữ liệu: ${error instanceof Error ? error.message : String(error)}`,
-    };
-  }
-}
 
-/**
- * Tạo QR Code từ text/data
- */
-export async function generateQRCode(data: string): Promise<SpecialFieldResult> {
-  try {
-    const qrDataUrl = await QRCode.toDataURL(data);
-    
-    return {
-      success: true,
-      data: qrDataUrl,
-    };
+    // Tạo hộp thoại ghi màn hình
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.bottom = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.padding = "15px";
+    modal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    modal.style.zIndex = "9999";
+    modal.style.display = "flex";
+    modal.style.alignItems = "center";
+    modal.style.justifyContent = "center";
+
+    // Tạo div hiển thị thời gian
+    const timerDisplay = document.createElement("div");
+    timerDisplay.style.fontSize = "20px";
+    timerDisplay.style.color = "white";
+    timerDisplay.style.marginRight = "20px";
+    timerDisplay.textContent = "00:00";
+    modal.appendChild(timerDisplay);
+
+    // Tạo div hiển thị trạng thái
+    const statusDisplay = document.createElement("div");
+    statusDisplay.style.fontSize = "16px";
+    statusDisplay.style.color = "white";
+    statusDisplay.style.marginRight = "20px";
+    statusDisplay.style.flexGrow = "1";
+    statusDisplay.textContent = "Đang ghi màn hình...";
+    modal.appendChild(statusDisplay);
+
+    // Tạo nút dừng
+    const stopButton = document.createElement("button");
+    stopButton.textContent = "Dừng";
+    stopButton.style.padding = "8px 16px";
+    stopButton.style.backgroundColor = "#ef4444";
+    stopButton.style.color = "white";
+    stopButton.style.border = "none";
+    stopButton.style.borderRadius = "4px";
+    stopButton.style.cursor = "pointer";
+    modal.appendChild(stopButton);
+
+    // Tạo nút hủy
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Hủy";
+    cancelButton.style.padding = "8px 16px";
+    cancelButton.style.backgroundColor = "#f43f5e";
+    cancelButton.style.color = "white";
+    cancelButton.style.border = "none";
+    cancelButton.style.borderRadius = "4px";
+    cancelButton.style.marginLeft = "10px";
+    cancelButton.style.cursor = "pointer";
+    modal.appendChild(cancelButton);
+
+    // Khởi tạo các biến
+    let stream: MediaStream | null = null;
+    let mediaRecorder: MediaRecorder | null = null;
+    let videoChunks: Blob[] = [];
+    let startTime: number = 0;
+    let timerInterval: NodeJS.Timeout | null = null;
+
+    return new Promise<FieldHandlerResponse>(async (resolve) => {
+      try {
+        // Yêu cầu quyền truy cập màn hình
+        stream = await (navigator.mediaDevices as any).getDisplayMedia({
+          video: {
+            cursor: "always",
+            frameRate: 30,
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+          },
+        });
+
+        // Xử lý khi người dùng dừng chia sẻ màn hình bằng cách nhấn nút "Stop sharing" của trình duyệt
+        stream.getVideoTracks()[0].onended = () => {
+          if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+          }
+        };
+
+        // Thêm modal vào body sau khi đã có quyền truy cập màn hình
+        document.body.appendChild(modal);
+
+        // Tạo MediaRecorder
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: "video/webm; codecs=vp9",
+        });
+
+        // Xử lý sự kiện khi có dữ liệu
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            videoChunks.push(event.data);
+          }
+        };
+
+        // Xử lý sự kiện khi ghi màn hình kết thúc
+        mediaRecorder.onstop = () => {
+          // Tạo blob từ các chunk
+          const videoBlob = new Blob(videoChunks, { type: "video/webm" });
+
+          // Chuyển đổi blob thành base64 data URL
+          const reader = new FileReader();
+          reader.readAsDataURL(videoBlob);
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+
+            // Dừng stream và đóng modal
+            cleanup();
+
+            // Trả về kết quả thành công với dữ liệu video
+            resolve({
+              success: true,
+              data: base64data,
+            });
+          };
+        };
+
+        // Bắt đầu ghi màn hình
+        mediaRecorder.start();
+
+        // Bắt đầu đếm thời gian
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+          const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+          const minutes = Math.floor(elapsedTime / 60)
+            .toString()
+            .padStart(2, "0");
+          const seconds = (elapsedTime % 60).toString().padStart(2, "0");
+          timerDisplay.textContent = `${minutes}:${seconds}`;
+        }, 1000);
+
+        // Xử lý sự kiện khi người dùng nhấn nút dừng
+        stopButton.onclick = () => {
+          if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            statusDisplay.textContent = "Đang xử lý...";
+            mediaRecorder.stop();
+          }
+        };
+
+        // Xử lý sự kiện khi người dùng nhấn nút hủy
+        cancelButton.onclick = () => {
+          // Dừng stream và đóng modal
+          cleanup();
+
+          // Trả về kết quả hủy
+          resolve({
+            success: false,
+            message: "Người dùng đã hủy ghi màn hình",
+          });
+        };
+      } catch (error) {
+        console.error("Lỗi khi truy cập màn hình:", error);
+        // Đóng modal nếu đã tạo
+        if (modal.parentNode) {
+          modal.parentNode.removeChild(modal);
+        }
+
+        // Trả về kết quả lỗi
+        resolve({
+          success: false,
+          message: "Không thể truy cập màn hình hoặc người dùng đã hủy yêu cầu",
+        });
+      }
+    });
+
+    // Hàm cleanup để dừng stream và xóa modal
+    function cleanup() {
+      // Dừng đếm thời gian
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+
+      // Dừng stream nếu có
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+
+      // Xóa modal
+      if (modal && modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+      }
+    }
   } catch (error) {
-    console.error('Lỗi khi tạo QR code:', error);
+    console.error("Lỗi khi ghi màn hình:", error);
     return {
       success: false,
-      message: `Lỗi khi tạo QR code: ${error instanceof Error ? error.message : String(error)}`,
+      message: "Đã xảy ra lỗi khi ghi màn hình",
     };
   }
 }
