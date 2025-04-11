@@ -17,6 +17,7 @@ import RecordDetailPage from "@/pages/record-detail";
 import LoginPage from "@/pages/login";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
+import { useLocation } from "wouter";
 import { setupInitialTheme } from "@/lib/theme";
 
 // Wrapper components với RequireAuth
@@ -72,17 +73,32 @@ function Router() {
   return (
     <Switch>
       <Route path="/login" component={LoginPage} />
-      
+
       {/* Các route được bảo vệ */}
       <Route path="/" component={ProtectedHome} />
       <Route path="/forms" component={ProtectedFormsPage} />
       <Route path="/workflow" component={ProtectedWorkflowPage} />
       <Route path="/menu/:menuId" component={ProtectedWorkflowPage} />
-      <Route path="/menu/:menuId/submenu/:subMenuId" component={ProtectedWorkflowPage} />
-      <Route path="/submission/:workflowId" component={ProtectedSubmissionPage} />
-      <Route path="/submission/:workflowId/create" component={ProtectedSubmissionCreatePage} />
-      <Route path="/record/:menuId/:recordId" component={ProtectedRecordDetailPage} />
-      <Route path="/record/:menuId/:recordId/workflow/:workflowId" component={ProtectedRecordDetailPage} />
+      <Route
+        path="/menu/:menuId/submenu/:subMenuId"
+        component={ProtectedWorkflowPage}
+      />
+      <Route
+        path="/submission/:workflowId"
+        component={ProtectedSubmissionPage}
+      />
+      <Route
+        path="/submission/:workflowId/create"
+        component={ProtectedSubmissionCreatePage}
+      />
+      <Route
+        path="/record/:menuId/:recordId"
+        component={ProtectedRecordDetailPage}
+      />
+      <Route
+        path="/record/:menuId/:recordId/workflow/:workflowId"
+        component={ProtectedRecordDetailPage}
+      />
       <Route path="/design" component={ProtectedDesignExamplePage} />
       <Route component={ProtectedNotFound} />
     </Switch>
@@ -94,12 +110,22 @@ function App() {
   useEffect(() => {
     setupInitialTheme();
   }, []);
+  
+  // Kiểm tra xem đường dẫn hiện tại có phải là trang login không
+  const [location] = useLocation();
+  const isLoginPage = location === '/login';
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MainSidebar>
+      {isLoginPage ? (
+        // Nếu là trang login, hiển thị nội dung không có sidebar
         <Router />
-      </MainSidebar>
+      ) : (
+        // Các trang khác được bọc bằng MainSidebar
+        <MainSidebar>
+          <Router />
+        </MainSidebar>
+      )}
       <CameraPermission />
       <PwaOfflineAlert />
       <Toaster />

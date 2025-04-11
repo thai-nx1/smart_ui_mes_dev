@@ -144,7 +144,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
-      <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg border">
+      <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg border border-primary/10">
         <div className="text-center">
           <div className="flex justify-center">
             <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
