@@ -57,13 +57,13 @@ export function MainLayout({ children, title }: MainLayoutProps) {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-x-3">
               {/* Nút menu cho mobile, chỉ hiện trên trang chủ */}
-              {/* Nút menu chỉ hiển thị ở trang chủ khi sử dụng mobile */}
-              {window.location.pathname === '/' && (
+              {location === '/' && (
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   className="md:hidden mr-1" 
                   onClick={() => {
+                    // Tìm và kích hoạt nút mở sidebar
                     const triggerButton = document.querySelector('[data-sidebar-trigger]');
                     if (triggerButton) {
                       (triggerButton as HTMLButtonElement).click();
