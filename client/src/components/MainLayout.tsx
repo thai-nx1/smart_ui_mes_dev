@@ -62,10 +62,34 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                 size="icon" 
                 className="md:hidden mr-1" 
                 onClick={() => {
-                  // Tìm và kích hoạt nút mở sidebar
+                  // Cách 1: Tìm và kích hoạt nút mở sidebar
                   const triggerButton = document.querySelector('[data-sidebar-trigger]');
                   if (triggerButton) {
                     (triggerButton as HTMLButtonElement).click();
+                  } else {
+                    // Cách 2: Nếu không tìm thấy nút trigger, sử dụng phương thức thay thế
+                    // Thêm overlay vào body
+                    const overlay = document.createElement('div');
+                    overlay.id = 'sidebar-overlay';
+                    overlay.className = 'fixed inset-0 z-40 bg-black/50 animate-in fade-in-0';
+                    document.body.appendChild(overlay);
+                    
+                    // Mở sidebar
+                    const sidebar = document.querySelector('[data-sidebar-content]');
+                    if (sidebar) {
+                      sidebar.setAttribute('data-sidebar-opened', 'true');
+                    }
+                    
+                    // Thêm sự kiện đóng khi click vào overlay
+                    overlay.addEventListener('click', () => {
+                      if (sidebar) {
+                        sidebar.setAttribute('data-sidebar-opened', 'false');
+                      }
+                      overlay.classList.add('animate-out', 'fade-out-0');
+                      setTimeout(() => {
+                        overlay.remove();
+                      }, 200);
+                    });
                   }
                 }}
               >
