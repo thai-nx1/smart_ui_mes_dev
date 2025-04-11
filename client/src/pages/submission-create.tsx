@@ -281,30 +281,34 @@ export default function SubmissionCreatePage() {
       <div className="w-full px-5 py-6">
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <div>
-              <CardTitle className="text-xl">
-                {t('submission.createNew', 'Tạo biểu mẫu mới')}
-              </CardTitle>
-              <CardDescription>
-                {workflowMenu?.name || t('submission.workflow', 'Workflow')}
-              </CardDescription>
+            <div className="flex flex-row items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mr-2"
+                onClick={() => {
+                  // Chuyển hướng về trang workflow - sử dụng menuId nếu có để định tuyến đúng
+                  const menuId = workflowMenu?.id;
+                  if (menuId) {
+                    setLocation(`/workflow/${menuId}/${menuId}`);
+                  } else {
+                    // Fallback nếu không tìm thấy menuId
+                    window.history.back();
+                  }
+                }}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <CardTitle className="text-xl">
+                  {t('submission.createNew', 'Tạo biểu mẫu mới')}
+                </CardTitle>
+                <CardDescription>
+                  {workflowMenu?.name || t('submission.workflow', 'Workflow')}
+                </CardDescription>
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                // Chuyển hướng về trang workflow - sử dụng menuId nếu có để định tuyến đúng
-                const menuId = workflowMenu?.id;
-                if (menuId) {
-                  setLocation(`/workflow/${menuId}/${menuId}`);
-                } else {
-                  // Fallback nếu không tìm thấy menuId
-                  window.history.back();
-                }
-              }}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
+            <div></div>
           </CardHeader>
           
           <CardContent className="px-6 py-5">
