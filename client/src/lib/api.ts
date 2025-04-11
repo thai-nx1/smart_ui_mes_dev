@@ -10,12 +10,11 @@ import {
   DEFAULT_ORGANIZATION_ID,
   DEFAULT_USER_ID,
 } from "./types";
+import { getAuthTokens, clearAuthTokens } from "./auth";
 
 // Dựa vào kiểm tra schema, backend đã hoạt động và có các trường cần thiết
 const GRAPHQL_ENDPOINT = "https://delicate-herring-66.hasura.app/v1/graphql";
-// Sử dụng token xác thực
-const AUTH_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJ1c2VyVHlwZSI6IlNZU1RFTV9VU0VSIiwidXNlcklkIjoiOTViZDhhMTMtOTE0Zi00ZDAyLTg3ZTMtMGMyNjIyYjg4MmFlIiwic2VydmljZUlkIjoiZTQ2NDU5YzItZTkxMy00MGMxLTgzODMtOGY5YmYzZTdhZGEwIiwib3JnYW5pemF0aW9uSWQiOiJhOWU5ODczNC1lNWQyLTQ4NTEtODRmMy01ZjFjOWE5Y2QyYTciLCJidXNpbmVzc1JvbGVJZHMiOlsiYzk0MGU2MjgtNmFmZC00MzRhLTgwZjMtZGJkNjdiN2ZiNGEyIl19LCJpYXQiOjE3NDMzOTg2OTAsImV4cCI6MjA1ODc1ODY5MH0.RYMF__ddVq4T6CWCNfM6sD0LHr_OpvVvJgoKW5zAhgQ";
+// Không còn sử dụng AUTH_TOKEN cứng mà lấy từ local storage
 console.log("Using GraphQL endpoint:", GRAPHQL_ENDPOINT);
 
 /**
@@ -27,18 +26,32 @@ export async function executeGraphQLQuery<T>(
 ): Promise<T> {
   try {
     console.log("Executing GraphQL query with variables:", variables);
-
+    
+    // Lấy token từ local storage qua Auth service
+    const authTokens = getAuthTokens();
+    const accessToken = authTokens?.accessToken || '';
+    
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${AUTH_TOKEN}`, // Thêm header xác thực
+        Authorization: `Bearer ${accessToken}`, // Sử dụng accessToken từ local storage
       },
       body: JSON.stringify({
         query,
         variables,
       }),
     });
+
+    // Nếu status code là 401 (Unauthorized), xóa thông tin xác thực và chuyển hướng về trang login
+    if (response.status === 401) {
+      console.error("Authentication failed (401 Unauthorized). Logging out...");
+      clearAuthTokens(); // Xóa token khỏi localStorage
+      
+      // Chuyển hướng đến trang đăng nhập
+      window.location.href = '/login';
+      throw new Error("Authentication token expired or invalid. Please login again.");
+    }
 
     if (!response.ok) {
       throw new Error(`GraphQL request failed: ${response.statusText}`);
@@ -49,6 +62,21 @@ export async function executeGraphQLQuery<T>(
 
     if (result.errors) {
       console.error("GraphQL errors:", result.errors);
+      
+      // Kiểm tra nếu lỗi liên quan đến xác thực thì cũng xử lý tương tự như 401
+      const authErrors = result.errors.some((e: any) => 
+        e.message.toLowerCase().includes('jwt') || 
+        e.message.toLowerCase().includes('token') || 
+        e.message.toLowerCase().includes('unauthorized')
+      );
+      
+      if (authErrors) {
+        console.error("Authentication failed (JWT/token error). Logging out...");
+        clearAuthTokens(); // Xóa token khỏi localStorage
+        window.location.href = '/login';
+        throw new Error("Authentication token expired or invalid. Please login again.");
+      }
+      
       throw new Error(result.errors.map((e: any) => e.message).join("\n"));
     }
 
