@@ -12,6 +12,8 @@ import {
   SidebarMenuSubButton,
   SidebarProvider,
   SidebarTrigger,
+  SidebarTriggerClose,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
@@ -178,10 +180,12 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen={true}>
       <div className={containerClass + ' h-screen flex items-start justify-start overflow-auto'}>
         {/* Mobile Sidebar Trigger - Chỉ hiển thị trên mobile */}
-        <div className="fixed z-20 top-4 left-4 lg:hidden">
+        <div className="fixed top-4 left-4 lg:hidden z-[9999] p-[5px]">
           <SidebarTrigger>
-            <Button size="icon" variant="outline" className="shadow-sm hover:bg-primary/10 transition-colors">
-              <Menu className="size-4" />
+            <Button 
+              size="icon" className="shadow-sm hover:bg-primary/10 transition-colors"
+              variant="ghost">
+                <Menu className="h-5 w-5" />
             </Button>
           </SidebarTrigger>
         </div>
@@ -210,45 +214,9 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
               {/* Chỉ hiển thị nút đóng trên mobile */}
-              <button 
-                className="ml-auto lg:hidden text-muted-foreground hover:text-sidebar-foreground p-1 rounded-full hover:bg-primary/10" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  
-                  try {
-                    // Đóng sidebar theo cách khác
-                    const sidebar = document.querySelector('[data-sidebar-content]');
-                    if (sidebar) {
-                      sidebar.setAttribute('data-sidebar-opened', 'false');
-                      // Cũng remove overlay nếu có
-                      const overlay = document.getElementById('sidebar-overlay');
-                      if (overlay) {
-                        overlay.classList.add('animate-out', 'fade-out-0');
-                        setTimeout(() => {
-                          try {
-                            overlay.remove();
-                          } catch (err) {
-                            console.error('Error removing overlay in X button:', err);
-                          }
-                        }, 200);
-                      }
-                    }
-                  } catch (err) {
-                    console.error('Error closing sidebar with X button:', err);
-                    // Fallback method
-                    try {
-                      const overlay = document.getElementById('sidebar-overlay');
-                      if (overlay) overlay.remove();
-                    } catch (e) {}
-                  }
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+              <div className="ml-auto lg:hidden text-muted-foreground hover:text-sidebar-foreground p-1 rounded-full hover:bg-primary/10" >
+                <SidebarTriggerClose/>
+              </div>
             </div>
             
             {/* Thanh tìm kiếm menu */}
@@ -540,6 +508,9 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const hasChildren = menu.core_dynamic_child_menus && menu.core_dynamic_child_menus.length > 0;
+  const screenSize = useScreenSize(); 
+  const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
+  const {toggleSidebar} = useSidebar()
 
   // Kiểm tra xem có submenu đang được chọn không - hỗ trợ đệ quy đa cấp
   const checkForActiveChild = (items: MenuType[] = []): boolean => {
@@ -569,6 +540,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   
   // Xử lý đóng sidebar khi click vào menu trên thiết bị di động
   const handleMobileMenuClick = () => {
+    toggleSidebar()
     if (window.innerWidth < 1024) { // 1024px là điểm ngắt cho lg (large) trong Tailwind
       setTimeout(() => {
         try {
@@ -629,7 +601,10 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen)
+          handleMobileMenuClick()
+        }}
         className={`transition-all whitespace-normal ${
           isOpen || hasActiveChild ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
         }`}
