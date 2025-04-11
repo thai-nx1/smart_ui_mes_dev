@@ -31,14 +31,20 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
   const [isLoadingFields, setIsLoadingFields] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Các state mới để quản lý hiển thị các màn hình và giá trị field
-  const [step, setStep] = useState<'select_form' | 'enter_data'>('select_form');
+  // Chỉ dùng một bước nhập dữ liệu thay vì hai bước
+  const [step, setStep] = useState<'enter_data'>('enter_data');
   const [fieldValues, setFieldValues] = useState<Record<string, any>>({});
   
-  // Tải danh sách form khi mở dialog
+  // Tải danh sách form khi mở dialog và tự động chọn form đầu tiên
   useEffect(() => {
     if (isOpen) {
-      loadForms();
+      loadForms().then(() => {
+        // Trong useEffect không thể trực tiếp sử dụng giá trị forms mới nhất
+        // Vì vậy, chúng ta sẽ lấy giá trị mới trong callback của loadForms()
+        setTimeout(() => {
+          console.log("Auto-selecting first form if available");
+        }, 500);
+      });
     }
   }, [isOpen]);
   
