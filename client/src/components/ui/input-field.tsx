@@ -1568,7 +1568,7 @@ export function InputField({
 
   return (
     <>
-      <div className="mb-6 p-4 transition-colors">
+      <div className="transition-colors">
         <div className="flex items-start justify-between mb-2">
           <div>
             {fieldType !== "SINGLE_CHOICE" && fieldType !== "MULTI_CHOICE" && (
