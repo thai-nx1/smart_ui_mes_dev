@@ -278,8 +278,8 @@ export default function SubmissionCreatePage() {
   
   return (
     <MainLayout title={t('submission.createTitle', 'Tạo biểu mẫu mới')}>
-      <div className="container py-6 max-w-4xl">
-        <Card>
+      <div className="w-full px-5 py-6">
+        <Card className="w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-xl">
@@ -307,7 +307,7 @@ export default function SubmissionCreatePage() {
             </Button>
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="px-6 py-5">
             {isLoadingForms ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -344,7 +344,7 @@ export default function SubmissionCreatePage() {
                   
                   {/* Form fields */}
                   {formFields.length > 0 && (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       {formFields.map((field, index) => {
                         // Tìm field tương ứng trong react-hook-form
                         const fieldIndex = form.getValues().fields.findIndex(f => f.id === field.core_dynamic_field.id);
