@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'wouter';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { PwaInstallButton } from '@/components/PwaInstallButton';
-import { Bell, Search, User, Menu, X } from 'lucide-react';
+import { Bell, Search, User, Menu, X, LogOut, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { clearAuthTokens } from '@/lib/auth';
 import { themeManager } from '@/lib/theme';
 
 interface MainLayoutProps {
@@ -18,8 +21,15 @@ interface MainLayoutProps {
 export function MainLayout({ children, title }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(themeManager.getIsDarkMode());
+  
+  // Xử lý đăng xuất
+  const handleLogout = () => {
+    clearAuthTokens();
+    setLocation('/login');
+  };
   
   // Theo dõi cuộn trang để thêm shadow cho header
   useEffect(() => {
@@ -106,10 +116,40 @@ export function MainLayout({ children, title }: MainLayoutProps) {
               
               <div className="h-8 w-px bg-border mx-1 hidden md:block" />
               
-              <Avatar className="h-8 w-8 border">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-primary/10 text-primary font-medium">VN</AvatarFallback>
-              </Avatar>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Avatar className="h-8 w-8 border cursor-pointer hover:shadow-sm transition-shadow">
+                      <AvatarImage src="" />
+                      <AvatarFallback className="bg-primary/10 text-primary font-medium">VN</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-0" align="end">
+                  <div className="p-3 border-b">
+                    <div className="font-medium">Người dùng</div>
+                    <div className="text-xs text-muted-foreground">user@example.com</div>
+                  </div>
+                  <div className="p-1">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start font-normal px-2 py-1.5 h-9"
+                      onClick={() => setLocation('/profile')}
+                    >
+                      <UserCircle className="mr-2 h-4 w-4" />
+                      {t('actions.viewProfile', 'Xem hồ sơ')}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start font-normal px-2 py-1.5 h-9 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      {t('actions.logout', 'Đăng xuất')}
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
