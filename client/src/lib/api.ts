@@ -407,7 +407,15 @@ export async function fetchMainMenus(): Promise<
 export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
   const query = `
     query GetAllMenus {
-      core_core_dynamic_menus(where: {deleted_at: {_is_null: true}}) {
+      core_core_dynamic_menus(
+        where: {
+          deleted_at: {_is_null: true}, 
+          _or: [
+            {status: {_eq: "Active"}}, 
+            {status: {_is_null: true}}
+          ]
+        }
+      ) {
         id
         code
         name
