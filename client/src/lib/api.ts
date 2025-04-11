@@ -411,7 +411,7 @@ export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
         where: {
           deleted_at: {_is_null: true}, 
           _or: [
-            {status: {_eq: "Active"}}, 
+            {status: {_eq: "active"}}, 
             {status: {_is_null: true}}
           ]
         }
