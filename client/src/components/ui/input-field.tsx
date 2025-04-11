@@ -112,7 +112,7 @@ export function InputField({
             id={id}
             value={value || ""}
             onChange={handleChange}
-            className={cn(error && "border-red-500")}
+            className={cn(error && "ring-2 ring-red-500")}
             placeholder="Nhập văn bản"
             required={required}
           />

@@ -327,7 +327,6 @@ export default function SubmissionCreatePage() {
                   {/* Form selector */}
                   {formsData?.forms && formsData.forms.length > 1 && (
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium">{t('submission.selectForm', 'Chọn biểu mẫu')}</label>
                       <Select
                         value={selectedFormId || undefined}
                         onValueChange={(value) => setSelectedFormId(value)}
@@ -369,7 +368,7 @@ export default function SubmissionCreatePage() {
                                   onBlur={formField.onBlur}
                                   name={formField.name}
                                   optionId={field.option_id}
-                                  showFieldLabel={true}
+                                  showFieldLabel={false}
                                 />
                               )}
                             />
