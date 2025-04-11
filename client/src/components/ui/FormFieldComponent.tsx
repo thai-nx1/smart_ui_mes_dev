@@ -134,7 +134,8 @@ function SearchableSelect({ field, value, onChange, optionId }: SearchableSelect
   
   return (
     <ReactSelect
-      className="w-full rounded-md focus:outline-none"
+      className="w-full focus:outline-none"
+      classNamePrefix="react-select"
       value={selectedOption}
       onChange={handleChange}
       options={options}
@@ -143,6 +144,22 @@ function SearchableSelect({ field, value, onChange, optionId }: SearchableSelect
       placeholder="Chọn hoặc tìm kiếm..."
       noOptionsMessage={() => "Không có tùy chọn"}
       loadingMessage={() => "Đang tải..."}
+      styles={{
+        control: (base) => ({
+          ...base,
+          borderWidth: 0,
+          backgroundColor: 'rgb(248 250 252)',
+          boxShadow: 'none',
+          '&:hover': {
+            borderColor: 'transparent',
+          }
+        }),
+        menu: (base) => ({
+          ...base,
+          borderRadius: 8,
+          overflow: 'hidden'
+        })
+      }}
     />
   );
 }
