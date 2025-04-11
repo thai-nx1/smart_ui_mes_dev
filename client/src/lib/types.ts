@@ -63,9 +63,6 @@ export interface FormField {
   dynamic_form_id: string;
   core_dynamic_field: Field;
   __typename: string;
-  position?: number | null;
-  is_required?: boolean | null;
-  option_id?: string | null;
 }
 
 export interface Form {
