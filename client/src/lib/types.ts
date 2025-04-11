@@ -11,7 +11,10 @@ export interface Menu {
   parent_id: string | null;
   workflow_id: string | null;
   __typename: string;
+  status?: string;
+  description?: string;
   core_dynamic_child_menus?: Menu[];
+  _isParentOfMatch?: boolean; // Dùng cho tìm kiếm
 }
 
 export interface MenusResponse {

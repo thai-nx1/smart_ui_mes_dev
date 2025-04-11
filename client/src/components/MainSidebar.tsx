@@ -54,7 +54,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
     }
   };
   
-  // Fetch all menus from the API để xử lý parent/child relationship
+  // Fetch all menus from the API để xử lý parent/child relationship đa cấp
   // Thêm retry và staleTime để đảm bảo dữ liệu luôn hiển thị sau khi mount
   const { data: menusData, isLoading, error } = useQuery({
     queryKey: ['/api/menus'],
@@ -69,28 +69,31 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         const allMenus = allMenusFromAPI.filter((menu:any) => menu.status === 'active');
         console.log("Fetched", allMenusFromAPI.length, "menus from API, filtered to", allMenus.length, "active menus");
         
-        // Lọc các menu cha (parent_id là null)
-        const parentMenus = allMenus.filter(menu => !menu.parent_id);
-        console.log("Found", parentMenus.length, "active parent menus");
+        // Hàm đệ quy để xây dựng cây menu nhiều cấp
+        const buildMenuTree = (menuItems: any[], parentId: string | null = null): Menu[] => {
+          return menuItems
+            .filter(item => item.parent_id === parentId)
+            .map(item => {
+              // Tìm tất cả các menu con
+              const children = buildMenuTree(menuItems, item.id);
+              // Log số lượng menu con
+              if (children.length > 0) {
+                console.log(`Menu '${item.name}' has ${children.length} child menus`);
+              }
+              
+              // Trả về menu với các con đã được xây dựng đệ quy
+              return {
+                ...item,
+                core_dynamic_child_menus: children.length > 0 ? children : undefined
+              };
+            });
+        };
         
-        // Thêm submenu vào mỗi menu cha
-        const menuWithChildren = parentMenus.map(parentMenu => {
-          // Tìm tất cả các menu con của menu cha hiện tại
-          const childMenus = allMenus.filter(menu => menu.parent_id === parentMenu.id).reduce((arr:any, submenu)=>{
-            arr.push({
-              ...submenu,
-              parent_code: parentMenu.code
-            })
-            return arr
-          },[]);
-          console.log(`Menu '${parentMenu.name}' has ${childMenus.length} child menus`);
-          return {
-            ...parentMenu,
-            core_dynamic_child_menus: childMenus // Thêm dưới định dạng cũ để tương thích với code hiện tại
-          };
-        });
+        // Xây dựng cây menu đa cấp từ menu gốc (parent_id = null)
+        const menuTree = buildMenuTree(allMenus);
+        console.log("Found", menuTree.length, "active parent menus");
         
-        return menuWithChildren;
+        return menuTree;
       } catch (error) {
         console.error("Error fetching menus:", error);
         return [];
