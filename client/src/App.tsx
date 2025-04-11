@@ -13,6 +13,7 @@ import SubmissionPage from "@/pages/submission";
 import SubmissionCreatePage from "@/pages/submission-create";
 import DesignExamplePage from "@/pages/design-example";
 import RecordDetailPage from "@/pages/record-detail";
+import LoginPage from "@/pages/login";
 import NotFound from "@/pages/not-found";
 import { useEffect } from "react";
 import { setupInitialTheme } from "@/lib/theme";
@@ -21,6 +22,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/login" component={LoginPage} />
       <Route path="/forms" component={FormsPage} />
       <Route path="/workflow" component={WorkflowPage} />
       <Route path="/menu/:menuId" component={WorkflowPage} />
