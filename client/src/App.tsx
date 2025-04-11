@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { MainLayout } from "@/components/MainLayout";
 import { MainSidebar } from "@/components/MainSidebar";
 import { CameraPermission } from "@/components/CameraPermission";
+import { PwaOfflineAlert } from "@/components/PwaOfflineAlert";
 import Home from "@/pages/home";
 import FormsPage from "@/pages/forms";
 import WorkflowPage from "@/pages/workflow";

@@ -3,6 +3,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { PwaInstallButton } from '@/components/PwaInstallButton';
 import { Bell, Search, User, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -99,6 +100,7 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                 </Badge>
               </Button>
               
+              <PwaInstallButton />
               <LanguageSwitcher />
               <ThemeSwitcher />
               
