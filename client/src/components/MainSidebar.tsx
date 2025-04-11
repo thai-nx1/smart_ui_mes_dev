@@ -66,7 +66,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         const allMenusFromAPI = response.data.core_core_dynamic_menus || [];
         
         // Lọc các menu có status là "active"
-        const allMenus = allMenusFromAPI.filter(menu => menu.status === 'active');
+        const allMenus = allMenusFromAPI.filter((menu:any) => menu.status === 'active');
         console.log("Fetched", allMenusFromAPI.length, "menus from API, filtered to", allMenus.length, "active menus");
         
         // Lọc các menu cha (parent_id là null)
