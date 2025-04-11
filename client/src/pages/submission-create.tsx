@@ -14,7 +14,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FormField as FormFieldComponent } from '@/components/ui/FormFieldComponent';
-import { FormSubmission } from '@/lib/types';
+import { FormSubmission, Field } from '@/lib/types';
+
+// Define extended types for our API responses
+interface FormFieldExtended {
+  id: string;
+  is_required: boolean;
+  position: number;
+  option_id?: string;
+  core_dynamic_field: Field;
+}
+
+interface FormExtended {
+  id: string;
+  name: string;
+  description?: string;
+  status: string;
+  __typename: string;
+  core_dynamic_form_fields: FormFieldExtended[];
+}
 
 export default function SubmissionCreatePage() {
   const params = useParams<{ workflowId: string }>();
@@ -34,16 +52,16 @@ export default function SubmissionCreatePage() {
   const { data: formsData, isLoading: isLoadingForms } = useQuery({
     queryKey: ['/api/workflow-forms', workflowId],
     queryFn: async () => {
-      if (!workflowId) return { forms: [] };
+      if (!workflowId) return { forms: [] as FormExtended[] };
       
       try {
         const response = await fetchFormsByWorkflow(workflowId);
         return {
-          forms: response.data.core_core_dynamic_forms || []
+          forms: (response.data.core_core_dynamic_forms || []) as FormExtended[]
         };
       } catch (error) {
         console.error('Error fetching forms:', error);
-        return { forms: [] };
+        return { forms: [] as FormExtended[] };
       }
     },
     enabled: !!workflowId
@@ -73,11 +91,12 @@ export default function SubmissionCreatePage() {
       setSelectedFormId(formsData.forms[0].id);
       
       // Cũng cập nhật formFields nếu form có core_dynamic_form_fields
-      if (formsData.forms[0].core_dynamic_form_fields) {
-        setFormFields(formsData.forms[0].core_dynamic_form_fields);
+      const firstForm = formsData.forms[0] as FormExtended;
+      if (firstForm.core_dynamic_form_fields) {
+        setFormFields(firstForm.core_dynamic_form_fields);
       }
     }
-  }, [formsData?.forms]);
+  }, [formsData?.forms, selectedFormId]);
   
   // Lấy fields cho form đã chọn
   useEffect(() => {
@@ -85,7 +104,7 @@ export default function SubmissionCreatePage() {
       console.log("Fetching fields for form ID:", selectedFormId);
       
       // Tìm form đã chọn
-      const selectedForm = formsData.forms.find((form: any) => form.id === selectedFormId);
+      const selectedForm = formsData.forms.find((form) => form.id === selectedFormId) as FormExtended | undefined;
       
       if (selectedForm?.core_dynamic_form_fields) {
         setFormFields(selectedForm.core_dynamic_form_fields);
@@ -252,7 +271,7 @@ export default function SubmissionCreatePage() {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {/* Form selector */}
-                  {formsData?.forms.length > 1 && (
+                  {formsData?.forms && formsData.forms.length > 1 && (
                     <div className="grid gap-2">
                       <label className="text-sm font-medium">{t('submission.selectForm', 'Chọn biểu mẫu')}</label>
                       <Select
