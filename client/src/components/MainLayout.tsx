@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { themeManager } from '@/lib/theme';
+import { useLocation } from 'wouter';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ interface MainLayoutProps {
 export function MainLayout({ children, title }: MainLayoutProps) {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
+  const [location] = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(themeManager.getIsDarkMode());
   
@@ -55,19 +57,22 @@ export function MainLayout({ children, title }: MainLayoutProps) {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-x-3">
               {/* Nút menu cho mobile, chỉ hiện trên trang chủ */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="md:hidden mr-1" 
-                onClick={() => {
-                  const triggerButton = document.querySelector('[data-sidebar-trigger]');
-                  if (triggerButton) {
-                    (triggerButton as HTMLButtonElement).click();
-                  }
-                }}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+              {/* Nút menu chỉ hiển thị ở trang chủ khi sử dụng mobile */}
+              {window.location.pathname === '/' && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="md:hidden mr-1" 
+                  onClick={() => {
+                    const triggerButton = document.querySelector('[data-sidebar-trigger]');
+                    if (triggerButton) {
+                      (triggerButton as HTMLButtonElement).click();
+                    }
+                  }}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              )}
               
               <div className="flex items-center">
                 <span className="h-8 w-8 inline-flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold rounded">
