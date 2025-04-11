@@ -62,11 +62,11 @@ export function SubmissionForm({ workflowId, onSubmit, onCancel }: SubmissionFor
       // Nếu có workflowId, tìm form theo workflow
       if (workflowId) {
         console.log("Fetching forms for workflow:", workflowId);
-        const response = await fetchMenuForms(workflowId);
+        const response = await fetchMenuForms(workflowId, "CREATE");
         if (response.data && response.data.core_core_dynamic_menu_forms) {
           // Extract các form từ menu_forms
           formsList = response.data.core_core_dynamic_menu_forms
-            .filter((menuForm: any) => menuForm.form_type === 'ADD') // Chỉ lấy form loại ADD
+            .filter((menuForm: any) => menuForm.form_type === 'CREATE') // Chỉ lấy form loại CREATE
             .map((menuForm: any) => menuForm.core_dynamic_form)
             .filter(Boolean); // Loại bỏ các giá trị null/undefined
         }
@@ -221,7 +221,7 @@ export function SubmissionForm({ workflowId, onSubmit, onCancel }: SubmissionFor
             <p className="text-muted-foreground">{t('submission.noFields', 'Không có trường dữ liệu nào')}</p>
           </div>
         ) : (
-          <UIForm className="space-y-6">
+          <div className="space-y-6">
             {fields.map((field) => (
               <FormItem key={field.id} className="relative">
                 <FormLabel className="text-base">{field.name}</FormLabel>
@@ -535,7 +535,7 @@ export function SubmissionForm({ workflowId, onSubmit, onCancel }: SubmissionFor
                 </FormControl>
               </FormItem>
             ))}
-          </UIForm>
+          </div>
         )}
       </CardContent>
       
