@@ -356,22 +356,24 @@ export default function SubmissionCreatePage() {
                         
                         return (
                           <div key={field.id} className="grid gap-2">
-                            <FormField
-                              control={form.control}
-                              name={`fields.${fieldIndex}.value`}
-                              render={({ field: formField }) => (
-                                <FormFieldComponent
-                                  field={field.core_dynamic_field}
-                                  isRequired={field.is_required}
-                                  value={formField.value}
-                                  onChange={formField.onChange}
-                                  onBlur={formField.onBlur}
-                                  name={formField.name}
-                                  optionId={field.option_id}
-                                  showFieldLabel={false}
-                                />
-                              )}
-                            />
+                            <div className="border border-gray-200 p-4 rounded-md">
+                              <FormField
+                                control={form.control}
+                                name={`fields.${fieldIndex}.value`}
+                                render={({ field: formField }) => (
+                                  <FormFieldComponent
+                                    field={field.core_dynamic_field}
+                                    isRequired={field.is_required}
+                                    value={formField.value}
+                                    onChange={formField.onChange}
+                                    onBlur={formField.onBlur}
+                                    name={formField.name}
+                                    optionId={field.option_id}
+                                    showFieldLabel={false}
+                                  />
+                                )}
+                              />
+                            </div>
                           </div>
                         );
                       })}
