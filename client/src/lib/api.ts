@@ -819,3 +819,45 @@ export async function apiRequest(
 
   return res;
 }
+
+/**
+ * Lấy các form của workflow từ API (bao gồm cả form fields)
+ */
+export async function fetchFormsByWorkflow(workflowId: string): Promise<GraphQLResponse<FormsListResponse>> {
+  const query = `
+    query GetWorkflowForms($workflowId: uuid!) {
+      core_core_dynamic_forms(
+        where: {
+          _and: [
+            { workflow_id: { _eq: $workflowId } },
+            { status: { _eq: "ACTIVE" } }
+          ]
+        }
+      ) {
+        id
+        name
+        description
+        status
+        __typename
+        core_dynamic_form_fields {
+          id
+          is_required
+          position
+          option_id
+          core_dynamic_field {
+            id
+            code
+            field_type
+            configuration
+            description
+            name
+            status
+            option_values
+          }
+        }
+      }
+    }
+  `;
+
+  return executeGraphQLQuery<GraphQLResponse<FormsListResponse>>(query, { workflowId });
+}
