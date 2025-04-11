@@ -106,8 +106,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
   // Lấy cài đặt mặc định cho SidebarProvider dựa trên kích thước màn hình
   const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
-  const isMobile = screenSize === 'mobile';
-  const defaultOpen = isDesktopOrTablet; // Mặc định mở trên desktop/tablet, đóng trên mobile
+  const defaultOpen = true; // Luôn mở mặc định (không phụ thuộc kích thước màn hình)
   
   // Sử dụng CSS từ file sidebar-fix.css trong một class
   const containerClass = isDesktopOrTablet 
@@ -176,12 +175,12 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <SidebarProvider defaultOpen={true}>
       <div className={containerClass + ' h-screen flex items-start justify-start overflow-auto'}>
         {/* Mobile Sidebar Trigger - Chỉ hiển thị trên mobile */}
         <div className="fixed z-20 top-4 left-4 lg:hidden">
           <SidebarTrigger>
-            <Button size="icon" variant="outline" className="shadow-sm hover:bg-primary/10 transition-colors bg-white dark:bg-gray-900">
+            <Button size="icon" variant="outline" className="shadow-sm hover:bg-primary/10 transition-colors">
               <Menu className="size-4" />
             </Button>
           </SidebarTrigger>

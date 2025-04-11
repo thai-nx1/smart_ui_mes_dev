@@ -54,7 +54,20 @@ export function MainLayout({ children, title }: MainLayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-x-3">
-              {/* Nút menu mobile đã được loại bỏ theo yêu cầu */}
+              {/* Nút menu cho mobile, chỉ hiện trên trang chủ */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="md:hidden mr-1" 
+                onClick={() => {
+                  const triggerButton = document.querySelector('[data-sidebar-trigger]');
+                  if (triggerButton) {
+                    (triggerButton as HTMLButtonElement).click();
+                  }
+                }}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
               
               <div className="flex items-center">
                 <span className="h-8 w-8 inline-flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold rounded">
