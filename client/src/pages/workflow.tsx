@@ -125,7 +125,7 @@ export default function WorkflowPage() {
 
   return (
     <MainLayout title={t('submission.createTitle', currentSubmenu?.name || "Phê duyệt tài chính")}>
-    <div className="container py-6">
+      <div className="container py-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
@@ -181,7 +181,7 @@ export default function WorkflowPage() {
           />
         </CardContent>
       </Card>
-    </div>
+      </div>
     </MainLayout>
   );
 }
