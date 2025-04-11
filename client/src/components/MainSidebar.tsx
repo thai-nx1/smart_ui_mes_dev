@@ -63,12 +63,15 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         // Hiển thị log rõ ràng hơn
         console.log("Fetching menus for sidebar...");
         const response = await fetchAllMenus();
-        const allMenus = response.data.core_core_dynamic_menus || [];
-        console.log("Fetched", allMenus.length, "menus from API");
+        const allMenusFromAPI = response.data.core_core_dynamic_menus || [];
+        
+        // Lọc các menu có status là "active"
+        const allMenus = allMenusFromAPI.filter(menu => menu.status === 'active');
+        console.log("Fetched", allMenusFromAPI.length, "menus from API, filtered to", allMenus.length, "active menus");
         
         // Lọc các menu cha (parent_id là null)
         const parentMenus = allMenus.filter(menu => !menu.parent_id);
-        console.log("Found", parentMenus.length, "parent menus");
+        console.log("Found", parentMenus.length, "active parent menus");
         
         // Thêm submenu vào mỗi menu cha
         const menuWithChildren = parentMenus.map(parentMenu => {
