@@ -14,6 +14,7 @@ interface FormFieldProps {
   name?: string;
   isRequired?: boolean;
   optionId?: string;
+  showFieldLabel?: boolean;
 }
 
 export function FormField({
@@ -23,32 +24,49 @@ export function FormField({
   onBlur,
   name,
   isRequired,
-  optionId
+  optionId,
+  showFieldLabel = false
 }: FormFieldProps) {
   // Handle field with SEARCH type
   if (field.field_type === 'SEARCH') {
     return (
-      <SearchableSelect 
-        field={field} 
-        value={value} 
-        onChange={onChange} 
-        optionId={optionId}
-      />
+      <div className="grid gap-2">
+        {showFieldLabel && (
+          <label className="font-medium text-sm">
+            {field.name}
+            {isRequired && <span className="text-red-500 ml-1">*</span>}
+          </label>
+        )}
+        <SearchableSelect 
+          field={field} 
+          value={value} 
+          onChange={onChange} 
+          optionId={optionId}
+        />
+      </div>
     );
   }
 
   // Default to use InputField for other field types
   return (
-    <InputField
-      id={field.id}
-      name={field.name}
-      description={field.description}
-      fieldType={field.field_type as FieldType}
-      value={value}
-      onChange={onChange}
-      options={field.options}
-      required={isRequired}
-    />
+    <div className="grid gap-2">
+      {showFieldLabel && (
+        <label className="font-medium text-sm">
+          {field.name}
+          {isRequired && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+      <InputField
+        id={field.id}
+        name={field.name}
+        description={field.description}
+        fieldType={field.field_type as FieldType}
+        value={value}
+        onChange={onChange}
+        options={field.options}
+        required={isRequired}
+      />
+    </div>
   );
 }
 

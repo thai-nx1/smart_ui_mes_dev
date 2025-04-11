@@ -279,8 +279,8 @@ export default function SubmissionCreatePage() {
   return (
     <MainLayout title={t('submission.createTitle', 'Tạo biểu mẫu mới')}>
       <div className="w-full px-5 py-6">
-        <Card className="w-full">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="w-full border-none shadow-none">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-6">
             <div className="flex flex-row items-center gap-2">
               <Button
                 variant="ghost"
@@ -357,10 +357,6 @@ export default function SubmissionCreatePage() {
                         
                         return (
                           <div key={field.id} className="grid gap-2">
-                            <label className="font-medium text-sm">
-                              {field.core_dynamic_field.name}
-                              {field.is_required && <span className="text-red-500 ml-1">*</span>}
-                            </label>
                             <FormField
                               control={form.control}
                               name={`fields.${fieldIndex}.value`}
@@ -373,6 +369,7 @@ export default function SubmissionCreatePage() {
                                   onBlur={formField.onBlur}
                                   name={formField.name}
                                   optionId={field.option_id}
+                                  showFieldLabel={true}
                                 />
                               )}
                             />
@@ -390,7 +387,7 @@ export default function SubmissionCreatePage() {
             )}
           </CardContent>
           
-          <CardFooter className="border-t bg-muted/30 px-6 py-4">
+          <CardFooter className="border-none bg-transparent px-6 py-4">
             <div className="flex justify-end w-full">
               <Button
                 onClick={form.handleSubmit(onSubmit)}
