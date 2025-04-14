@@ -21,52 +21,53 @@ import { useLocation } from "wouter";
 import { setupInitialTheme } from "@/lib/theme";
 
 // Wrapper components với RequireAuth
+// Comment các component RequireAuth để tạm thời tắt xác thực
 const ProtectedHome = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <Home />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 const ProtectedFormsPage = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <FormsPage />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 const ProtectedWorkflowPage = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <WorkflowPage />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 const ProtectedSubmissionPage = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <SubmissionPage />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 const ProtectedSubmissionCreatePage = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <SubmissionCreatePage />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 const ProtectedRecordDetailPage = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <RecordDetailPage />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 const ProtectedDesignExamplePage = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <DesignExamplePage />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 const ProtectedNotFound = () => (
-  <RequireAuth>
+  // <RequireAuth>
     <NotFound />
-  </RequireAuth>
+  // </RequireAuth>
 );
 
 function Router() {
