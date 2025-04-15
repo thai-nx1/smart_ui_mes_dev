@@ -35,7 +35,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // Kiểm tra nếu đã đăng nhập thì chuyển hướng về trang chính
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
@@ -80,7 +80,8 @@ export default function LoginPage() {
       const response = await fetch('https://delicate-herring-66.hasura.app/v1/graphql', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "secret": "HITL2Om903jHX62HWcWsyYMJ7Fx9cx25"
         },
         body: JSON.stringify(graphqlQuery),
       });
@@ -97,32 +98,32 @@ export default function LoginPage() {
       // Lưu token vào localStorage nếu accessToken không null hoặc rỗng
       if (data.data?.identityLogin && data.data.identityLogin.accessToken) {
         const { accessToken, refreshToken } = data.data.identityLogin;
-        
+
         // Chỉ lưu accessToken nếu nó không null và không rỗng
         if (accessToken && accessToken.trim() !== '') {
           localStorage.setItem('accessToken', accessToken);
-          
+
           // Lưu các thông tin khác nếu có
           if (refreshToken) {
             localStorage.setItem('refreshToken', refreshToken);
           }
-          
+
           // Lưu thời gian đăng nhập
           localStorage.setItem('loggedInTime', new Date().toISOString());
-          
+
           // Hiển thị thông báo thành công
           toast({
             title: t('Đăng nhập thành công'),
             description: t('Chào mừng bạn quay trở lại!'),
             variant: 'default',
           });
-          
+
           // Chuyển hướng đến trang chủ
           setLocation('/');
           return;
         }
       }
-      
+
       // Xử lý trường hợp phản hồi không có token hợp lệ
       throw new Error('Không nhận được token đăng nhập hợp lệ');
     },
@@ -168,10 +169,10 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>{t('Số điện thoại')}</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={t('Nhập số điện thoại')} 
-                      {...field} 
-                      className="bg-slate-50" 
+                    <Input
+                      placeholder={t('Nhập số điện thoại')}
+                      {...field}
+                      className="bg-slate-50"
                     />
                   </FormControl>
                   <FormMessage />
@@ -218,8 +219,8 @@ export default function LoginPage() {
               </a>
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full"
               disabled={loginMutation.isPending}
             >
