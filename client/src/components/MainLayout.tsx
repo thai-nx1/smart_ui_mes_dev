@@ -62,29 +62,22 @@ export function MainLayout({ children, title }: MainLayoutProps) {
             : 'bg-background border-b'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
-          <div className="flex justify-between items-center h-16">
+        <div className="w-full flex px-4 sm:px-6 lg:px-4">
+          <div className="flex-1 flex justify-between items-center h-16">
             <div className="flex items-center gap-x-3">
               {/* Nút menu cho mobile, chỉ hiện trên trang chủ */}
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="mr-1 bg-transparent border-none outline-none hover:bg-transparent" 
+                className="block md:hidden mr-1 bg-transparent border-none outline-none hover:bg-transparent" 
                 disabled
               >
               </Button>
               
-              <div className="flex items-center">
-                <span className="h-8 w-8 inline-flex items-center justify-center bg-primary text-primary-foreground text-lg font-bold rounded">
-                  D
-                </span>
-                <span className="ml-2 text-lg font-semibold text-foreground hidden md:inline">DynamicForm</span>
-              </div>
-              
               {title && (
                 <div className="flex items-center">
-                  <div className="hidden md:block h-6 w-px bg-border mx-3" />
-                  <h1 className={`${isMobile ? 'text-sm' : 'text-lg'} font-semibold text-foreground truncate max-w-[180px] md:max-w-none`}>
+                  {/* <div className="hidden md:block h-6 w-px bg-border mx-3" /> */}
+                  <h1 className={`${isMobile ? 'text-sm' : 'text-xl'} font-semibold text-foreground truncate max-w-[180px] md:max-w-none`}>
                     {title}
                   </h1>
                 </div>

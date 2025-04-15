@@ -9,7 +9,7 @@ const resources = {
       // Thông tin ứng dụng
       app: {
         title: 'Dynamic Form Management System',
-        shortTitle: 'Dynamic Form',
+        shortTitle: 'S-Factory',
         description: 'Create dynamic forms with advanced features',
         login: 'Login',
         nav: {
