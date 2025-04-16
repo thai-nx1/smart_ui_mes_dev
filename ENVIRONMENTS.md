@@ -24,6 +24,7 @@ Dự án sử dụng các file sau để quản lý cấu hình cho từng môi 
 | `VITE_APP_ENV` | Định danh môi trường hiện tại (development, staging, production) |
 | `VITE_GRAPHQL_ENDPOINT` | URL của GraphQL API endpoint |
 | `VITE_API_URL` | URL của REST API (nếu có) |
+| `PORT` | Cổng máy chủ để chạy ứng dụng (mặc định: 3000) |
 
 ## Sử dụng trong code
 
