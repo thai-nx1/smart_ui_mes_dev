@@ -213,7 +213,8 @@ const Sidebar = React.forwardRef<
             className={cn(
               "w-[--sidebar-width] p-0 text-gray-400",
               "bg-slate-900 border-slate-700",
-              "border-r-0" // Để tránh đường viền không cần thiết
+              "border-r-0 dark", // Force dark mode for mobile sidebar
+              "data-theme-override='dark'" // Add a custom attribute for styling hooks
             )}
             style={
               {
@@ -222,7 +223,7 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
-            <div className="flex h-full w-full flex-col bg-slate-900 text-gray-400">{children}</div>
+            <div className="flex h-full w-full flex-col bg-slate-900 text-gray-400 dark">{children}</div>
           </SheetContent>
         </Sheet>
       )

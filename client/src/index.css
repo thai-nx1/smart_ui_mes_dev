@@ -410,4 +410,18 @@
     display: none;
     /* Chrome, Safari */
   }
+  
+  /* Đảm bảo sidebar mobile luôn ở chế độ tối */
+  [data-sidebar="sidebar"][data-mobile="true"],
+  [data-sidebar="sidebar"][data-mobile="true"] * {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 190 100% 42%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 190 100% 42%;
+    color-scheme: dark;
+  }
 }
