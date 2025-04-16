@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, PlusCircle } from 'lucide-react';
 import { SubmissionDataTable } from '@/components/SubmissionDataTable';
-import { useParams, useLocation } from 'wouter';
+import { useParams, useLocation, Link } from 'wouter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchMenuRecords, fetchAllMenus, submitFormData } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
@@ -135,19 +135,19 @@ export default function WorkflowPage() {
             </CardDescription>
           </div>
           {workflowId && (
-            <Button 
-              onClick={handleCreateSubmission} 
-              disabled={isNavigating}
-              className="gap-1 bg-primary hover:bg-primary/90 transition-colors"
-            >
-              <PlusCircle className="h-4 w-4" />
-              <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
-            </Button>
+            <Link href={`/submission/${workflowId}/create?menuId=${subMenuId}`}>
+              <Button 
+                className="gap-1 bg-primary hover:bg-primary/90 transition-colors"
+              >
+                <PlusCircle className="h-4 w-4" />
+                <span>{t('submission.create', 'Tạo biểu mẫu')}</span>
+              </Button>
+            </Link>
           )}
         </CardHeader>
         
         <CardContent className="px-6 py-4">
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <h3 className="text-lg font-medium mb-2">Dữ liệu đã nộp</h3>
             <div className="relative w-full max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -169,7 +169,7 @@ export default function WorkflowPage() {
             <Button variant="outline" className="text-xs bg-background hover:bg-primary/5 transition-colors text-foreground">
               Số tiền cần chi
             </Button>
-          </div>
+          </div> */}
           
           {/* Sử dụng SubmissionDataTable để hiển thị dữ liệu */}
           <SubmissionDataTable

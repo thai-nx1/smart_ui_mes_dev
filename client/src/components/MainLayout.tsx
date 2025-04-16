@@ -124,14 +124,14 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                     <div className="text-xs text-muted-foreground">user@example.com</div>
                   </div>
                   <div className="p-1">
-                    <Button 
+                    {/* <Button 
                       variant="ghost" 
                       className="w-full justify-start font-normal px-2 py-1.5 h-9"
                       onClick={() => setLocation('/profile')}
                     >
                       <UserCircle className="mr-2 h-4 w-4" />
                       {t('actions.viewProfile', 'Xem hồ sơ')}
-                    </Button>
+                    </Button> */}
                     <Button 
                       variant="ghost" 
                       className="w-full justify-start font-normal px-2 py-1.5 h-9 text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -162,7 +162,7 @@ export function MainLayout({ children, title }: MainLayoutProps) {
         </div>
       </main>
       
-      <footer className="mt-auto py-4 border-t bg-muted/30">
+      {/* <footer className="mt-auto py-4 border-t bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
             <p>
@@ -175,7 +175,7 @@ export function MainLayout({ children, title }: MainLayoutProps) {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

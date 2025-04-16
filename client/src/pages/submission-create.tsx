@@ -3,7 +3,7 @@ import { MainLayout } from '@/components/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchFormsByWorkflow, fetchAllMenus, submitFormData } from '@/lib/api';
-import { useParams, useLocation } from 'wouter';
+import { useParams, useLocation, Link } from 'wouter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Loader2, PlusCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -35,11 +35,12 @@ interface FormExtended {
 }
 
 export default function SubmissionCreatePage() {
-  const params = useParams<{ workflowId: string }>();
+  const params = useParams<{ workflowId: string}>();
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const workflowId = params.workflowId;
+  const [menuId, setMenuId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // State để lưu trữ form đã chọn
@@ -84,6 +85,22 @@ export default function SubmissionCreatePage() {
   
   const workflowMenu = findWorkflowMenu();
   
+  // Get query parameters from URL
+  const getQueryParams = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const queryParams: Record<string, string> = {};
+    for (const [key, value] of searchParams.entries()) {
+      queryParams[key] = value;
+    }
+    return queryParams;
+  };
+
+  // Log query parameters for debugging
+  useEffect(() => {
+    const queryParams = getQueryParams();
+    setMenuId(queryParams.menuId);
+  }, [menuId, location]);
+
   // Tự động chọn form đầu tiên khi forms được tải
   useEffect(() => {
     if (formsData?.forms && formsData.forms.length > 0 && !selectedFormId) {
@@ -285,19 +302,11 @@ export default function SubmissionCreatePage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="mr-2"
-                onClick={() => {
-                  // Chuyển hướng về trang workflow - sử dụng menuId nếu có để định tuyến đúng
-                  const menuId = workflowMenu?.id;
-                  if (menuId) {
-                    setLocation(`/workflow/${menuId}/${menuId}`);
-                  } else {
-                    // Fallback nếu không tìm thấy menuId
-                    window.history.back();
-                  }
-                }}
+                className="mr-2 flex justify-start items-center hover:bg-transparent"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <Link href={`/menu/${menuId}`}>
+                  <ArrowLeft className="h-4 w-4" />
+                </Link>
               </Button>
               <div>
                 <CardTitle className="text-xl">
