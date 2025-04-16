@@ -411,9 +411,9 @@
     /* Chrome, Safari */
   }
   
-  /* Đảm bảo sidebar mobile luôn ở chế độ tối */
-  [data-sidebar="sidebar"][data-mobile="true"],
-  [data-sidebar="sidebar"][data-mobile="true"] * {
+  /* Đảm bảo sidebar luôn ở chế độ tối - cho cả mobile và desktop */
+  [data-sidebar="sidebar"],
+  [data-sidebar="sidebar"] * {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --sidebar-background: 222 47% 11%;
@@ -423,5 +423,23 @@
     --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 190 100% 42%;
     color-scheme: dark;
+  }
+  
+  /* Các style cố định cho sidebar bất kể theme */
+  body:not(.dark) [data-sidebar="sidebar"] {
+    @apply bg-slate-900 text-gray-400;
+  }
+  
+  body:not(.dark) [data-sidebar="menu-button"],
+  body:not(.dark) [data-sidebar="menu-sub-button"] {
+    @apply text-gray-400 hover:bg-slate-800 hover:text-white data-[active=true]:bg-cyan-900 data-[active=true]:text-cyan-500;
+  }
+  
+  body:not(.dark) [data-sidebar="menu-sub"] {
+    @apply border-slate-700;
+  }
+  
+  body:not(.dark) [data-sidebar="separator"] {
+    @apply bg-slate-700;
   }
 }
