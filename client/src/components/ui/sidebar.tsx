@@ -213,7 +213,7 @@ const Sidebar = React.forwardRef<
             className={cn(
               "w-[--sidebar-width] p-0 text-gray-400",
               "bg-slate-900 border-slate-700",
-              "[&>button]:hidden" // Ẩn nút đóng mặc định của SheetContent
+              "border-r-0" // Để tránh đường viền không cần thiết
             )}
             style={
               {
