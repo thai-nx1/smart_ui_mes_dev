@@ -187,12 +187,12 @@
   /* Sidebar Colors - Light Mode */
   --sidebar-background: 0 0% 100%; /* bg-white */
   --sidebar-foreground: 215 25% 27%; /* text-slate-900 */
-  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
+  --sidebar-primary: 19 98.2% 55.3%; /* #FD651D */
   --sidebar-primary-foreground: 0 0% 100%; /* text-white */
   --sidebar-accent: 210 40% 96.1%; /* bg-slate-50 */
   --sidebar-accent-foreground: 215 25% 27%; /* text-slate-900 */
   --sidebar-border: 214 32% 91%; /* border-slate-300 */
-  --sidebar-ring: 190 100% 41%; /* #00B1D2 */
+  --sidebar-ring: 19 98.2% 55.3%; /* #FD651D */
 }
 
 .dark {
@@ -231,12 +231,12 @@
   /* Sidebar Colors - Dark Mode */
   --sidebar-background: 215 25% 5%; /* bg-slate-900 */
   --sidebar-foreground: 210 40% 98%; /* text-slate-100 */
-  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
+  --sidebar-primary: 19 98.2% 55.3%; /* #FD651D */
   --sidebar-primary-foreground: 0 0% 100%; /* text-white */
   --sidebar-accent: 215 20% 17%; /* bg-slate-800 */
   --sidebar-accent-foreground: 210 40% 98%; /* text-slate-100 */
   --sidebar-border: 215 20% 30%; /* border-slate-700 */
-  --sidebar-ring: 190 100% 41%; /* #00B1D2 */
+  --sidebar-ring: 19 98.2% 55.3%; /* #FD651D */
 }
 
 /* Vibrant Theme Style - Oxii Design System inspired */
@@ -247,7 +247,7 @@
   --card-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --popover: 0 0% 100%;
   --popover-foreground: 230 16% 17%; /* #232735 - Màu text chính */
-  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary: 19 98.2% 55.3%; /* #FD651D */
   --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%; /* text-black */
@@ -273,7 +273,7 @@
   /* Sidebar Colors - Vibrant Light */
   --sidebar-background: 0 0% 100%;
   --sidebar-foreground: 230 16% 17%; /* #232735 - Màu text chính */
-  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
+  --sidebar-primary: 19 98.2% 55.3%; /* #FD651D */
   --sidebar-accent: 190 30% 94%;
   --sidebar-accent-foreground: 190 100% 32%;
 }
@@ -285,7 +285,7 @@
   --card-foreground: 210 40% 98%; /* text-slate-100 */
   --popover: 215 25% 5%; /* bg-slate-900 */
   --popover-foreground: 210 40% 98%; /* text-slate-100 */
-  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary: 19 98.2% 55.3%; /* #FD651D */
   --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%; /* text-black */
@@ -311,14 +311,14 @@
   /* Sidebar Colors - Vibrant Dark */
   --sidebar-background: 215 25% 8%;
   --sidebar-foreground: 210 40% 98%; /* text-slate-100 */
-  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
+  --sidebar-primary: 19 98.2% 55.3%; /* #FD651D */
   --sidebar-accent: 190 70% 20%;
   --sidebar-accent-foreground: 210 40% 98%; /* text-slate-100 */
 }
 
 /* Tint Theme Style */
 .theme-tint {
-  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary: 19 98.2% 55.3%; /* #FD651D */
   --background: 0 0% 100%; /* bg-white */
   --foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --card: 190 30% 98%;
@@ -361,7 +361,7 @@
   --card-foreground: 210 40% 98%; /* text-slate-100 */
   --popover: 215 25% 5%; /* bg-slate-900 */
   --popover-foreground: 210 40% 98%; /* text-slate-100 */
-  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary: 19 98.2% 55.3%; /* #FD651D */
   --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%; /* text-black */
