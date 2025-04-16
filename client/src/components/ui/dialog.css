@@ -4,37 +4,53 @@
 .dialog-content,
 [role="dialog"][aria-modal="true"] > div,
 div[data-radix-popper-content-wrapper] > div {
-  @apply bg-white border border-slate-200 rounded-2xl shadow-xl;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Dark mode dialog styling */
 .dark .dialog-content,
 .dark [role="dialog"][aria-modal="true"] > div,
 .dark div[data-radix-popper-content-wrapper] > div {
-  @apply bg-slate-900 border-slate-800;
+  background-color: #0f172a !important; /* slate-900 */
+  border-color: #1e293b !important; /* slate-800 */
 }
 
 /* Dialog header styling */
 .dialog-header {
-  @apply pb-2;
+  padding-bottom: 0.5rem;
 }
 
 /* Dialog title styling */
 .dialog-title {
-  @apply text-xl font-bold text-foreground;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--foreground);
 }
 
 /* Dialog description styling */
 .dialog-description {
-  @apply text-muted-foreground;
+  color: var(--muted-foreground);
 }
 
 /* Dialog footer styling */
 .dialog-footer {
-  @apply pt-2 flex items-center justify-end;
+  padding-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 /* Dialog close button styling */
 .dialog-close {
-  @apply absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  border-radius: 0.125rem;
+  opacity: 0.7;
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
