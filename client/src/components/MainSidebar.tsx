@@ -218,7 +218,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           className={cn(
             "h-screen flex flex-col items-center justify-start overflow-auto z-10",
             "border-r border-slate-700",
-            "bg-slate-900 text-gray-300"
+            "bg-slate-900 text-gray-300 dark"
           )}
           collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
         >
