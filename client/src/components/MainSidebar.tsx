@@ -23,6 +23,8 @@ import {
   Box,
   Calendar,
   CheckCircle,
+  ChevronDown,
+  ChevronRight,
   Clipboard,
   FileText, 
   Home, 
@@ -303,7 +305,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                       }
                     }}
                     className={`transition-all whitespace-normal ${
-                      location === '/' ? 'bg-cyan-900 text-cyan-500 font-medium' : 'hover:bg-slate-800 text-gray-400 hover:text-white'
+                      location === '/' ? 'bg-cyan-900 text-cyan-500 font-medium' : 'text-gray-400 hover:bg-slate-800 hover:text-white'
                     }`}
                   >
                     <Link href="/" className="w-full flex items-center">
@@ -634,7 +636,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           className={`transition-all whitespace-normal ${
             isActive 
               ? 'bg-cyan-900 text-cyan-500 font-medium' 
-              : 'hover:bg-slate-800 text-gray-400 hover:text-white'
+              : 'text-gray-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
           <Link href={`/menu/${menu.id}`} className="w-full flex items-center">
@@ -652,6 +654,9 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
     );
   }
 
+  // Kiểm tra xem chính menu cha này có được chọn không
+  const isParentActive = location === `/menu/${menu.id}`;
+
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -659,10 +664,12 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           setIsOpen(!isOpen)
           handleMobileMenuClick()
         }}
-        className={`transition-all whitespace-normal ${
-          isOpen || hasActiveChild 
+        className={`transition-all whitespace-normal relative ${
+          isParentActive 
             ? 'bg-cyan-900 text-cyan-500 font-medium' 
-            : 'hover:bg-slate-800 text-gray-400 hover:text-white'
+            : hasActiveChild 
+              ? 'text-gray-400 hover:bg-slate-800 hover:text-white' 
+              : 'text-gray-400 hover:bg-slate-800 hover:text-white'
         }`}
       >
         {menuIcon}
@@ -673,6 +680,15 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
         <span className="text-sm min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">
           {menu.name}
         </span>
+        
+        {/* Thêm dấu mũi tên chỉ trạng thái mở/đóng của menu cha */}
+        <div className="absolute right-2 top-1/2 -translate-y-1/2">
+          {isOpen ? (
+            <ChevronDown className="size-3.5 opacity-60" />
+          ) : (
+            <ChevronRight className="size-3.5 opacity-60" />
+          )}
+        </div>
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
