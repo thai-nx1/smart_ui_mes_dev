@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import component-specific styles */
+@import "./components/ui/dialog.css";
+
 /* Ẩn các badge màu vàng và nhãn Approved, New trong sidebar */
 .bg-yellow-300,
 .bg-yellow-200,
@@ -43,6 +46,18 @@
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
+  }
+  
+  /* Thiết lập toàn cục cho các dialog/popup trong dark mode */
+  .dark [role="dialog"][aria-modal="true"] > div,
+  .dark .dialog-content,
+  .dark div[data-radix-popper-content-wrapper] > div {
+    background-color: #0f172a !important; /* slate-900 */
+    border-color: #1e293b !important; /* slate-800 */
+    border-width: 1px;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 
+                0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
   }
 
   /* Cải thiện cách xử lý xuống dòng cho chữ tiếng Việt */

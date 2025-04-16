@@ -426,7 +426,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
       {/* Hộp thoại thiết lập giao diện */}
       <Dialog open={showThemeDialog} onOpenChange={setShowThemeDialog}>
-        <DialogContent className="max-w-md rounded-xl p-6 shadow-lg border-0 dark:bg-slate-900">
+        <DialogContent className="bg-white dark:bg-slate-900 p-6 rounded-2xl border dark:border-slate-800 border-slate-200 shadow-xl w-full max-w-md">
           <DialogHeader className="pb-2">
             <DialogTitle className="text-xl font-bold text-foreground">
               {t('theme.dialog.title', 'Thiết lập giao diện')}
