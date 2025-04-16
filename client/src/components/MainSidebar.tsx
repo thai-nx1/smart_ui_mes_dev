@@ -579,14 +579,44 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
 
   // Tự động mở menu có menu con đang được chọn
   useEffect(() => {
+    // Nếu có menu con đang được chọn, mở menu cha
     if (hasActiveChild && !isOpen) {
       setIsOpen(true);
     }
+    
+    // Nếu menu cha được chọn trực tiếp, mở nó bất kể có menu con active hay không
+    if (location === `/menu/${menu.id}` && !isOpen) {
+      setIsOpen(true);
+    }
+    
     // Đảm bảo chỉ một menu cấp 1 được mở tại một thời điểm
     // Nếu menu cha không có menu con active, nhưng đang mở, và người dùng chuyển đến một menu khác
     // thì đóng menu này lại
     if (level === 0 && !hasActiveChild && isOpen && location !== `/menu/${menu.id}`) {
       setIsOpen(false);
+    }
+    
+    // Đóng menu khi không có menu con active và không phải menu cha đang được chọn
+    if (!hasActiveChild && location !== `/menu/${menu.id}` && isOpen && level === 0) {
+      // Tìm menu hiện tại đang active (được chọn)
+      const currentActiveLocation = location;
+      
+      // Kiểm tra xem location hiện tại có khớp với bất kỳ menu cấp 1 nào khác không
+      let shouldClose = false;
+      
+      if (currentActiveLocation.startsWith('/menu/')) {
+        const activeMenuId = currentActiveLocation.split('/')[2];
+        if (activeMenuId && activeMenuId !== menu.id) {
+          shouldClose = true;
+        }
+      } else if (currentActiveLocation !== '/' && currentActiveLocation !== '') {
+        // Nếu đang ở một route khác và không phải trang chủ, đóng menu
+        shouldClose = true;
+      }
+      
+      if (shouldClose) {
+        setIsOpen(false);
+      }
     }
   }, [location, hasActiveChild, menu.id, isOpen, level]);
   
