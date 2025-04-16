@@ -41,6 +41,27 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        disabled: {
+          DEFAULT: "hsl(var(--disabled))",
+          foreground: "hsl(var(--disabled-foreground))",
+        },
+        placeholder: "hsl(var(--placeholder))",
+        link: {
+          DEFAULT: "hsl(var(--link))",
+          hover: "hsl(var(--link-hover))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -63,8 +84,16 @@ export default {
         },
         // Core Design System colors
         'text': {
-          DEFAULT: 'var(--text-color)',
-          secondary: 'var(--text-color-secondary)',
+          DEFAULT: '#232735', // Màu text chính
+          secondary: '#73798D', // Màu text phụ
+          disabled: '#A1A4B0', // Màu text bị disable
+          white: '#FFFFFF', // Màu text trắng
+          error: '#B00020', // Màu text lỗi
+          success: '#00D18A', // Màu text thành công
+          warning: '#FF9E17', // Màu text cảnh báo
+          info: '#00B1D2', // Màu text thông tin
+          placeholder: '#8B90A0', // Màu text placeholder
+          link: '#00B1D2', // Màu text link
         },
         // Surface colors
         'surface': {
@@ -106,7 +135,7 @@ export default {
           300: 'var(--green-300)',
           400: 'var(--green-400)',
           500: 'var(--green-500)',
-          600: 'var(--green-600)',
+          600: 'var(--green-600)', // #00D18A
           700: 'var(--green-700)',
           800: 'var(--green-800)',
           900: 'var(--green-900)',
@@ -116,7 +145,7 @@ export default {
           50: 'var(--orange-50)',
           100: 'var(--orange-100)',
           200: 'var(--orange-200)',
-          300: 'var(--orange-300)',
+          300: 'var(--orange-300)', // #FF9E17
           400: 'var(--orange-400)',
           500: 'var(--orange-500)',
           600: 'var(--orange-600)',
@@ -131,7 +160,7 @@ export default {
           200: 'var(--gray-200)',
           300: 'var(--gray-300)',
           400: 'var(--gray-400)',
-          500: 'var(--gray-500)',
+          500: 'var(--gray-500)', // #8B90A0
           600: 'var(--gray-600)',
           700: 'var(--gray-700)',
           800: 'var(--gray-800)',
@@ -145,7 +174,7 @@ export default {
           300: 'var(--red-300)',
           400: 'var(--red-400)',
           500: 'var(--red-500)',
-          600: 'var(--red-600)',
+          600: 'var(--red-600)', // #B00020
           700: 'var(--red-700)',
           800: 'var(--red-800)',
           900: 'var(--red-900)',

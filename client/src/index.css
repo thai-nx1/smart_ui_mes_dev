@@ -151,23 +151,34 @@
   --red-800: #8c231c;
   --red-900: #661a14;
 
-  /* Light mode - Cập nhật theo yêu cầu */
+  /* Light mode - Cập nhật theo yêu cầu với các semantic tokens mới */
   --background: 0 0% 100%; /* bg-white */
-  --foreground: 215 25% 27%; /* text-slate-900 */
+  --foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --card: 0 0% 100%; /* bg-white */
-  --card-foreground: 215 25% 27%; /* text-slate-900 */
+  --card-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --popover: 0 0% 100%; /* bg-white */
-  --popover-foreground: 215 25% 27%; /* text-slate-900 */
+  --popover-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --primary: 190 100% 41%; /* #00B1D2 */
   --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%; /* text-black */
   --muted: 210 40% 96.1%; /* bg-slate-50 */
-  --muted-foreground: 215 16% 47%; /* text-slate-500 */
+  --muted-foreground: 226 9% 50%; /* #73798D - Màu text phụ */
   --accent: 210 40% 96.1%; /* bg-slate-50 */
-  --accent-foreground: 215 25% 27%; /* text-slate-900 */
-  --destructive: 346 87% 36%; /* #B00020 */
-  --destructive-foreground: 210 40% 98%;
+  --accent-foreground: 230 16% 17%; /* #232735 - Màu text chính */
+  --destructive: 350 100% 35%; /* #B00020 - Màu text lỗi */
+  --destructive-foreground: 0 0% 100%; /* text-white */
+  --success: 158 100% 41%; /* #00D18A - Màu text thành công */
+  --success-foreground: 0 0% 100%; /* text-white */
+  --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
+  --warning-foreground: 0 0% 100%; /* text-white */
+  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info-foreground: 0 0% 100%; /* text-white */
+  --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
+  --disabled-foreground: 0 0% 100%; /* text-white */
+  --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
+  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
+  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
   --border: 214 32% 91%; /* border-slate-300 */
   --input: 210 40% 96.1%; /* bg-slate-50 */
   --ring: 215 20% 65%; /* focus:ring-slate-500 */
@@ -185,7 +196,7 @@
 }
 
 .dark {
-  /* Cập nhật theo yêu cầu dark mode */
+  /* Cập nhật theo yêu cầu dark mode với các semantic tokens mới */
   --background: 215 25% 5%; /* bg-slate-900 */
   --foreground: 210 40% 98%; /* text-slate-100 */
   --card: 215 25% 5%; /* bg-slate-900 */
@@ -197,11 +208,22 @@
   --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%; /* text-black */
   --muted: 215 20% 17%; /* bg-slate-800 */
-  --muted-foreground: 210 15% 60%; /* text-slate-400 */
+  --muted-foreground: 226 9% 50%; /* #73798D - Màu text phụ */
   --accent: 215 20% 17%; /* bg-slate-800 */
   --accent-foreground: 210 40% 98%; /* text-slate-100 */
-  --destructive: 346 87% 36%; /* #B00020 */
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 350 100% 35%; /* #B00020 - Màu text lỗi */
+  --destructive-foreground: 0 0% 100%; /* text-white */
+  --success: 158 100% 41%; /* #00D18A - Màu text thành công */
+  --success-foreground: 0 0% 100%; /* text-white */
+  --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
+  --warning-foreground: 0 0% 100%; /* text-white */
+  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info-foreground: 0 0% 100%; /* text-white */
+  --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
+  --disabled-foreground: 0 0% 100%; /* text-white */
+  --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
+  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
+  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
   --border: 215 20% 30%; /* border-slate-700 */
   --input: 215 20% 17%; /* bg-slate-800 */
   --ring: 215 20% 65%; /* focus:ring-slate-500 */
@@ -220,20 +242,37 @@
 /* Vibrant Theme Style - Oxii Design System inspired */
 .theme-vibrant {
   --background: 0 0% 97.6%;
-  --foreground: 215 25% 27%; /* text-slate-900 */
+  --foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --card: 0 0% 100%;
-  --card-foreground: 215 25% 27%; /* text-slate-900 */
+  --card-foreground: 230 16% 17%; /* #232735 - Màu text chính */
+  --popover: 0 0% 100%;
+  --popover-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --primary: 190 100% 41%; /* #00B1D2 */
-  --primary-foreground: 0 0% 100%;
+  --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
-  --secondary-foreground: 0 0% 0%;
+  --secondary-foreground: 0 0% 0%; /* text-black */
+  --muted: 210 40% 96.1%; /* bg-slate-50 */
+  --muted-foreground: 226 9% 50%; /* #73798D - Màu text phụ */
   --accent: 190 30% 97%;
-  --accent-foreground: 190 100% 32%;
+  --accent-foreground: 230 16% 17%; /* #232735 - Màu text chính */
+  --destructive: 350 100% 35%; /* #B00020 - Màu text lỗi */
+  --destructive-foreground: 0 0% 100%; /* text-white */
+  --success: 158 100% 41%; /* #00D18A - Màu text thành công */
+  --success-foreground: 0 0% 100%; /* text-white */
+  --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
+  --warning-foreground: 0 0% 100%; /* text-white */
+  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info-foreground: 0 0% 100%; /* text-white */
+  --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
+  --disabled-foreground: 0 0% 100%; /* text-white */
+  --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
+  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
+  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
   --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Vibrant Light */
   --sidebar-background: 0 0% 100%;
-  --sidebar-foreground: 215 25% 27%; /* text-slate-900 */
+  --sidebar-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --sidebar-primary: 190 100% 41%; /* #00B1D2 */
   --sidebar-accent: 190 30% 94%;
   --sidebar-accent-foreground: 190 100% 32%;
@@ -244,12 +283,29 @@
   --foreground: 210 40% 98%; /* text-slate-100 */
   --card: 215 20% 10%;
   --card-foreground: 210 40% 98%; /* text-slate-100 */
+  --popover: 215 25% 5%; /* bg-slate-900 */
+  --popover-foreground: 210 40% 98%; /* text-slate-100 */
   --primary: 190 100% 41%; /* #00B1D2 */
-  --primary-foreground: 0 0% 100%;
+  --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
-  --secondary-foreground: 0 0% 0%;
+  --secondary-foreground: 0 0% 0%; /* text-black */
+  --muted: 215 20% 17%; /* bg-slate-800 */
+  --muted-foreground: 226 9% 50%; /* #73798D - Màu text phụ */
   --accent: 190 70% 20%;
   --accent-foreground: 210 40% 98%; /* text-slate-100 */
+  --destructive: 350 100% 35%; /* #B00020 - Màu text lỗi */
+  --destructive-foreground: 0 0% 100%; /* text-white */
+  --success: 158 100% 41%; /* #00D18A - Màu text thành công */
+  --success-foreground: 0 0% 100%; /* text-white */
+  --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
+  --warning-foreground: 0 0% 100%; /* text-white */
+  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info-foreground: 0 0% 100%; /* text-white */
+  --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
+  --disabled-foreground: 0 0% 100%; /* text-white */
+  --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
+  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
+  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
   --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Vibrant Dark */
@@ -264,14 +320,35 @@
 .theme-tint {
   --primary: 190 100% 41%; /* #00B1D2 */
   --background: 0 0% 100%; /* bg-white */
+  --foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --card: 190 30% 98%;
+  --card-foreground: 230 16% 17%; /* #232735 - Màu text chính */
+  --popover: 0 0% 100%;
+  --popover-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --secondary: 174 97% 44%; /* #03DAC6 */
+  --secondary-foreground: 0 0% 0%; /* text-black */
+  --muted: 210 40% 96.1%; /* bg-slate-50 */
+  --muted-foreground: 226 9% 50%; /* #73798D - Màu text phụ */
   --accent: 190 30% 96%;
+  --accent-foreground: 230 16% 17%; /* #232735 - Màu text chính */
+  --destructive: 350 100% 35%; /* #B00020 - Màu text lỗi */
+  --destructive-foreground: 0 0% 100%; /* text-white */
+  --success: 158 100% 41%; /* #00D18A - Màu text thành công */
+  --success-foreground: 0 0% 100%; /* text-white */
+  --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
+  --warning-foreground: 0 0% 100%; /* text-white */
+  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info-foreground: 0 0% 100%; /* text-white */
+  --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
+  --disabled-foreground: 0 0% 100%; /* text-white */
+  --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
+  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
+  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
   --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Tint Light */
   --sidebar-background: 190 30% 97%;
-  --sidebar-foreground: 215 25% 27%; /* text-slate-900 */
+  --sidebar-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --sidebar-primary: 190 100% 41%; /* #00B1D2 */
   --sidebar-accent: 190 30% 92%;
   --sidebar-accent-foreground: 190 70% 30%;
@@ -279,9 +356,32 @@
 
 .dark.theme-tint {
   --background: 215 25% 5%; /* bg-slate-900 */
+  --foreground: 210 40% 98%; /* text-slate-100 */
   --card: 190 30% 10%;
+  --card-foreground: 210 40% 98%; /* text-slate-100 */
+  --popover: 215 25% 5%; /* bg-slate-900 */
+  --popover-foreground: 210 40% 98%; /* text-slate-100 */
+  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
+  --secondary-foreground: 0 0% 0%; /* text-black */
+  --muted: 215 20% 17%; /* bg-slate-800 */
+  --muted-foreground: 226 9% 50%; /* #73798D - Màu text phụ */
   --accent: 190 30% 15%;
+  --accent-foreground: 210 40% 98%; /* text-slate-100 */
+  --destructive: 350 100% 35%; /* #B00020 - Màu text lỗi */
+  --destructive-foreground: 0 0% 100%; /* text-white */
+  --success: 158 100% 41%; /* #00D18A - Màu text thành công */
+  --success-foreground: 0 0% 100%; /* text-white */
+  --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
+  --warning-foreground: 0 0% 100%; /* text-white */
+  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info-foreground: 0 0% 100%; /* text-white */
+  --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
+  --disabled-foreground: 0 0% 100%; /* text-white */
+  --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
+  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
+  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
   --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Tint Dark */
