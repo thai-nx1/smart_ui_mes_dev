@@ -387,7 +387,7 @@ export function TransitionFormDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="dialog-content sm:max-w-[600px] w-[95vw] max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 p-6 rounded-2xl border dark:border-slate-800 border-slate-200 shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium text-blue-300">
             <div className="flex items-center">

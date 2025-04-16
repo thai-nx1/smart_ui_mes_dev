@@ -208,7 +208,7 @@ export function WorkflowDiagram({
   if (useDialogStyle) {
     return (
       <Dialog open onOpenChange={onClose}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="dialog-content max-w-3xl bg-white dark:bg-slate-900 p-6 rounded-2xl border dark:border-slate-800 border-slate-200 shadow-xl">
           <DialogHeader>
             <DialogTitle>
               <div className="flex justify-between items-center">
