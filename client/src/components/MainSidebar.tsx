@@ -45,8 +45,10 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 // import { useTranslation } from 'react-i18next';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useScreenSize } from '@/hooks/use-mobile';
-import { themeManager } from '@/lib/theme';
+import { themeManager, ThemeType, ThemeStyle } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -422,122 +424,133 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Hộp thoại chủ đề */}
+      {/* Hộp thoại thiết lập giao diện */}
       <Dialog open={showThemeDialog} onOpenChange={setShowThemeDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">
+        <DialogContent className="max-w-md rounded-xl p-6 shadow-lg border-0">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-xl font-bold text-foreground">
               {t('theme.dialog.title', 'Thiết lập giao diện')}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-muted-foreground">
               {t('theme.dialog.description', 'Tùy chỉnh giao diện theo sở thích của bạn.')}
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">{t('theme.mode', 'Chế độ hiển thị')}</h3>
-              <div className="grid grid-cols-3 gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    themeManager.setTheme({ theme: 'light' });
-                  }}
+          
+          <div className="space-y-6 py-3">
+            {/* Chế độ hiển thị */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-foreground">
+                {t('theme.mode', 'Chế độ hiển thị')}
+              </Label>
+              
+              <RadioGroup 
+                defaultValue={currentTheme.theme}
+                className="grid grid-cols-3 gap-3"
+                onValueChange={(value: ThemeType) => themeManager.setTheme({ theme: value as ThemeType })}
+              >
+                <Label
+                  htmlFor="theme-light"
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
-                    currentTheme.theme === 'light' && "border-primary bg-primary/5"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
+                    currentTheme.theme === 'light' && "border-primary ring-1 ring-primary"
                   )}
                 >
-                  <Sun className="h-5 w-5" />
-                  <span>{t('theme.light', 'Sáng')}</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    themeManager.setTheme({ theme: 'dark' });
-                  }}
+                  <RadioGroupItem value="light" id="theme-light" className="sr-only" />
+                  <Sun className="mb-2 h-5 w-5" />
+                  <span className="text-sm font-medium">{t('theme.light', 'Sáng')}</span>
+                </Label>
+                
+                <Label
+                  htmlFor="theme-dark"
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
-                    currentTheme.theme === 'dark' && "border-primary bg-primary/5"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
+                    currentTheme.theme === 'dark' && "border-primary ring-1 ring-primary"
                   )}
                 >
-                  <Moon className="h-5 w-5" />
-                  <span>{t('theme.dark', 'Tối')}</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    themeManager.setTheme({ theme: 'system' });
-                  }}
+                  <RadioGroupItem value="dark" id="theme-dark" className="sr-only" />
+                  <Moon className="mb-2 h-5 w-5" />
+                  <span className="text-sm font-medium">{t('theme.dark', 'Tối')}</span>
+                </Label>
+                
+                <Label
+                  htmlFor="theme-system"
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
-                    currentTheme.theme === 'system' && "border-primary bg-primary/5"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
+                    currentTheme.theme === 'system' && "border-primary ring-1 ring-primary"
                   )}
                 >
-                  <Laptop className="h-5 w-5" />
-                  <span>{t('theme.system', 'Tự động')}</span>
-                </Button>
-              </div>
+                  <RadioGroupItem value="system" id="theme-system" className="sr-only" />
+                  <Laptop className="mb-2 h-5 w-5" />
+                  <span className="text-sm font-medium">{t('theme.system', 'Tự động')}</span>
+                </Label>
+              </RadioGroup>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">{t('theme.style', 'Phong cách')}</h3>
-              <div className="grid grid-cols-3 gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    themeManager.setTheme({ themeStyle: 'professional' });
-                  }}
+            
+            {/* Phong cách */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-foreground">
+                {t('theme.style', 'Phong cách')}
+              </Label>
+              
+              <RadioGroup 
+                defaultValue={currentTheme.themeStyle}
+                className="grid grid-cols-3 gap-3"
+                onValueChange={(value: ThemeStyle) => themeManager.setTheme({ themeStyle: value as ThemeStyle })}
+              >
+                <Label
+                  htmlFor="style-professional"
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
-                    currentTheme.themeStyle === 'professional' && "border-primary bg-primary/5"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
+                    currentTheme.themeStyle === 'professional' && "border-primary ring-1 ring-primary"
                   )}
                 >
-                  <div className="size-5 flex items-center justify-center">
-                    <div className="size-4 bg-primary rounded-md"></div>
+                  <RadioGroupItem value="professional" id="style-professional" className="sr-only" />
+                  <div className="mb-2 size-6 flex items-center justify-center">
+                    <div className="size-5 bg-primary rounded-md"></div>
                   </div>
-                  <span>{t('theme.professional', 'Tiêu chuẩn')}</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    themeManager.setTheme({ themeStyle: 'tint' });
-                  }}
+                  <span className="text-sm font-medium">{t('theme.professional', 'Tiêu chuẩn')}</span>
+                </Label>
+                
+                <Label
+                  htmlFor="style-tint"
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
-                    currentTheme.themeStyle === 'tint' && "border-primary bg-primary/5"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
+                    currentTheme.themeStyle === 'tint' && "border-primary ring-1 ring-primary"
                   )}
                 >
-                  <div className="size-5 flex items-center justify-center">
-                    <div className="size-4 bg-primary/20 rounded-md border border-primary"></div>
+                  <RadioGroupItem value="tint" id="style-tint" className="sr-only" />
+                  <div className="mb-2 size-6 flex items-center justify-center">
+                    <div className="size-5 bg-primary/20 rounded-md border border-primary"></div>
                   </div>
-                  <span>{t('theme.tint', 'Màu nhẹ')}</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    themeManager.setTheme({ themeStyle: 'vibrant' });
-                  }}
+                  <span className="text-sm font-medium">{t('theme.tint', 'Màu nhẹ')}</span>
+                </Label>
+                
+                <Label
+                  htmlFor="style-vibrant"
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 h-auto py-3",
-                    currentTheme.themeStyle === 'vibrant' && "border-primary bg-primary/5"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
+                    currentTheme.themeStyle === 'vibrant' && "border-primary ring-1 ring-primary"
                   )}
                 >
-                  <div className="size-5 flex items-center justify-center">
-                    <div className="size-4 bg-gradient-to-br from-primary to-blue-400 rounded-md"></div>
+                  <RadioGroupItem value="vibrant" id="style-vibrant" className="sr-only" />
+                  <div className="mb-2 size-6 flex items-center justify-center">
+                    <div className="size-5 bg-gradient-to-br from-primary to-blue-400 rounded-md"></div>
                   </div>
-                  <span>{t('theme.vibrant', 'Nổi bật')}</span>
-                </Button>
-              </div>
+                  <span className="text-sm font-medium">{t('theme.vibrant', 'Nổi bật')}</span>
+                </Label>
+              </RadioGroup>
             </div>
           </div>
-          <DialogFooter>
+          
+          <DialogFooter className="pt-2">
             <DialogClose asChild>
-              <Button>{t('common.done', 'Hoàn tất')}</Button>
+              <Button 
+                size="default"
+                variant="default"
+                className="rounded-md font-medium px-6 transition-colors"
+              >
+                {t('common.done', 'Hoàn tất')}
+              </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
