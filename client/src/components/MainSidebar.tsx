@@ -264,8 +264,8 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
           <SidebarContent className="px-2 py-4 flex-1 overflow-auto none-scroll">
             <SidebarGroup>
-              <div className="text-xs font-semibold text-primary mb-2 px-3 flex items-center">
-                <span className="w-1 h-1 bg-primary rounded-full mr-2 inline-block"></span>
+              <div className="text-xs uppercase font-semibold text-cyan-400 mb-2 px-3 flex items-center">
+                <span className="w-1 h-1 bg-cyan-400 rounded-full mr-2 inline-block"></span>
                 {t('app.sidebar.applications', 'Ứng dụng')}
               </div>
               
@@ -374,7 +374,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
             </SidebarGroup>
           </SidebarContent>
 
-          <div className="border-t border-slate-800 bg-slate-800/50 p-2">
+          <div className="border-t border-slate-700 bg-slate-800/50 p-2">
             <Button
               variant="ghost"
               size="sm"
@@ -695,7 +695,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
-        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l border-slate-700">
+        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l-2 border-slate-700">
           {menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
             // Gọi đệ quy DynamicMenuItem cho menu con, tăng cấp độ lên 1
             <DynamicMenuItem key={subMenu.id} menu={subMenu} level={level + 1} />
