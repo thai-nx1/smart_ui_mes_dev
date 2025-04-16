@@ -172,13 +172,13 @@
   --success-foreground: 0 0% 100%; /* text-white */
   --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
   --warning-foreground: 0 0% 100%; /* text-white */
-  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info: 19 98.2% 55.3%; /* #FD651D - Màu text thông tin */
   --info-foreground: 0 0% 100%; /* text-white */
   --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
   --disabled-foreground: 0 0% 100%; /* text-white */
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
-  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
-  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
+  --link: 19 98.2% 55.3%; /* #FD651D - Màu text link */
+  --link-hover: 19 98.2% 55.3% / 80%; /* #FD651D với opacity 80% */
   --border: 214 32% 91%; /* border-slate-300 */
   --input: 210 40% 96.1%; /* bg-slate-50 */
   --ring: 215 20% 65%; /* focus:ring-slate-500 */
@@ -217,13 +217,13 @@
   --success-foreground: 0 0% 100%; /* text-white */
   --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
   --warning-foreground: 0 0% 100%; /* text-white */
-  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info: 19 98.2% 55.3%; /* #FD651D - Màu text thông tin */
   --info-foreground: 0 0% 100%; /* text-white */
   --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
   --disabled-foreground: 0 0% 100%; /* text-white */
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
-  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
-  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
+  --link: 19 98.2% 55.3%; /* #FD651D - Màu text link */
+  --link-hover: 19 98.2% 55.3% / 80%; /* #FD651D với opacity 80% */
   --border: 215 20% 30%; /* border-slate-700 */
   --input: 215 20% 17%; /* bg-slate-800 */
   --ring: 215 20% 65%; /* focus:ring-slate-500 */
@@ -261,13 +261,13 @@
   --success-foreground: 0 0% 100%; /* text-white */
   --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
   --warning-foreground: 0 0% 100%; /* text-white */
-  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info: 19 98.2% 55.3%; /* #FD651D - Màu text thông tin */
   --info-foreground: 0 0% 100%; /* text-white */
   --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
   --disabled-foreground: 0 0% 100%; /* text-white */
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
-  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
-  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
+  --link: 19 98.2% 55.3%; /* #FD651D - Màu text link */
+  --link-hover: 19 98.2% 55.3% / 80%; /* #FD651D với opacity 80% */
   --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Vibrant Light */
@@ -299,13 +299,13 @@
   --success-foreground: 0 0% 100%; /* text-white */
   --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
   --warning-foreground: 0 0% 100%; /* text-white */
-  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info: 19 98.2% 55.3%; /* #FD651D - Màu text thông tin */
   --info-foreground: 0 0% 100%; /* text-white */
   --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
   --disabled-foreground: 0 0% 100%; /* text-white */
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
-  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
-  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
+  --link: 19 98.2% 55.3%; /* #FD651D - Màu text link */
+  --link-hover: 19 98.2% 55.3% / 80%; /* #FD651D với opacity 80% */
   --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Vibrant Dark */
@@ -337,13 +337,13 @@
   --success-foreground: 0 0% 100%; /* text-white */
   --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
   --warning-foreground: 0 0% 100%; /* text-white */
-  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info: 19 98.2% 55.3%; /* #FD651D - Màu text thông tin */
   --info-foreground: 0 0% 100%; /* text-white */
   --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
   --disabled-foreground: 0 0% 100%; /* text-white */
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
-  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
-  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
+  --link: 19 98.2% 55.3%; /* #FD651D - Màu text link */
+  --link-hover: 19 98.2% 55.3% / 80%; /* #FD651D với opacity 80% */
   --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Tint Light */
@@ -375,13 +375,13 @@
   --success-foreground: 0 0% 100%; /* text-white */
   --warning: 35 100% 55%; /* #FF9E17 - Màu text cảnh báo */
   --warning-foreground: 0 0% 100%; /* text-white */
-  --info: 190 100% 41%; /* #00B1D2 - Màu text thông tin */
+  --info: 19 98.2% 55.3%; /* #FD651D - Màu text thông tin */
   --info-foreground: 0 0% 100%; /* text-white */
   --disabled: 220 6% 66%; /* #A1A4B0 - Màu text bị disable */
   --disabled-foreground: 0 0% 100%; /* text-white */
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
-  --link: 190 100% 41%; /* #00B1D2 - Màu text link */
-  --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
+  --link: 19 98.2% 55.3%; /* #FD651D - Màu text link */
+  --link-hover: 19 98.2% 55.3% / 80%; /* #FD651D với opacity 80% */
   --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Tint Dark */
