@@ -332,7 +332,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     className={cn(
                       "transition-all whitespace-normal",
                       location === '/' 
-                        ? "bg-cyan-900 text-cyan-500 font-medium" 
+                        ? "bg-orange-900 text-orange-500 font-medium" 
                         : "text-gray-400 hover:bg-slate-800 hover:text-white"
                     )}
                   >
@@ -409,7 +409,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
               onClick={() => setShowThemeDialog(true)}
               className={cn(
                 "w-full justify-start",
-                "text-gray-400 hover:text-white hover:bg-slate-800"
+                "text-gray-400 hover:text-orange-500 hover:bg-slate-800"
               )}
             >
               <Sun className="h-4 w-4 mr-2" />
@@ -583,7 +583,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
               <Button 
                 size="default"
                 variant="default"
-                className="rounded-md font-medium px-6 transition-colors bg-cyan-600 hover:bg-cyan-700 text-white dark:bg-cyan-700 dark:hover:bg-cyan-800"
+                className="rounded-md font-medium px-6 transition-colors bg-orange-600 hover:bg-orange-700 text-white dark:bg-orange-700 dark:hover:bg-orange-800"
               >
                 {t('common.done', 'Hoàn tất')}
               </Button>
@@ -717,7 +717,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           className={cn(
             "transition-all whitespace-normal",
             isActive 
-              ? "bg-cyan-900 text-cyan-500 font-medium" 
+              ? "bg-orange-900 text-orange-500 font-medium" 
               : "text-gray-400 hover:bg-slate-800 hover:text-white"
           )}
         >
@@ -749,7 +749,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
         className={cn(
           "transition-all whitespace-normal relative",
           isParentActive 
-            ? "bg-cyan-900 text-cyan-500 font-medium" 
+            ? "bg-orange-900 text-orange-500 font-medium" 
             : "text-gray-400 hover:bg-slate-800 hover:text-white"
         )}
       >
