@@ -12,10 +12,8 @@ import {
 } from "./types";
 import { getAuthTokens, clearAuthTokens } from "./auth";
 
-import { GRAPHQL_ENDPOINT } from './env';
-
 // Dựa vào kiểm tra schema, backend đã hoạt động và có các trường cần thiết
-// GRAPHQL_ENDPOINT được import từ file env.ts
+const GRAPHQL_ENDPOINT = import.meta.env.VITE_GRAPHQL_ENDPOINT || "https://delicate-herring-66.hasura.app/v1/graphql";
 // Token mặc định sẽ được sử dụng khi không có token trong localStorage
 const DEFAULT_AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJ1c2VyVHlwZSI6IlNZU1RFTV9VU0VSIiwidXNlcklkIjoiOTViZDhhMTMtOTE0Zi00ZDAyLTg3ZTMtMGMyNjIyYjg4MmFlIiwic2VydmljZUlkIjoiZTQ2NDU5YzItZTkxMy00MGMxLTgzODMtOGY5YmYzZTdhZGEwIiwib3JnYW5pemF0aW9uSWQiOiJhOWU5ODczNC1lNWQyLTQ4NTEtODRmMy01ZjFjOWE5Y2QyYTciLCJidXNpbmVzc1JvbGVJZHMiOlsiYzk0MGU2MjgtNmFmZC00MzRhLTgwZjMtZGJkNjdiN2ZiNGEyIl19LCJpYXQiOjE3NDMzOTg2OTAsImV4cCI6MjA1ODc1ODY5MH0.RYMF__ddVq4T6CWCNfM6sD0LHr_OpvVvJgoKW5zAhgQ';
 console.log("Using GraphQL endpoint:", GRAPHQL_ENDPOINT);
