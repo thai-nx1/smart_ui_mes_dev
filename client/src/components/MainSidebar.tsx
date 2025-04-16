@@ -343,7 +343,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     </div>
                     
                     {searchResults.length === 0 ? (
-                      <div className="p-4 text-sm text-muted-foreground text-center">
+                      <div className="p-4 text-sm text-gray-400 text-center">
                         {t('menu.noSearchResults', 'Không tìm thấy kết quả nào cho "{{query}}"', { query: searchQuery })}
                       </div>
                     ) : (
@@ -640,8 +640,8 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           <Link href={`/menu/${menu.id}`} className="w-full flex items-center">
             {menuIcon}
             {/* Menu con không có icon (sử dụng left padding tăng dần) */}
-            {!menuIcon && (
-              <div className={`w-${level * 3}`}></div>
+            {!menuIcon && level > 0 && (
+              <div className="w-4 ml-2"></div>
             )}
             <span className="min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">
               {menu.name}
@@ -667,8 +667,8 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
       >
         {menuIcon}
         {/* Menu con không có icon (sử dụng left padding tăng dần) */}
-        {!menuIcon && (
-          <div className={`w-${level * 3}`}></div>
+        {!menuIcon && level > 0 && (
+          <div className="w-4 ml-2"></div>
         )}
         <span className="text-sm min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">
           {menu.name}
