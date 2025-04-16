@@ -210,11 +210,12 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
+            data-sidebar-dark="true"
             className={cn(
               "w-[--sidebar-width] p-0 text-gray-400",
               "bg-slate-900 border-slate-700",
               "border-r-0 dark", // Force dark mode for mobile sidebar
-              "data-theme-override='dark'" // Add a custom attribute for styling hooks
+              "[&_button[aria-label='Close']]:hidden" // Hide default SheetContent close button
             )}
             style={
               {
@@ -309,24 +310,8 @@ const SidebarTriggerClose = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar, isMobile, openMobile } = useSidebar()
-  
-  return (
-    openMobile && isMobile && <Button
-      ref={ref}
-      data-sidebar="trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("h-7 w-7", className)}
-      onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
-      }}
-      {...props}
-    >
-      <X />
-    </Button>
-  )
+  // Không hiển thị nút close ở mobile vì đã ẩn nút close mặc định của SheetContent
+  return null;
 })
 SidebarTriggerClose.displayName = "SidebarTriggerClose"
 
