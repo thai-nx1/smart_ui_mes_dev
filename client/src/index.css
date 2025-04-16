@@ -268,7 +268,7 @@
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
   --link: 190 100% 41%; /* #00B1D2 - Màu text link */
   --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
-  --ring: 190 100% 41%; /* #00B1D2 */
+  --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Vibrant Light */
   --sidebar-background: 0 0% 100%;
@@ -306,7 +306,7 @@
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
   --link: 190 100% 41%; /* #00B1D2 - Màu text link */
   --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
-  --ring: 190 100% 41%; /* #00B1D2 */
+  --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Vibrant Dark */
   --sidebar-background: 215 25% 8%;
@@ -344,12 +344,12 @@
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
   --link: 190 100% 41%; /* #00B1D2 - Màu text link */
   --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
-  --ring: 190 100% 41%; /* #00B1D2 */
+  --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Tint Light */
   --sidebar-background: 190 30% 97%;
   --sidebar-foreground: 230 16% 17%; /* #232735 - Màu text chính */
-  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
+  --sidebar-primary: 19 98.2% 55.3%; /* #FD651D */
   --sidebar-accent: 190 30% 92%;
   --sidebar-accent-foreground: 190 70% 30%;
 }
@@ -382,12 +382,12 @@
   --placeholder: 223 9% 59%; /* #8B90A0 - Màu text placeholder */
   --link: 190 100% 41%; /* #00B1D2 - Màu text link */
   --link-hover: 190 100% 41% / 80%; /* #00B1D2 với opacity 80% */
-  --ring: 190 100% 41%; /* #00B1D2 */
+  --ring: 19 98.2% 55.3%; /* #FD651D */
 
   /* Sidebar Colors - Tint Dark */
   --sidebar-background: 190 30% 8%;
   --sidebar-foreground: 210 40% 98%; /* text-slate-100 */
-  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
+  --sidebar-primary: 19 98.2% 55.3%; /* #FD651D */
   --sidebar-accent: 190 30% 15%;
   --sidebar-accent-foreground: 210 40% 98%; /* text-slate-100 */
 }
@@ -524,10 +524,10 @@
     --foreground: 210 40% 98%; /* text-slate-100 */
     --sidebar-background: 215 25% 5%; /* bg-slate-900 */
     --sidebar-foreground: 210 40% 98%; /* text-slate-100 */
-    --sidebar-primary: 190 100% 41%; /* #00B1D2 - primary color */
+    --sidebar-primary: 19 98.2% 55.3%; /* #FD651D - primary color */
     --sidebar-accent: 215 20% 17%; /* bg-slate-800 */
     --sidebar-border: 215 20% 30%; /* border-slate-700 */
-    --sidebar-ring: 190 100% 41%; /* #00B1D2 - primary color */
+    --sidebar-ring: 19 98.2% 55.3%; /* #FD651D - primary color */
     color-scheme: dark;
   }
   
