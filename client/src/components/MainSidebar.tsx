@@ -130,6 +130,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
   // Lấy cài đặt mặc định cho SidebarProvider dựa trên kích thước màn hình
   const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
+  const isMobile = screenSize === 'mobile';
   const defaultOpen = true; // Luôn mở mặc định (không phụ thuộc kích thước màn hình)
   
   // Sử dụng CSS từ file sidebar-fix.css trong một class
@@ -212,7 +213,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarTrigger>
         </div>
 
-        {/* Sidebar - Bắt buộc always open trên desktop và luôn có dark theme */}
+        {/* Sidebar - Bắt buộc always open trên desktop, dark theme cho cả desktop và mobile */}
         <Sidebar 
           className="h-screen flex flex-col items-center justify-start overflow-auto z-10 border-r border-slate-800 bg-slate-900 text-gray-300"
           collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
@@ -231,8 +232,10 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
               {/* Chỉ hiển thị nút đóng trên mobile */}
-              <div className="ml-auto lg:hidden text-gray-400 hover:text-white p-1 rounded-full hover:bg-slate-800" >
-                <SidebarTriggerClose/>
+              <div className="ml-auto lg:hidden text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-slate-800" >
+                <SidebarTriggerClose>
+                  <X className="h-5 w-5" />
+                </SidebarTriggerClose>
               </div>
             </div>
             
@@ -692,7 +695,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
-        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l border-slate-800">
+        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l border-slate-700">
           {menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
             // Gọi đệ quy DynamicMenuItem cho menu con, tăng cấp độ lên 1
             <DynamicMenuItem key={subMenu.id} menu={subMenu} level={level + 1} />
