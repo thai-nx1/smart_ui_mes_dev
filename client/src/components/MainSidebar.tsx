@@ -454,11 +454,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
                     "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
                     "border-slate-300 text-slate-800 bg-transparent",
-                    "hover:border-cyan-500 hover:text-cyan-500",
-                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
-                    "hover:bg-cyan-100",
-                    currentTheme.theme === 'light' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
-                    currentTheme.theme === 'light' && "bg-cyan-100 border-cyan-500 text-cyan-500"
+                    "hover:border-orange-500 hover:text-orange-500",
+                    "dark:hover:bg-orange-500/30 dark:hover:border-orange-700",
+                    "hover:bg-orange-100",
+                    currentTheme.theme === 'light' && "dark:bg-orange-700 dark:border-orange-500 dark:text-orange-500",
+                    currentTheme.theme === 'light' && "bg-orange-100 border-orange-500 text-orange-500"
                   )}
                 >
                   <RadioGroupItem value="light" id="theme-light" className="sr-only" />
@@ -472,11 +472,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
                     "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
                     "border-slate-300 text-slate-800 bg-transparent",
-                    "hover:border-cyan-500 hover:text-cyan-500",
-                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
-                    "hover:bg-cyan-100",
-                    currentTheme.theme === 'dark' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
-                    currentTheme.theme === 'dark' && "bg-cyan-100 border-cyan-500 text-cyan-500"
+                    "hover:border-orange-500 hover:text-orange-500",
+                    "dark:hover:bg-orange-500/30 dark:hover:border-orange-700",
+                    "hover:bg-orange-100",
+                    currentTheme.theme === 'dark' && "dark:bg-orange-700 dark:border-orange-500 dark:text-orange-500",
+                    currentTheme.theme === 'dark' && "bg-orange-100 border-orange-500 text-orange-500"
                   )}
                 >
                   <RadioGroupItem value="dark" id="theme-dark" className="sr-only" />
@@ -490,11 +490,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
                     "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
                     "border-slate-300 text-slate-800 bg-transparent",
-                    "hover:border-cyan-500 hover:text-cyan-500",
-                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
-                    "hover:bg-cyan-100",
-                    currentTheme.theme === 'system' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
-                    currentTheme.theme === 'system' && "bg-cyan-100 border-cyan-500 text-cyan-500"
+                    "hover:border-orange-500 hover:text-orange-500",
+                    "dark:hover:bg-orange-500/30 dark:hover:border-orange-700",
+                    "hover:bg-orange-100",
+                    currentTheme.theme === 'system' && "dark:bg-orange-700 dark:border-orange-500 dark:text-orange-500",
+                    currentTheme.theme === 'system' && "bg-orange-100 border-orange-500 text-orange-500"
                   )}
                 >
                   <RadioGroupItem value="system" id="theme-system" className="sr-only" />
@@ -521,11 +521,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
                     "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
                     "border-slate-300 text-slate-800 bg-transparent",
-                    "hover:border-cyan-500 hover:text-cyan-500",
-                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
-                    "hover:bg-cyan-100",
-                    currentTheme.themeStyle === 'professional' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
-                    currentTheme.themeStyle === 'professional' && "bg-cyan-100 border-cyan-500 text-cyan-500"
+                    "hover:border-orange-500 hover:text-orange-500",
+                    "dark:hover:bg-orange-500/30 dark:hover:border-orange-700",
+                    "hover:bg-orange-100",
+                    currentTheme.themeStyle === 'professional' && "dark:bg-orange-700 dark:border-orange-500 dark:text-orange-500",
+                    currentTheme.themeStyle === 'professional' && "bg-orange-100 border-orange-500 text-orange-500"
                   )}
                 >
                   <RadioGroupItem value="professional" id="style-professional" className="sr-only" />
@@ -541,11 +541,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
                     "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
                     "border-slate-300 text-slate-800 bg-transparent",
-                    "hover:border-cyan-500 hover:text-cyan-500",
-                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
-                    "hover:bg-cyan-100",
-                    currentTheme.themeStyle === 'tint' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
-                    currentTheme.themeStyle === 'tint' && "bg-cyan-100 border-cyan-500 text-cyan-500"
+                    "hover:border-orange-500 hover:text-orange-500",
+                    "dark:hover:bg-orange-500/30 dark:hover:border-orange-700",
+                    "hover:bg-orange-100",
+                    currentTheme.themeStyle === 'tint' && "dark:bg-orange-700 dark:border-orange-500 dark:text-orange-500",
+                    currentTheme.themeStyle === 'tint' && "bg-orange-100 border-orange-500 text-orange-500"
                   )}
                 >
                   <RadioGroupItem value="tint" id="style-tint" className="sr-only" />
@@ -561,11 +561,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                     "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
                     "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
                     "border-slate-300 text-slate-800 bg-transparent",
-                    "hover:border-cyan-500 hover:text-cyan-500",
-                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
-                    "hover:bg-cyan-100",
-                    currentTheme.themeStyle === 'vibrant' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
-                    currentTheme.themeStyle === 'vibrant' && "bg-cyan-100 border-cyan-500 text-cyan-500"
+                    "hover:border-orange-500 hover:text-orange-500",
+                    "dark:hover:bg-orange-500/30 dark:hover:border-orange-700",
+                    "hover:bg-orange-100",
+                    currentTheme.themeStyle === 'vibrant' && "dark:bg-orange-700 dark:border-orange-500 dark:text-orange-500",
+                    currentTheme.themeStyle === 'vibrant' && "bg-orange-100 border-orange-500 text-orange-500"
                   )}
                 >
                   <RadioGroupItem value="vibrant" id="style-vibrant" className="sr-only" />
