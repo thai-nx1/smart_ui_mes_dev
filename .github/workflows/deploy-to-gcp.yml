@@ -1,0 +1,61 @@
+name: Deploy React to GCP
+
+on:
+  push:
+    branches: [ prod, stg, dev ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/prod' && 'production' || github.ref == 'refs/heads/dev' && 'dev' || 'staging' }}
+
+    env:
+      BUILD_COMMAND: ${{ github.ref == 'refs/heads/prod' && 'build:production' || github.ref == 'refs/heads/dev' && 'build:dev' || 'build:staging' }}
+      PROJECT_ID: ${{ github.ref == 'refs/heads/prod' && 'soffice-prod' || 'soffice-stag' }}
+      BUCKET_NAME: ${{ github.ref == 'refs/heads/prod' && 'oxiitek-mes-web-app' || 'srt-office-stg-web-chat-cms' }}
+      # URL_MAP: ${{ github.ref == 'refs/heads/prod' && 'oxii-prod-office-chat' || github.ref == 'refs/heads/uat' && 'oxii-uat-office-chat' || 'srt-office-stg-chat-cms' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps  # TODO: Remove --legacy-peer-deps
+
+      - name: Build React App
+        run: npm run ${{ env.BUILD_COMMAND }}
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_CE }}
+      
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '>= 363.0.0'
+          project_id: ${{ env.PROJECT_ID }}
+      
+      - name: Deploy to Google Cloud Storage
+        id: deploy
+        run: |
+          echo "Deploying to ${{ env.BUCKET_NAME }} in project ${{ env.PROJECT_ID }}"
+          gsutil -m rsync -r -c -d dist/web-app gs://${{ env.BUCKET_NAME }}
+
+      # - name: Clear CDN Cache
+      #   run: |
+      #     gcloud compute url-maps invalidate-cdn-cache ${{ env.URL_MAP }} \
+      #       --path "/*" \
+      #       --async \
+      #       --project ${{ env.PROJECT_ID }}
+
+      # - name: Post Deployment Summary
+      #   if: always()
+      #   run: |
+      #     echo "::notice::Deployment to ${{ env.BUCKET_NAME }} completed with status ${{ job.status }}"
