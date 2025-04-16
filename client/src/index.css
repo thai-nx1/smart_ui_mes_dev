@@ -152,28 +152,25 @@
   --red-900: #661a14;
 
   /* Light mode */
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 190 100% 42%;
-  /* #00B1D2 in HSL */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 174 97% 44%;
-  /* #03DAC6 in HSL */
-  --secondary-foreground: 0 0% 0%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
+  --background: 0 0% 100%; /* bg-white */
+  --foreground: 215 25% 27%; /* text-slate-900 */
+  --card: 0 0% 100%; /* bg-white */
+  --card-foreground: 215 25% 27%; /* text-slate-900 */
+  --popover: 0 0% 100%; /* bg-white */
+  --popover-foreground: 215 25% 27%; /* text-slate-900 */
+  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary-foreground: 0 0% 100%; /* text-white */
+  --secondary: 174 97% 44%; /* #03DAC6 */
+  --secondary-foreground: 0 0% 0%; /* text-black */
+  --muted: 210 40% 96.1%; /* bg-slate-50 */
+  --muted-foreground: 215 16% 47%; /* text-slate-500 */
+  --accent: 210 40% 96.1%; /* bg-slate-50 */
   --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 346 87% 36%;
-  /* #B00020 in HSL */
+  --destructive: 346 87% 36%; /* #B00020 */
   --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 190 100% 42%;
+  --border: 214 32% 91%; /* border-slate-300 */
+  --input: 210 40% 96.1%; /* bg-slate-50 */
+  --ring: 215 20% 65%; /* ring-slate-500 */
   --radius: var(--border-radius);
 
   /* Sidebar Colors - Light Mode */
@@ -188,25 +185,25 @@
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 190 100% 42%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 174 97% 44%;
-  --secondary-foreground: 0 0% 0%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 346 87% 36%;
+  --background: 215 25% 5%; /* bg-slate-900 */
+  --foreground: 210 40% 98%; /* text-slate-100 */
+  --card: 215 25% 5%; /* bg-slate-900 */
+  --card-foreground: 210 40% 98%; /* text-slate-100 */
+  --popover: 215 25% 5%; /* bg-slate-900 */
+  --popover-foreground: 210 40% 98%; /* text-slate-100 */
+  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary-foreground: 0 0% 100%; /* text-white */
+  --secondary: 174 97% 44%; /* #03DAC6 */
+  --secondary-foreground: 0 0% 0%; /* text-black */
+  --muted: 215 20% 17%; /* bg-slate-800 */
+  --muted-foreground: 210 15% 60%; /* text-slate-400 */
+  --accent: 215 20% 17%; /* bg-slate-800 */
+  --accent-foreground: 210 40% 98%; /* text-slate-100 */
+  --destructive: 346 87% 36%; /* #B00020 */
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 190 100% 42%;
+  --border: 215 20% 30%; /* border-slate-700 */
+  --input: 215 20% 17%; /* bg-slate-800 */
+  --ring: 215 20% 65%; /* ring-slate-500 */;
 
   /* Sidebar Colors - Dark Mode */
   --sidebar-background: 222 47% 11%;
@@ -222,72 +219,76 @@
 /* Vibrant Theme Style - Oxii Design System inspired */
 .theme-vibrant {
   --background: 0 0% 97.6%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 215 25% 27%; /* text-slate-900 */
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --primary: 190 100% 42%;
+  --card-foreground: 215 25% 27%; /* text-slate-900 */
+  --primary: 190 100% 41%; /* #00B1D2 */
   --primary-foreground: 0 0% 100%;
-  --secondary: 174 97% 44%;
+  --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%;
-  --accent: 180 50% 97%;
+  --accent: 190 30% 97%;
   --accent-foreground: 190 100% 32%;
-  --ring: var(--oxii-primary);
+  --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Vibrant Light */
   --sidebar-background: 0 0% 100%;
-  --sidebar-foreground: 222.2 84% 4.9%;
+  --sidebar-foreground: 215 25% 27%; /* text-slate-900 */
+  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
   --sidebar-accent: 190 30% 94%;
   --sidebar-accent-foreground: 190 100% 32%;
 }
 
 .dark.theme-vibrant {
-  --background: 222.2 47% 12%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 47% 8%;
-  --card-foreground: 210 40% 98%;
-  --primary: 190 100% 42%;
+  --background: 215 25% 5%; /* bg-slate-900 */
+  --foreground: 210 40% 98%; /* text-slate-100 */
+  --card: 215 20% 10%;
+  --card-foreground: 210 40% 98%; /* text-slate-100 */
+  --primary: 190 100% 41%; /* #00B1D2 */
   --primary-foreground: 0 0% 100%;
-  --secondary: 174 97% 44%;
+  --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%;
   --accent: 190 70% 20%;
-  --accent-foreground: 210 40% 98%;
-  --ring: var(--oxii-primary);
+  --accent-foreground: 210 40% 98%; /* text-slate-100 */
+  --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Vibrant Dark */
-  --sidebar-background: 222.2 47% 10%;
-  --sidebar-foreground: 210 40% 98%;
+  --sidebar-background: 215 25% 8%;
+  --sidebar-foreground: 210 40% 98%; /* text-slate-100 */
+  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
   --sidebar-accent: 190 70% 20%;
-  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-accent-foreground: 210 40% 98%; /* text-slate-100 */
 }
 
 /* Tint Theme Style */
 .theme-tint {
-  --primary: 190 100% 42%;
-  --background: 0 0% 100%;
+  --primary: 190 100% 41%; /* #00B1D2 */
+  --background: 0 0% 100%; /* bg-white */
   --card: 190 30% 98%;
-  --secondary: 174 97% 44%;
+  --secondary: 174 97% 44%; /* #03DAC6 */
   --accent: 190 30% 96%;
-  --ring: var(--oxii-primary);
+  --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Tint Light */
   --sidebar-background: 190 30% 97%;
-  --sidebar-foreground: 222.2 84% 4.9%;
+  --sidebar-foreground: 215 25% 27%; /* text-slate-900 */
+  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
   --sidebar-accent: 190 30% 92%;
   --sidebar-accent-foreground: 190 70% 30%;
 }
 
 .dark.theme-tint {
-  --background: 222.2 84% 4.9%;
+  --background: 215 25% 5%; /* bg-slate-900 */
   --card: 190 30% 10%;
-  --secondary: 174 97% 44%;
+  --secondary: 174 97% 44%; /* #03DAC6 */
   --accent: 190 30% 15%;
-  --ring: var(--oxii-primary);
+  --ring: 190 100% 41%; /* #00B1D2 */
 
   /* Sidebar Colors - Tint Dark */
   --sidebar-background: 190 30% 8%;
-  --sidebar-foreground: 210 40% 98%;
+  --sidebar-foreground: 210 40% 98%; /* text-slate-100 */
+  --sidebar-primary: 190 100% 41%; /* #00B1D2 */
   --sidebar-accent: 190 30% 15%;
-  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-accent-foreground: 210 40% 98%; /* text-slate-100 */
 }
 
 @layer base {
@@ -418,14 +419,14 @@
   /* Đảm bảo sidebar luôn ở chế độ tối - cho cả mobile và desktop */
   [data-sidebar="sidebar"],
   [data-sidebar="sidebar"] * {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 190 100% 42%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 190 100% 42%;
+    --background: 215 25% 5%; /* bg-slate-900 */
+    --foreground: 210 40% 98%; /* text-slate-100 */
+    --sidebar-background: 215 25% 5%; /* bg-slate-900 */
+    --sidebar-foreground: 210 40% 98%; /* text-slate-100 */
+    --sidebar-primary: 190 100% 41%; /* #00B1D2 - primary color */
+    --sidebar-accent: 215 20% 17%; /* bg-slate-800 */
+    --sidebar-border: 215 20% 30%; /* border-slate-700 */
+    --sidebar-ring: 190 100% 41%; /* #00B1D2 - primary color */
     color-scheme: dark;
   }
   
@@ -434,13 +435,13 @@
   body:not(.dark) [data-sidebar-dark="true"],
   body:not(.dark) [data-sidebar="sidebar"] *,
   body:not(.dark) [data-sidebar-dark="true"] * {
-    @apply bg-slate-900 text-gray-400;
+    @apply bg-slate-900 text-slate-400;
   }
   
   /* Menu buttons - đảm bảo nút có background trong suốt và chỉ thay đổi màu khi hover */
   body:not(.dark) [data-sidebar="menu-button"],
   body:not(.dark) [data-sidebar="menu-sub-button"] {
-    @apply bg-transparent text-gray-400 hover:bg-slate-800 hover:text-white;
+    @apply bg-transparent text-slate-400 hover:bg-slate-800 hover:text-white;
   }
   
   /* Đảm bảo input field trong sidebar có background màu khác */
@@ -451,7 +452,7 @@
   /* Active menu items */
   body:not(.dark) [data-sidebar="menu-button"][data-active="true"],
   body:not(.dark) [data-sidebar="menu-sub-button"][data-active="true"] {
-    @apply bg-cyan-900 text-cyan-500;
+    @apply bg-primary/20 text-primary;
   }
   
   /* Borders and separators */
@@ -465,6 +466,6 @@
   
   /* Search box và các control khác trong sidebar */
   body:not(.dark) [data-sidebar="input"] {
-    @apply bg-slate-800 text-gray-200 border-slate-700;
+    @apply bg-slate-800 text-slate-200 border-slate-700;
   }
 }
