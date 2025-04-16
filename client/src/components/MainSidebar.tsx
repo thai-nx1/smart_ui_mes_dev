@@ -18,7 +18,27 @@ import {
 import { fetchAllMenus } from '@/lib/api';
 import { Menu as MenuType } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
-import { Home, Laptop, Loader2, Menu, Moon, Search, Sun, X } from 'lucide-react';
+import { 
+  Archive,
+  Box,
+  Calendar,
+  CheckCircle,
+  Clipboard,
+  FileText, 
+  Home, 
+  Laptop,
+  Layers,
+  Loader2, 
+  Menu, 
+  Moon, 
+  Package,
+  Search, 
+  Settings, 
+  Shield,
+  Sun, 
+  LayoutGrid,
+  X 
+} from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 // import { useTranslation } from 'react-i18next';
@@ -190,26 +210,26 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           </SidebarTrigger>
         </div>
 
-        {/* Sidebar - Bắt buộc always open trên desktop */}
+        {/* Sidebar - Bắt buộc always open trên desktop và luôn có dark theme */}
         <Sidebar 
-          className="h-screen flex flex-col items-center justify-start overflow-auto z-10 border-r border-sidebar-border bg-sidebar-background text-sidebar-foreground"
+          className="h-screen flex flex-col items-center justify-start overflow-auto z-10 border-r border-slate-800 bg-slate-900 text-gray-300"
           collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
         >
-          <SidebarHeader className="p-4 border-b">
+          <SidebarHeader className="p-4 border-b border-slate-800">
             <div className="flex items-center">
               <div className="mr-3 flex items-center justify-center h-9 w-9 rounded-md bg-transparent">
                 <img src="/icons/app-icon.svg" alt="logo" className="h-10 w-10" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-sidebar-foreground">
+                <h1 className="text-lg font-bold text-white">
                   {t('app.shortTitle', 'Form Động')}
                 </h1>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-400">
                   {t('app.version', 'v1.0.0')}
                 </p>
               </div>
               {/* Chỉ hiển thị nút đóng trên mobile */}
-              <div className="ml-auto lg:hidden text-muted-foreground hover:text-sidebar-foreground p-1 rounded-full hover:bg-primary/10" >
+              <div className="ml-auto lg:hidden text-gray-400 hover:text-white p-1 rounded-full hover:bg-slate-800" >
                 <SidebarTriggerClose/>
               </div>
             </div>
@@ -222,15 +242,15 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   placeholder={t('menu.search', 'Tìm kiếm menu...')}
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="pl-9 pr-8 py-1.5 h-9 text-sm bg-sidebar-accent/20 border-sidebar-border focus-visible:ring-primary oxii-transition"
+                  className="pl-9 pr-8 py-1.5 h-9 text-sm bg-slate-800 border-slate-700 text-gray-300 focus-visible:ring-cyan-500 oxii-transition"
                 />
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 {searchQuery && (
                   <button
                     onClick={clearSearch}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-sidebar-border/60 hover:bg-sidebar-border flex items-center justify-center oxii-transition"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center oxii-transition"
                   >
-                    <X className="h-3 w-3 text-muted-foreground" />
+                    <X className="h-3 w-3 text-gray-300" />
                   </button>
                 )}
               </div>
@@ -283,13 +303,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                       }
                     }}
                     className={`transition-all whitespace-normal ${
-                      location === '/' ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
+                      location === '/' ? 'bg-cyan-900 text-cyan-500 font-medium' : 'hover:bg-slate-800 text-gray-400 hover:text-white'
                     }`}
                   >
                     <Link href="/" className="w-full flex items-center">
-                      <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2 flex-shrink-0">
-                        <Home className="size-3" />
-                      </div>
+                      <Home className="size-4 mr-2 flex-shrink-0" />
                       <span className="min-w-0 flex-1 whitespace-normal overflow-hidden text-ellipsis leading-tight">
                         {t('app.home', 'Trang chủ')}
                       </span>
@@ -298,27 +316,27 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 </SidebarMenuItem>
                 
                 {/* Divider sau trang chủ */}
-                <div className="my-2 border-t border-sidebar-border/30"></div>
+                <div className="my-2 border-t border-slate-800/50"></div>
                 
                 {/* Dynamic Menu Items */}
                 {isLoading ? (
-                  <div className="p-4 text-sm text-muted-foreground flex items-center justify-center">
+                  <div className="p-4 text-sm text-gray-400 flex items-center justify-center">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     {t('loading.title', 'Đang tải...')}
                   </div>
                 ) : menusData?.length === 0 ? (
-                  <div className="p-4 text-sm text-muted-foreground">{t('menu.noItems', 'Không có menu nào')}</div>
+                  <div className="p-4 text-sm text-gray-400">{t('menu.noItems', 'Không có menu nào')}</div>
                 ) : showSearchResults && searchQuery ? (
                   // Hiển thị kết quả tìm kiếm
                   <>
-                    <div className="text-xs font-medium text-muted-foreground mb-2 px-2 py-1 flex items-center justify-between bg-sidebar-accent/30 rounded">
+                    <div className="text-xs font-medium text-gray-300 mb-2 px-2 py-1 flex items-center justify-between bg-slate-800 rounded">
                       <div className="flex items-center">
                         <Search className="h-3 w-3 mr-1.5" />
                         {t('menu.searchResults', 'Kết quả tìm kiếm')} ({searchResults.length})
                       </div>
                       <button 
                         onClick={clearSearch}
-                        className="text-muted-foreground hover:text-sidebar-foreground"
+                        className="text-gray-400 hover:text-white"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -336,8 +354,8 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                       </div>
                     )}
                     
-                    <div className="my-2 border-t border-sidebar-border/30"></div>
-                    <div className="text-xs text-muted-foreground mb-2 px-2">
+                    <div className="my-2 border-t border-slate-800/50"></div>
+                    <div className="text-xs text-gray-400 mb-2 px-2">
                       {t('menu.allMenus', 'Tất cả các menu')}
                     </div>
                   </>
@@ -351,16 +369,15 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
             </SidebarGroup>
           </SidebarContent>
 
-          <div className="border-t border-sidebar-border bg-sidebar-accent/20 p-2">
+          <div className="border-t border-slate-800 bg-slate-800/50 p-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowThemeDialog(true)}
-              className="w-full justify-start"
+              className="w-full justify-start text-gray-400 hover:text-white hover:bg-slate-800"
             >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="ml-2">{t('theme.title', 'Giao diện')}</span>
+              <Sun className="h-4 w-4 mr-2" />
+              <span>{t('theme.title', 'Giao diện')}</span>
             </Button>
           </div>
         </Sidebar>
@@ -567,6 +584,43 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
     }
   };
   
+  // Import lucide icons cho từng loại menu
+  const getMenuIcon = () => {
+    // Nếu là menu con (cấp 2 trở lên), không hiển thị icon
+    if (level > 0) {
+      return null;
+    }
+    
+    // Từ danh sách icon được cung cấp
+    // Tìm icon phù hợp dựa trên tên menu
+    const menuName = menu.name.toLowerCase();
+    
+    if (menuName.includes('tox')) {
+      return <Box className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('vật tư') || menuName.includes('sản phẩm')) {
+      return <Package className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('kế hoạch')) {
+      return <Calendar className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('phê duyệt')) {
+      return <CheckCircle className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('khuôn') || menuName.includes('mẫu')) {
+      return <Layers className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('chất lượng') || menuName.includes('qc')) {
+      return <Shield className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('thiết bị')) {
+      return <Settings className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('warehouse') || menuName.includes('kho')) {
+      return <Archive className="size-4 mr-2 flex-shrink-0" />;
+    } else if (menuName.includes('form')) {
+      return <Clipboard className="size-4 mr-2 flex-shrink-0" />;
+    } else {
+      // Icon mặc định cho các menu khác
+      return <FileText className="size-4 mr-2 flex-shrink-0" />;
+    }
+  };
+
+  const menuIcon = getMenuIcon();
+  
   if (!hasChildren) {
     const isActive = location === `/menu/${menu.id}`;
     return (
@@ -578,17 +632,20 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
             toggleSidebar()
           }}
           className={`transition-all whitespace-normal ${
-            isActive ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
+            isActive 
+              ? 'bg-cyan-900 text-cyan-500 font-medium' 
+              : 'hover:bg-slate-800 text-gray-400 hover:text-white'
           }`}
         >
           <Link href={`/menu/${menu.id}`} className="w-full flex items-center">
-            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2 flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                <polyline points="14 2 14 8 20 8" />
-              </svg>
-            </div>
-            <span className="min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">{menu.name}</span>
+            {menuIcon}
+            {/* Menu con không có icon (sử dụng left padding tăng dần) */}
+            {!menuIcon && (
+              <div className={`w-${level * 3}`}></div>
+            )}
+            <span className="min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">
+              {menu.name}
+            </span>
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -603,19 +660,23 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           handleMobileMenuClick()
         }}
         className={`transition-all whitespace-normal ${
-          isOpen || hasActiveChild ? 'bg-sidebar-accent text-sidebar-primary font-medium' : 'hover:bg-sidebar-accent/50'
+          isOpen || hasActiveChild 
+            ? 'bg-cyan-900 text-cyan-500 font-medium' 
+            : 'hover:bg-slate-800 text-gray-400 hover:text-white'
         }`}
       >
-        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary mr-2 flex-shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-          </svg>
-        </div>
-        <span className="text-sm min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">{menu.name}</span>
+        {menuIcon}
+        {/* Menu con không có icon (sử dụng left padding tăng dần) */}
+        {!menuIcon && (
+          <div className={`w-${level * 3}`}></div>
+        )}
+        <span className="text-sm min-w-0 flex-1 overflow-hidden break-words hyphens-auto leading-tight">
+          {menu.name}
+        </span>
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
-        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200">
+        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l border-slate-800">
           {menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
             // Gọi đệ quy DynamicMenuItem cho menu con, tăng cấp độ lên 1
             <DynamicMenuItem key={subMenu.id} menu={subMenu} level={level + 1} />
