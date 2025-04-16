@@ -218,7 +218,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
           className={cn(
             "h-screen flex flex-col items-center justify-start overflow-auto z-10",
             "border-r border-slate-700",
-            "bg-slate-900 text-gray-300 dark"
+            "bg-slate-900 text-gray-300"
           )}
           collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
         >
@@ -579,46 +579,10 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
 
   // Tự động mở menu có menu con đang được chọn
   useEffect(() => {
-    // Nếu có menu con đang được chọn, mở menu cha
     if (hasActiveChild && !isOpen) {
       setIsOpen(true);
     }
-    
-    // Nếu menu cha được chọn trực tiếp, mở nó bất kể có menu con active hay không
-    if (location === `/menu/${menu.id}` && !isOpen) {
-      setIsOpen(true);
-    }
-    
-    // Đảm bảo chỉ một menu cấp 1 được mở tại một thời điểm
-    // Nếu menu cha không có menu con active, nhưng đang mở, và người dùng chuyển đến một menu khác
-    // thì đóng menu này lại
-    if (level === 0 && !hasActiveChild && isOpen && location !== `/menu/${menu.id}`) {
-      setIsOpen(false);
-    }
-    
-    // Đóng menu khi không có menu con active và không phải menu cha đang được chọn
-    if (!hasActiveChild && location !== `/menu/${menu.id}` && isOpen && level === 0) {
-      // Tìm menu hiện tại đang active (được chọn)
-      const currentActiveLocation = location;
-      
-      // Kiểm tra xem location hiện tại có khớp với bất kỳ menu cấp 1 nào khác không
-      let shouldClose = false;
-      
-      if (currentActiveLocation.startsWith('/menu/')) {
-        const activeMenuId = currentActiveLocation.split('/')[2];
-        if (activeMenuId && activeMenuId !== menu.id) {
-          shouldClose = true;
-        }
-      } else if (currentActiveLocation !== '/' && currentActiveLocation !== '') {
-        // Nếu đang ở một route khác và không phải trang chủ, đóng menu
-        shouldClose = true;
-      }
-      
-      if (shouldClose) {
-        setIsOpen(false);
-      }
-    }
-  }, [location, hasActiveChild, menu.id, isOpen, level]);
+  }, [location, hasActiveChild]);
   
   // Xử lý đóng sidebar khi click vào menu trên thiết bị di động
   const handleMobileMenuClick = () => {
@@ -729,41 +693,10 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        onClick={(e) => {
-          // Đảm bảo chỉ có một menu cấp 1 được mở tại một thời điểm
-          if (level === 0 && !isOpen) {
-            // Tìm tất cả các menu đang mở
-            document.querySelectorAll('[data-sidebar="menu-sub"]').forEach(submenu => {
-              const parentItem = submenu.closest('[data-sidebar="menu-item"]');
-              const parentButton = parentItem?.querySelector('[data-sidebar="menu-button"][data-level="0"]');
-              
-              // Chỉ xử lý cho các menu cấp 1 (level=0) không phải menu hiện tại
-              if (parentButton && parentButton !== e.currentTarget) {
-                // Tìm ID của menu từ button
-                const menuId = parentButton.getAttribute('data-menu-id');
-                if (menuId && menuId !== menu.id) {
-                  // Đóng menu khác bằng cách cập nhật state
-                  const parentMenuItem = parentItem as HTMLElement;
-                  const reactInstance = (parentMenuItem as any)._reactFiber;
-                  if (reactInstance) {
-                    // Cố gắng truy cập React component để đóng menu
-                    try {
-                      // Fallback: Ẩn bằng CSS
-                      (submenu as HTMLElement).style.display = 'none';
-                    } catch (err) {
-                      console.error('Failed to close other menus:', err);
-                    }
-                  }
-                }
-              }
-            });
-          }
-          
+        onClick={() => {
           setIsOpen(!isOpen)
           handleMobileMenuClick()
         }}
-        data-level={level}
-        data-menu-id={menu.id}
         className={cn(
           "transition-all whitespace-normal relative",
           isParentActive 
