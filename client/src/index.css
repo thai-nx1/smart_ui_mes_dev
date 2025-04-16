@@ -64,7 +64,7 @@
   /* Core Design System colors */
   --text-color: #232735;
   --text-color-secondary: #73798D;
-  --primary-color: #00B1D2;
+  --primary-color: #FD651D;
   --primary-color-text: #ffffff;
 
   /* Surface colors */
@@ -120,12 +120,12 @@
   --orange-100: #fde0c2;
   --orange-200: #fbc791;
   --orange-300: #FF9E17;
-  --orange-400: #f79530;
-  --orange-500: #f57c00;
-  --orange-600: #d06900;
-  --orange-700: #ac5700;
-  --orange-800: #874400;
-  --orange-900: #623200;
+  --orange-400: #fd803f;
+  --orange-500: #FD651D; /* Màu primary mới */
+  --orange-600: #e55a18;
+  --orange-700: #c14c14;
+  --orange-800: #9d3e10;
+  --orange-900: #7a300c;
 
   /* Gray color palette */
   --gray-50: #FAFAFA;
@@ -158,7 +158,7 @@
   --card-foreground: 230 16% 17%; /* #232735 - Màu text chính */
   --popover: 0 0% 100%; /* bg-white */
   --popover-foreground: 230 16% 17%; /* #232735 - Màu text chính */
-  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary: 19 98.2% 55.3%; /* #FD651D */
   --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%; /* text-black */
@@ -203,7 +203,7 @@
   --card-foreground: 210 40% 98%; /* text-slate-100 */
   --popover: 215 25% 5%; /* bg-slate-900 */
   --popover-foreground: 210 40% 98%; /* text-slate-100 */
-  --primary: 190 100% 41%; /* #00B1D2 */
+  --primary: 19 98.2% 55.3%; /* #FD651D */
   --primary-foreground: 0 0% 100%; /* text-white */
   --secondary: 174 97% 44%; /* #03DAC6 */
   --secondary-foreground: 0 0% 0%; /* text-black */
