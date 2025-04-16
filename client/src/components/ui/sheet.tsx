@@ -56,7 +56,7 @@ const SheetContent = React.forwardRef<
   SheetContentProps
 >(({ side = "right", className, children, ...props }, ref) => {
   // Check if this is a sidebar based on data attributes or className patterns
-  const isSidebar = props['data-sidebar'] === 'sidebar' || props['data-mobile'] === 'true' || className?.includes('bg-slate-900');
+  const isSidebar = className?.includes('bg-slate-900');
   
   return (
     <SheetPortal>

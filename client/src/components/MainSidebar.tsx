@@ -582,7 +582,13 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
     if (hasActiveChild && !isOpen) {
       setIsOpen(true);
     }
-  }, [location, hasActiveChild]);
+    // Đảm bảo chỉ một menu cấp 1 được mở tại một thời điểm
+    // Nếu menu cha không có menu con active, nhưng đang mở, và người dùng chuyển đến một menu khác
+    // thì đóng menu này lại
+    if (level === 0 && !hasActiveChild && isOpen && location !== `/menu/${menu.id}`) {
+      setIsOpen(false);
+    }
+  }, [location, hasActiveChild, menu.id, isOpen, level]);
   
   // Xử lý đóng sidebar khi click vào menu trên thiết bị di động
   const handleMobileMenuClick = () => {
@@ -693,10 +699,41 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        onClick={() => {
+        onClick={(e) => {
+          // Đảm bảo chỉ có một menu cấp 1 được mở tại một thời điểm
+          if (level === 0 && !isOpen) {
+            // Tìm tất cả các menu đang mở
+            document.querySelectorAll('[data-sidebar="menu-sub"]').forEach(submenu => {
+              const parentItem = submenu.closest('[data-sidebar="menu-item"]');
+              const parentButton = parentItem?.querySelector('[data-sidebar="menu-button"][data-level="0"]');
+              
+              // Chỉ xử lý cho các menu cấp 1 (level=0) không phải menu hiện tại
+              if (parentButton && parentButton !== e.currentTarget) {
+                // Tìm ID của menu từ button
+                const menuId = parentButton.getAttribute('data-menu-id');
+                if (menuId && menuId !== menu.id) {
+                  // Đóng menu khác bằng cách cập nhật state
+                  const parentMenuItem = parentItem as HTMLElement;
+                  const reactInstance = (parentMenuItem as any)._reactFiber;
+                  if (reactInstance) {
+                    // Cố gắng truy cập React component để đóng menu
+                    try {
+                      // Fallback: Ẩn bằng CSS
+                      (submenu as HTMLElement).style.display = 'none';
+                    } catch (err) {
+                      console.error('Failed to close other menus:', err);
+                    }
+                  }
+                }
+              }
+            });
+          }
+          
           setIsOpen(!isOpen)
           handleMobileMenuClick()
         }}
+        data-level={level}
+        data-menu-id={menu.id}
         className={cn(
           "transition-all whitespace-normal relative",
           isParentActive 
