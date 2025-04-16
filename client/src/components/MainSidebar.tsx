@@ -255,13 +255,25 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   placeholder={t('menu.search', 'Tìm kiếm menu...')}
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="pl-9 pr-8 py-1.5 h-9 text-sm bg-slate-800 border-slate-700 text-gray-300 focus-visible:ring-cyan-500 oxii-transition"
+                  className={cn(
+                    "pl-9 pr-8 py-1.5 h-9 text-sm",
+                    "bg-slate-800 border-slate-700 text-gray-300",
+                    "focus-visible:ring-cyan-500 transition-colors"
+                  )}
                 />
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className={cn(
+                  "absolute left-2.5 top-1/2 -translate-y-1/2",
+                  "h-4 w-4 text-gray-400"
+                )} />
                 {searchQuery && (
                   <button
                     onClick={clearSearch}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center oxii-transition"
+                    className={cn(
+                      "absolute right-2.5 top-1/2 -translate-y-1/2",
+                      "h-5 w-5 rounded-full",
+                      "bg-slate-700 hover:bg-slate-600",
+                      "flex items-center justify-center transition-colors"
+                    )}
                   >
                     <X className="h-3 w-3 text-gray-300" />
                   </button>
@@ -315,9 +327,12 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                         }, 100);
                       }
                     }}
-                    className={`transition-all whitespace-normal ${
-                      location === '/' ? 'bg-cyan-900 text-cyan-500 font-medium' : 'text-gray-400 hover:bg-slate-800 hover:text-white'
-                    }`}
+                    className={cn(
+                      "transition-all whitespace-normal",
+                      location === '/' 
+                        ? "bg-cyan-900 text-cyan-500 font-medium" 
+                        : "text-gray-400 hover:bg-slate-800 hover:text-white"
+                    )}
                   >
                     <Link href="/" className="w-full flex items-center">
                       <Home className="size-4 mr-2 flex-shrink-0" />
@@ -682,13 +697,12 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           setIsOpen(!isOpen)
           handleMobileMenuClick()
         }}
-        className={`transition-all whitespace-normal relative ${
+        className={cn(
+          "transition-all whitespace-normal relative",
           isParentActive 
-            ? 'bg-cyan-900 text-cyan-500 font-medium' 
-            : hasActiveChild 
-              ? 'text-gray-400 hover:bg-slate-800 hover:text-white' 
-              : 'text-gray-400 hover:bg-slate-800 hover:text-white'
-        }`}
+            ? "bg-cyan-900 text-cyan-500 font-medium" 
+            : "text-gray-400 hover:bg-slate-800 hover:text-white"
+        )}
       >
         {menuIcon}
         {/* Menu con không có icon (sử dụng left padding tăng dần) */}
@@ -710,7 +724,10 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
-        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l-2 border-slate-700 bg-slate-900">
+        <SidebarMenuSub className={cn(
+          "animate-in slide-in-from-left-1 duration-200",
+          "pl-2 border-l-2 border-slate-700 bg-slate-900"
+        )}>
           {menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
             // Gọi đệ quy DynamicMenuItem cho menu con, tăng cấp độ lên 1
             <DynamicMenuItem key={subMenu.id} menu={subMenu} level={level + 1} />
