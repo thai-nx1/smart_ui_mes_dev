@@ -425,21 +425,42 @@
     color-scheme: dark;
   }
   
-  /* Các style cố định cho sidebar bất kể theme */
-  body:not(.dark) [data-sidebar="sidebar"] {
+  /* Đảm bảo tất cả các phần tử trong sidebar luôn có giao diện dark */
+  body:not(.dark) [data-sidebar="sidebar"],
+  body:not(.dark) [data-sidebar-dark="true"],
+  body:not(.dark) [data-sidebar="sidebar"] *,
+  body:not(.dark) [data-sidebar-dark="true"] * {
     @apply bg-slate-900 text-gray-400;
   }
   
+  /* Menu buttons - đảm bảo nút có background trong suốt và chỉ thay đổi màu khi hover */
   body:not(.dark) [data-sidebar="menu-button"],
   body:not(.dark) [data-sidebar="menu-sub-button"] {
-    @apply text-gray-400 hover:bg-slate-800 hover:text-white data-[active=true]:bg-cyan-900 data-[active=true]:text-cyan-500;
+    @apply bg-transparent text-gray-400 hover:bg-slate-800 hover:text-white;
   }
   
+  /* Đảm bảo input field trong sidebar có background màu khác */
+  body:not(.dark) [data-sidebar="sidebar"] input {
+    @apply bg-slate-800 border-slate-700 !important;
+  }
+  
+  /* Active menu items */
+  body:not(.dark) [data-sidebar="menu-button"][data-active="true"],
+  body:not(.dark) [data-sidebar="menu-sub-button"][data-active="true"] {
+    @apply bg-cyan-900 text-cyan-500;
+  }
+  
+  /* Borders and separators */
   body:not(.dark) [data-sidebar="menu-sub"] {
     @apply border-slate-700;
   }
   
   body:not(.dark) [data-sidebar="separator"] {
     @apply bg-slate-700;
+  }
+  
+  /* Search box và các control khác trong sidebar */
+  body:not(.dark) [data-sidebar="input"] {
+    @apply bg-slate-800 text-gray-200 border-slate-700;
   }
 }

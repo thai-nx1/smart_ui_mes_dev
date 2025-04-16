@@ -55,8 +55,12 @@ const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
 >(({ side = "right", className, children, ...props }, ref) => {
-  // Check if this is a sidebar based on className patterns
-  const isSidebar = className?.includes('bg-slate-900');
+  // Kiểm tra xem đây có phải là sidebar không dựa vào một số đặc tính
+  const isSidebar = Boolean(
+    className?.includes('bg-slate-900') || 
+    className?.includes('text-gray-400') ||
+    className?.includes('[&_button[aria-label=\'Close\']]:hidden')
+  );
   
   return (
     <SheetPortal>
