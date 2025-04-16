@@ -215,10 +215,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
         {/* Sidebar - Bắt buộc always open trên desktop, dark theme cho cả desktop và mobile */}
         <Sidebar 
-          className="h-screen flex flex-col items-center justify-start overflow-auto z-10 border-r border-slate-800 bg-slate-900 text-gray-300"
+          className={cn(
+            "h-screen flex flex-col items-center justify-start overflow-auto z-10",
+            "border-r border-slate-700",
+            "bg-slate-900 text-gray-300"
+          )}
           collapsible={isDesktopOrTablet ? 'none' : 'offcanvas'} // none: không thể đóng trên desktop/tablet
         >
-          <SidebarHeader className="p-4 border-b border-slate-800">
+          <SidebarHeader className={cn("p-4 border-b border-slate-700")}>
             <div className="flex items-center">
               <div className="mr-3 flex items-center justify-center h-9 w-9 rounded-md bg-transparent">
                 <img src="/icons/app-icon.svg" alt="logo" className="h-10 w-10" />
@@ -232,7 +236,11 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
               {/* Chỉ hiển thị nút đóng trên mobile */}
-              <div className="ml-auto lg:hidden text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-slate-800" >
+              <div className={cn(
+                "ml-auto lg:hidden", 
+                "text-gray-400 hover:text-white", 
+                "p-1.5 rounded-full hover:bg-slate-800"
+              )}>
                 <SidebarTriggerClose>
                   <X className="h-5 w-5" />
                 </SidebarTriggerClose>
@@ -374,12 +382,18 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
             </SidebarGroup>
           </SidebarContent>
 
-          <div className="border-t border-slate-700 bg-slate-800/50 p-2">
+          <div className={cn(
+            "border-t border-slate-700",
+            "bg-slate-800/50 p-2"
+          )}>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowThemeDialog(true)}
-              className="w-full justify-start text-gray-400 hover:text-white hover:bg-slate-800"
+              className={cn(
+                "w-full justify-start",
+                "text-gray-400 hover:text-white hover:bg-slate-800"
+              )}
             >
               <Sun className="h-4 w-4 mr-2" />
               <span>{t('theme.title', 'Giao diện')}</span>
@@ -636,11 +650,12 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
             handleMobileMenuClick()
             toggleSidebar()
           }}
-          className={`transition-all whitespace-normal ${
+          className={cn(
+            "transition-all whitespace-normal",
             isActive 
-              ? 'bg-cyan-900 text-cyan-500 font-medium' 
-              : 'text-gray-400 hover:bg-slate-800 hover:text-white'
-          }`}
+              ? "bg-cyan-900 text-cyan-500 font-medium" 
+              : "text-gray-400 hover:bg-slate-800 hover:text-white"
+          )}
         >
           <Link href={`/menu/${menu.id}`} className="w-full flex items-center">
             {menuIcon}

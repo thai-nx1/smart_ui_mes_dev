@@ -1,58 +1,58 @@
 /* CSS để đảm bảo sidebar không bị thu gọn trên desktop */
 @media (min-width: 768px) {
-  /* Đặt chiều rộng cố định cho sidebar */
-  [data-sidebar="sidebar"] {
-    width: 280px !important;
-    min-width: 280px !important;
-    max-width: 280px !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    transform: none !important;
-    display: flex !important;
-    flex-shrink: 0 !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-    height: 100vh !important;
-    overflow-y: auto !important;
-    transition: none !important;
-    z-index: 30 !important;
+  /* Đặt chiều rộng cố định cho sidebar - Sử dụng CSS specificity cao hơn thay vì !important */
+  html body [data-sidebar="sidebar"] {
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    display: flex;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+    overflow-y: auto;
+    transition: none;
+    z-index: 30;
   }
 
   /* Đặt margin-left cho content để không bị đè bởi sidebar */
-  [data-sidebar="sidebar"] + .flex-1 {
-    margin-left: 280px !important;
+  html body [data-sidebar="sidebar"] + .flex-1 {
+    margin-left: 280px;
   }
 
   /* Đảm bảo nội dung không thu gọn */
-  [data-sidebar-content] {
-    width: 100% !important;
-    transform: none !important;
-    transition: none !important;
-  }
-
-  /* Khôi phục animation chỉ trên mobile */
-  @media (max-width: 767px) {
-    [data-sidebar="sidebar"] {
-      transition: transform 0.3s ease, opacity 0.3s ease !important;
-    }
+  html body [data-sidebar-content] {
+    width: 100%;
+    transform: none;
+    transition: none;
   }
 
   /* Đảm bảo các menu hiển thị đầy đủ */
-  [data-sidebar-menu-button] span {
-    overflow: visible !important;
-    text-overflow: initial !important;
-    white-space: normal !important;
+  html body [data-sidebar-menu-button] span {
+    overflow: visible;
+    text-overflow: initial;
+    white-space: normal;
   }
 
   /* Ẩn trigger button trên desktop */
-  [data-sidebar-trigger] {
-    display: none !important;
+  html body [data-sidebar-trigger] {
+    display: none;
   }
 
   /* Overlay sidebar */
-  .sidebar-desktop-container {
-    position: relative !important;
+  html body .sidebar-desktop-container {
+    position: relative;
+  }
+}
+
+/* Khôi phục animation chỉ trên mobile */
+@media (max-width: 767px) {
+  html body [data-sidebar="sidebar"] {
+    transition: transform 0.3s ease, opacity 0.3s ease;
   }
 }
