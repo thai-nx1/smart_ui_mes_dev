@@ -451,8 +451,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <Label
                   htmlFor="theme-light"
                   className={cn(
-                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    currentTheme.theme === 'light' && "border-primary ring-1 ring-primary"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
+                    "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
+                    "border-slate-300 text-slate-800 bg-transparent",
+                    "hover:border-cyan-500 hover:text-cyan-500",
+                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
+                    "hover:bg-cyan-100",
+                    currentTheme.theme === 'light' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
+                    currentTheme.theme === 'light' && "bg-cyan-100 border-cyan-500 text-cyan-500"
                   )}
                 >
                   <RadioGroupItem value="light" id="theme-light" className="sr-only" />
@@ -463,8 +469,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <Label
                   htmlFor="theme-dark"
                   className={cn(
-                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    currentTheme.theme === 'dark' && "border-primary ring-1 ring-primary"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
+                    "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
+                    "border-slate-300 text-slate-800 bg-transparent",
+                    "hover:border-cyan-500 hover:text-cyan-500",
+                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
+                    "hover:bg-cyan-100",
+                    currentTheme.theme === 'dark' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
+                    currentTheme.theme === 'dark' && "bg-cyan-100 border-cyan-500 text-cyan-500"
                   )}
                 >
                   <RadioGroupItem value="dark" id="theme-dark" className="sr-only" />
@@ -475,8 +487,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <Label
                   htmlFor="theme-system"
                   className={cn(
-                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    currentTheme.theme === 'system' && "border-primary ring-1 ring-primary"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
+                    "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
+                    "border-slate-300 text-slate-800 bg-transparent",
+                    "hover:border-cyan-500 hover:text-cyan-500",
+                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
+                    "hover:bg-cyan-100",
+                    currentTheme.theme === 'system' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
+                    currentTheme.theme === 'system' && "bg-cyan-100 border-cyan-500 text-cyan-500"
                   )}
                 >
                   <RadioGroupItem value="system" id="theme-system" className="sr-only" />
@@ -500,8 +518,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <Label
                   htmlFor="style-professional"
                   className={cn(
-                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    currentTheme.themeStyle === 'professional' && "border-primary ring-1 ring-primary"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
+                    "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
+                    "border-slate-300 text-slate-800 bg-transparent",
+                    "hover:border-cyan-500 hover:text-cyan-500",
+                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
+                    "hover:bg-cyan-100",
+                    currentTheme.themeStyle === 'professional' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
+                    currentTheme.themeStyle === 'professional' && "bg-cyan-100 border-cyan-500 text-cyan-500"
                   )}
                 >
                   <RadioGroupItem value="professional" id="style-professional" className="sr-only" />
@@ -514,8 +538,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <Label
                   htmlFor="style-tint"
                   className={cn(
-                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    currentTheme.themeStyle === 'tint' && "border-primary ring-1 ring-primary"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
+                    "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
+                    "border-slate-300 text-slate-800 bg-transparent",
+                    "hover:border-cyan-500 hover:text-cyan-500",
+                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
+                    "hover:bg-cyan-100",
+                    currentTheme.themeStyle === 'tint' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
+                    currentTheme.themeStyle === 'tint' && "bg-cyan-100 border-cyan-500 text-cyan-500"
                   )}
                 >
                   <RadioGroupItem value="tint" id="style-tint" className="sr-only" />
@@ -528,8 +558,14 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                 <Label
                   htmlFor="style-vibrant"
                   className={cn(
-                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    currentTheme.themeStyle === 'vibrant' && "border-primary ring-1 ring-primary"
+                    "flex cursor-pointer flex-col items-center justify-between rounded-md border-2 p-3 transition-all duration-200",
+                    "dark:border-slate-700 dark:text-gray-500 dark:bg-transparent",
+                    "border-slate-300 text-slate-800 bg-transparent",
+                    "hover:border-cyan-500 hover:text-cyan-500",
+                    "dark:hover:bg-cyan-500/30 dark:hover:border-cyan-700",
+                    "hover:bg-cyan-100",
+                    currentTheme.themeStyle === 'vibrant' && "dark:bg-cyan-700 dark:border-cyan-500 dark:text-cyan-500",
+                    currentTheme.themeStyle === 'vibrant' && "bg-cyan-100 border-cyan-500 text-cyan-500"
                   )}
                 >
                   <RadioGroupItem value="vibrant" id="style-vibrant" className="sr-only" />
@@ -547,7 +583,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
               <Button 
                 size="default"
                 variant="default"
-                className="rounded-md font-medium px-6 transition-colors"
+                className="rounded-md font-medium px-6 transition-colors bg-cyan-600 hover:bg-cyan-700 text-white dark:bg-cyan-700 dark:hover:bg-cyan-800"
               >
                 {t('common.done', 'Hoàn tất')}
               </Button>
