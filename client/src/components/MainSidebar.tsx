@@ -695,7 +695,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
       </SidebarMenuButton>
 
       {isOpen && menu.core_dynamic_child_menus && (
-        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l-2 border-slate-700">
+        <SidebarMenuSub className="animate-in slide-in-from-left-1 duration-200 pl-2 border-l-2 border-slate-700 bg-slate-900">
           {menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
             // Gọi đệ quy DynamicMenuItem cho menu con, tăng cấp độ lên 1
             <DynamicMenuItem key={subMenu.id} menu={subMenu} level={level + 1} />
