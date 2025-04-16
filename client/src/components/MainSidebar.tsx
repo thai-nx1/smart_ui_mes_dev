@@ -444,9 +444,9 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
               </Label>
               
               <RadioGroup 
-                defaultValue={currentTheme.theme}
+                value={currentTheme.theme}
                 className="grid grid-cols-3 gap-3"
-                onValueChange={(value: ThemeType) => themeManager.setTheme({ theme: value as ThemeType })}
+                onValueChange={(value) => themeManager.setTheme({ theme: value as ThemeType })}
               >
                 <Label
                   htmlFor="theme-light"
@@ -493,9 +493,9 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
               </Label>
               
               <RadioGroup 
-                defaultValue={currentTheme.themeStyle}
+                value={currentTheme.themeStyle}
                 className="grid grid-cols-3 gap-3"
-                onValueChange={(value: ThemeStyle) => themeManager.setTheme({ themeStyle: value as ThemeStyle })}
+                onValueChange={(value) => themeManager.setTheme({ themeStyle: value as ThemeStyle })}
               >
                 <Label
                   htmlFor="style-professional"
