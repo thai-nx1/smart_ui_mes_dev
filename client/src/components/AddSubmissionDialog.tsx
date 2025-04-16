@@ -377,7 +377,7 @@ export function AddSubmissionDialog({ onSubmit, workflowId }: AddSubmissionDialo
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[600px] p-0 border-none shadow-lg rounded-lg overflow-hidden">
+      <DialogContent className="dialog-content sm:max-w-[600px] p-0 shadow-lg rounded-2xl overflow-hidden">
         <DialogHeader className="bg-muted/30 border-b p-6">
           <DialogTitle className="text-xl font-bold text-primary">
             {t('submission.enterData', 'Nhập dữ liệu')}
