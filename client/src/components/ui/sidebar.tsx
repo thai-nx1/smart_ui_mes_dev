@@ -494,7 +494,7 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem"
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-slate-800 hover:text-white focus-visible:ring-2 active:bg-cyan-900 active:text-cyan-500 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-cyan-900 data-[active=true]:font-medium data-[active=true]:text-cyan-500 data-[state=open]:hover:bg-slate-800 data-[state=open]:hover:text-white group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-2 [&>svg]:size-4 [&>svg]:shrink-0 whitespace-normal break-words text-gray-400",
+  "peer/menu-button flex w-full items-center gap-2 rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-slate-800 hover:text-white focus-visible:ring-2 active:bg-orange-900 active:text-orange-500 disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-orange-900 data-[active=true]:font-medium data-[active=true]:text-orange-500 data-[state=open]:hover:bg-slate-800 data-[state=open]:hover:text-white group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-2 [&>svg]:size-4 [&>svg]:shrink-0 whitespace-normal break-words text-gray-400",
   {
     variants: {
       variant: {
@@ -704,8 +704,8 @@ const SidebarMenuSubButton = React.forwardRef<
       data-size={size}
       data-active={isActive}
       className={cn(
-        "flex min-h-7 w-full -translate-x-px items-center gap-2 rounded-md px-2 py-1.5 text-gray-400 outline-none ring-sidebar-ring hover:bg-slate-800 hover:text-white focus-visible:ring-2 active:bg-cyan-900 active:text-cyan-500 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
-        "data-[active=true]:bg-cyan-900 data-[active=true]:text-cyan-500 data-[active=true]:font-medium",
+        "flex min-h-7 w-full -translate-x-px items-center gap-2 rounded-md px-2 py-1.5 text-gray-400 outline-none ring-sidebar-ring hover:bg-slate-800 hover:text-white focus-visible:ring-2 active:bg-orange-900 active:text-orange-500 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
+        "data-[active=true]:bg-orange-900 data-[active=true]:text-orange-500 data-[active=true]:font-medium",
         "whitespace-normal break-words hyphens-auto",
         size === "sm" && "text-xs min-h-6 py-1",
         size === "md" && "text-sm",
