@@ -181,7 +181,7 @@ export default function LoginPage() {
                     <Input
                       placeholder={t('Nhập số điện thoại')}
                       {...field}
-                      className="bg-white !border-slate-400 !focus:border-slate-500 !focus:ring-0 dark:!bg-white dark:!text-slate-900 dark:!border-slate-400"
+                      className="bg-white !border-slate-300 !focus:border-slate-500 !focus:ring-0 dark:!bg-white dark:!text-slate-900 dark:!border-slate-300"
                     />
                   </FormControl>
                   <FormMessage />

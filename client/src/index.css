@@ -401,6 +401,13 @@
     @apply font-sans antialiased bg-background text-foreground transition-colors duration-300 overflow-x-hidden;
   }
   
+  /* Style chuẩn cho các thành phần nhập liệu */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    @apply bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 border-slate-300 dark:border-slate-700 focus:outline-none focus:border-slate-500 dark:focus:border-slate-500;
+  }
+  
   /* Đảm bảo login page luôn ở light mode */
   .light-mode-login {
     @apply bg-slate-50 text-slate-900;
@@ -436,13 +443,13 @@
   .light-mode-login input,
   .light-mode-login select,
   .light-mode-login textarea {
-    @apply bg-white border-slate-400 text-slate-900 placeholder-slate-400 !important;
+    @apply bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-slate-500 !important;
   }
   
   .dark .light-mode-login input,
   .dark .light-mode-login select,
   .dark .light-mode-login textarea {
-    @apply bg-white border-slate-400 text-slate-900 placeholder-slate-400 !important;
+    @apply bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-slate-500 !important;
   }
 
   /* Fix for horizontal scrolling issues */
