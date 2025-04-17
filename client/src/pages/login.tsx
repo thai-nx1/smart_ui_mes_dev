@@ -262,9 +262,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg border border-primary/10">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-xl font-bold text-primary-foreground">D</span>
-            </div>
+            <img src="/icons/app-icon.svg" alt="logo" className="h-16 w-16" />
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
             {t('Đăng nhập vào tài khoản của bạn')}
