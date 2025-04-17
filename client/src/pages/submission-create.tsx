@@ -299,7 +299,7 @@ export default function SubmissionCreatePage() {
   
   return (
     <MainLayout title={t('submission.createTitle', 'Tạo biểu mẫu mới')}>
-      <div className="w-full flex justify-center px-4 py-4">
+      <div className="w-full flex justify-center p-4 md:p-12">
         <Card className="w-full max-w-xl border-none shadow-none lg:w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2 px-4">
             <div className="flex flex-row items-center gap-2">
