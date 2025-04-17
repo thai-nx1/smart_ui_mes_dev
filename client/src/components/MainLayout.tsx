@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useTranslation } from 'react-i18next';
-import { useLocation } from 'wouter';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { PwaInstallButton } from '@/components/PwaInstallButton';
-import { Bell, Search, User, Menu, X, LogOut, UserCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { clearAuthTokens } from '@/lib/auth';
 import { themeManager } from '@/lib/theme';
+import { LogOut, Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'wouter';
 
 interface MainLayoutProps {
   children: React.ReactNode;
   title?: string;
+}
+
+interface UserInfo {
+  fullname?: string;
+  email?: string;
+  avatar?: string;
 }
 
 export function MainLayout({ children, title }: MainLayoutProps) {
@@ -24,6 +26,24 @@ export function MainLayout({ children, title }: MainLayoutProps) {
   const [, setLocation] = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(themeManager.getIsDarkMode());
+  const [userInfo, setUserInfo] = useState<UserInfo>({});
+  
+  // Get user info from localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUserInfo({
+          fullname: parsedUser.fullname || 'User',
+          email: parsedUser.email || 'user@example.com',
+          avatar: parsedUser.avatar.location || ''
+        });
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
   
   // Xử lý đăng xuất
   const handleLogout = () => {
@@ -86,26 +106,30 @@ export function MainLayout({ children, title }: MainLayoutProps) {
             
             <div className="flex items-center gap-x-1 sm:gap-x-3">
               <div className="hidden md:flex items-center mr-2">
-                <div className="relative">
+                  <div className="p-1">
+                    <div className="font-medium">{userInfo.fullname || 'User'}</div>
+                    <div className="text-xs text-muted-foreground">{userInfo.email || 'user@example.com'}</div>
+                  </div>
+                {/* <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
                     placeholder={t('actions.search', 'Tìm kiếm...')}
                     className="h-9 w-[180px] lg:w-[280px] rounded-md border bg-background px-9 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                   />
-                </div>
+                </div> */}
               </div>
               
-              <Button variant="ghost" size="icon" className="relative size-8 text-muted-foreground hover:text-foreground hidden md:flex">
+              {/* <Button variant="ghost" size="icon" className="relative size-8 text-muted-foreground hover:text-foreground hidden md:flex">
                 <Bell className="h-[1.2rem] w-[1.2rem]" />
                 <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground">
                   3
                 </Badge>
-              </Button>
+              </Button> */}
               
-              <PwaInstallButton />
-              <LanguageSwitcher />
-              <ThemeSwitcher />
+              {/* <PwaInstallButton /> */}
+              {/* <LanguageSwitcher /> */}
+              {/* <ThemeSwitcher /> */}
               
               <div className="h-8 w-px bg-border mx-1 hidden md:block" />
               
@@ -113,16 +137,14 @@ export function MainLayout({ children, title }: MainLayoutProps) {
                 <PopoverTrigger asChild>
                   <Button variant="ghost" className="h-8 w-8 p-0">
                     <Avatar className="h-8 w-8 border cursor-pointer hover:shadow-sm transition-shadow">
-                      <AvatarImage src="" />
-                      <AvatarFallback className="bg-primary/10 text-primary font-medium">VN</AvatarFallback>
+                      <AvatarImage src={userInfo.avatar} />
+                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                        {userInfo.fullname?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-56 p-0" align="end">
-                  <div className="p-3 border-b">
-                    <div className="font-medium">Người dùng</div>
-                    <div className="text-xs text-muted-foreground">user@example.com</div>
-                  </div>
                   <div className="p-1">
                     {/* <Button 
                       variant="ghost" 

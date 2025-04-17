@@ -43,6 +43,7 @@ export function clearAuthTokens(): void {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('loggedInTime');
+  localStorage.removeItem('user');
 }
 
 // Kiểm tra xem người dùng đã đăng nhập hay chưa
