@@ -26,6 +26,7 @@ interface LoginResponse {
       identityLogin: {
         accessToken: string;
         refreshToken: string;
+        organizationId: string;
       }
     }
   }
@@ -72,6 +73,7 @@ export default function LoginPage() {
               identityLogin(credential: { phone: "${data.phone}", password: "${data.password}" }) {
                 accessToken
                 refreshToken
+                organizationId
               }
             }
           }
@@ -99,7 +101,7 @@ export default function LoginPage() {
     onSuccess: (data) => {
       // Lưu token vào localStorage nếu accessToken không null hoặc rỗng
       if (data.data?.mes?.identityLogin && data.data.mes.identityLogin.accessToken) {
-        const { accessToken, refreshToken } = data.data.mes.identityLogin;
+        const { accessToken, refreshToken, organizationId } = data.data.mes.identityLogin;
         
         // Chỉ lưu accessToken nếu nó không null và không rỗng
         if (accessToken && accessToken.trim() !== '') {
@@ -108,6 +110,11 @@ export default function LoginPage() {
           // Lưu các thông tin khác nếu có
           if (refreshToken) {
             localStorage.setItem('refreshToken', refreshToken);
+          }
+
+          // Lưu các thông tin khác nếu có
+          if (organizationId) {
+            localStorage.setItem('organizationId', organizationId);
           }
 
           // Lưu thời gian đăng nhập
