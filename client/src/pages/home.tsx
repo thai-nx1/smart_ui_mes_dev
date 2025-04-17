@@ -9,7 +9,7 @@ export default function Home() {
   const { t } = useTranslation();
   
   return (
-    <MainLayout title={t('app.title', 'Hệ thống Quản lý Form Động')}>
+    <MainLayout title={t('Trang chủ')}>
       <div className="flex justify-center items-center w-full h-full p-4">
         <img 
           src="/home.svg" 
