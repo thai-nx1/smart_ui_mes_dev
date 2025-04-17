@@ -260,7 +260,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   className={cn(
                     "pl-9 pr-8 py-1.5 h-9 text-sm",
                     "bg-slate-800 border-slate-700 text-gray-300",
-                    "focus-visible:ring-cyan-500 transition-colors"
+                    "focus-visible:ring-orange-500 transition-colors"
                   )}
                 />
                 <Search className={cn(
@@ -286,8 +286,8 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
 
           <SidebarContent className="px-2 py-4 flex-1 overflow-auto none-scroll">
             <SidebarGroup>
-              <div className="text-xs uppercase font-semibold text-cyan-400 mb-2 px-3 flex items-center">
-                <span className="w-1 h-1 bg-cyan-400 rounded-full mr-2 inline-block"></span>
+              <div className="text-xs uppercase font-semibold text-orange-500 mb-2 px-3 flex items-center">
+                <span className="w-1 h-1 bg-orange-500 rounded-full mr-2 inline-block"></span>
                 {t('app.sidebar.applications', 'Ứng dụng')}
               </div>
               
