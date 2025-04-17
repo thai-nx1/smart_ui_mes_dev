@@ -628,13 +628,28 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
     }
   }, [menu.id, isOpen, level]);
 
+  // Cải thiện kiểm tra route active với regex patterns
+  const isExactPathActive = (path: string): boolean => {
+    return location === path;
+  };
+  
+  const isPathPartialMatch = (path: string): boolean => {
+    // Kiểm tra nếu đường dẫn hiện tại bắt đầu với path
+    if (!path) return false;
+    const currentPath = location.toLowerCase();
+    return currentPath.startsWith(path.toLowerCase());
+  };
+
   // Kiểm tra xem có submenu đang được chọn không - hỗ trợ đệ quy đa cấp
   const checkForActiveChild = (items: MenuType[] = []): boolean => {
     return items.some(item => {
-      // Kiểm tra menu con này có được chọn không
-      const isActive = location === `/submission/${item.workflow_id}` || 
-                      location === `/menu/${item.id}` ||
-                      location === `/menu/${menu.id}/submenu/${item.id}`;
+      // Kiểm tra menu con này có được chọn không - bổ sung kiểm tra partial match
+      const isActive = isExactPathActive(`/submission/${item.workflow_id}`) || 
+                       isExactPathActive(`/menu/${item.id}`) ||
+                       isExactPathActive(`/menu/${menu.id}/submenu/${item.id}`) ||
+                       isPathPartialMatch(`/forms/${item.workflow_id}`) ||
+                       isPathPartialMatch(`/workflow/${item.id}`) ||
+                       isPathPartialMatch(`/form-builder/${item.id}`);
                       
       // Nếu menu con này có menu con khác, kiểm tra đệ quy
       if (item.core_dynamic_child_menus?.length) {
@@ -647,17 +662,23 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   
   const hasActiveChild = checkForActiveChild(menu.core_dynamic_child_menus);
 
-  // Tự động mở menu có menu con đang được chọn, đóng menu khác
+  // Kiểm tra xem chính menu này có được chọn không
+  const isCurrentMenuActive = isExactPathActive(`/menu/${menu.id}`) || 
+                             isPathPartialMatch(`/forms/${menu.workflow_id}`) ||
+                             isPathPartialMatch(`/workflow/${menu.id}`) ||
+                             isPathPartialMatch(`/form-builder/${menu.id}`);
+
+  // Tự động mở menu có menu con đang được chọn, giữ mở nếu đang được chọn
   useEffect(() => {
-    // Nếu có con active, mở menu này
-    if (hasActiveChild && !isOpen) {
+    // Nếu menu này hoặc con active, mở menu này
+    if ((hasActiveChild || isCurrentMenuActive) && !isOpen) {
       setIsOpen(true);
     }
     // Nếu không có con active và không phải menu đích, đóng menu
-    else if (!hasActiveChild && isOpen && location !== `/menu/${menu.id}`) {
+    else if (!hasActiveChild && !isCurrentMenuActive && isOpen) {
       setIsOpen(false);
     }
-  }, [location, hasActiveChild, menu.id]);
+  }, [location, hasActiveChild, isCurrentMenuActive]);
   
   // Xử lý đóng sidebar khi click vào menu trên thiết bị di động
   const handleMobileMenuClick = () => {
@@ -731,7 +752,6 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   const menuIcon = getMenuIcon();
   
   if (!hasChildren) {
-    const isActive = location === `/menu/${menu.id}`;
     return (
       <SidebarMenuItem>
         <SidebarMenuButton
@@ -740,9 +760,10 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
             handleMobileMenuClick()
             toggleSidebar()
           }}
+          data-active={isCurrentMenuActive}
           className={cn(
             "transition-all whitespace-normal",
-            isActive 
+            isCurrentMenuActive 
               ? "bg-orange-900 text-orange-500 font-medium" 
               : "text-gray-400 hover:bg-slate-800 hover:text-white"
           )}
@@ -762,11 +783,6 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
     );
   }
 
-  // Kiểm tra xem chính menu cha này có được chọn không
-  const isParentActive = location === `/menu/${menu.id}`;
-  
-  // Menu cha chỉ được active nếu chính nó được chọn
-  // Nếu chỉ có con active, menu cha sẽ mở nhưng không active
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -783,11 +799,14 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           setIsOpen(!isOpen)
           handleMobileMenuClick()
         }}
+        data-active={isCurrentMenuActive || hasActiveChild}
         className={cn(
           "transition-all whitespace-normal relative",
-          isParentActive 
+          isCurrentMenuActive 
             ? "bg-orange-900 text-orange-500 font-medium" 
-            : "text-gray-400 hover:bg-slate-800 hover:text-white"
+            : hasActiveChild
+              ? "text-orange-500 font-medium"
+              : "text-gray-400 hover:bg-slate-800 hover:text-white"
         )}
       >
         {menuIcon}
@@ -809,17 +828,24 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
         </div>
       </SidebarMenuButton>
 
-      {isOpen && menu.core_dynamic_child_menus && (
-        <SidebarMenuSub className={cn(
-          "animate-in slide-in-from-left-1 duration-200",
-          "pl-2 border-l-2 border-slate-700 bg-slate-900"
-        )}>
-          {menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
+      {/* Sử dụng max-height và transition để tạo hiệu ứng mượt mà */}
+      <div 
+        className={cn(
+          "overflow-hidden transition-all duration-300",
+          isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+        )}
+      >
+        <SidebarMenuSub 
+          className={cn(
+            "pl-2 border-l-2 border-slate-700 bg-slate-900"
+          )}
+        >
+          {menu.core_dynamic_child_menus && menu.core_dynamic_child_menus.map((subMenu: MenuType) => (
             // Gọi đệ quy DynamicMenuItem cho menu con, tăng cấp độ lên 1
             <DynamicMenuItem key={subMenu.id} menu={subMenu} level={level + 1} />
           ))}
         </SidebarMenuSub>
-      )}
+      </div>
     </SidebarMenuItem>
   );
 }
