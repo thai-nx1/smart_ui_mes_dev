@@ -22,10 +22,11 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 interface LoginResponse {
   data: {
-    identityLogin: {
-      accessToken: string;
-      loggedInTime: string;
-      refreshToken: string;
+    mes: {
+      identityLogin: {
+        accessToken: string;
+        refreshToken: string;
+      }
     }
   }
 }
@@ -66,11 +67,12 @@ export default function LoginPage() {
     mutationFn: async (data: LoginForm) => {
       const graphqlQuery = {
         query: `
-          mutation IdentityLogin {
-            identityLogin(credential: { password: "${data.password}", phone: "${data.phone}" }) {
-              accessToken
-              loggedInTime
-              refreshToken
+          mutation mesLogin {
+            mes {
+              identityLogin(credential: { phone: "${data.phone}", password: "${data.password}" }) {
+                accessToken
+                refreshToken
+              }
             }
           }
         `,
@@ -81,7 +83,7 @@ export default function LoginPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          "secret": "HITL2Om903jHX62HWcWsyYMJ7Fx9cx25"
+          'x-hasura-admin-secret': 'Oxiitek@13579'
         },
         body: JSON.stringify(graphqlQuery),
       });
@@ -96,9 +98,9 @@ export default function LoginPage() {
     },
     onSuccess: (data) => {
       // Lưu token vào localStorage nếu accessToken không null hoặc rỗng
-      if (data.data?.identityLogin && data.data.identityLogin.accessToken) {
-        const { accessToken, refreshToken } = data.data.identityLogin;
-
+      if (data.data?.mes?.identityLogin && data.data.mes.identityLogin.accessToken) {
+        const { accessToken, refreshToken } = data.data.mes.identityLogin;
+        
         // Chỉ lưu accessToken nếu nó không null và không rỗng
         if (accessToken && accessToken.trim() !== '') {
           localStorage.setItem('accessToken', accessToken);
