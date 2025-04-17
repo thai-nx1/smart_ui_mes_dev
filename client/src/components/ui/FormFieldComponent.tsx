@@ -63,7 +63,7 @@ export function FormField({
         fieldType={field.field_type as FieldType}
         value={value}
         onChange={onChange}
-        options={field.options}
+        options={field.option_values}
         required={isRequired}
       />
     </div>

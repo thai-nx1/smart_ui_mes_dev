@@ -14,7 +14,7 @@ import { getAuthTokens, clearAuthTokens } from "./auth";
 
 // Dựa vào kiểm tra schema, backend đã hoạt động và có các trường cần thiết
 // const GRAPHQL_ENDPOINT = import.meta.env.VITE_API_URL || "https://oxii-hasura-api.oxiiuat.com/v1/graphql";
-const GRAPHQL_ENDPOINT = "https://oxii-hasura-api.oxiiuat.com/v1/graphql";
+const GRAPHQL_ENDPOINT = "https://delicate-herring-66.hasura.app/v1/graphql";
 // Token mặc định sẽ được sử dụng khi không có token trong localStorage
 const DEFAULT_AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mbyI6eyJ1c2VyVHlwZSI6IlNZU1RFTV9VU0VSIiwidXNlcklkIjoiOTViZDhhMTMtOTE0Zi00ZDAyLTg3ZTMtMGMyNjIyYjg4MmFlIiwic2VydmljZUlkIjoiZTQ2NDU5YzItZTkxMy00MGMxLTgzODMtOGY5YmYzZTdhZGEwIiwib3JnYW5pemF0aW9uSWQiOiJhOWU5ODczNC1lNWQyLTQ4NTEtODRmMy01ZjFjOWE5Y2QyYTciLCJidXNpbmVzc1JvbGVJZHMiOlsiYzk0MGU2MjgtNmFmZC00MzRhLTgwZjMtZGJkNjdiN2ZiNGEyIl19LCJpYXQiOjE3NDMzOTg2OTAsImV4cCI6MjA1ODc1ODY5MH0.RYMF__ddVq4T6CWCNfM6sD0LHr_OpvVvJgoKW5zAhgQ';
 
@@ -239,7 +239,17 @@ export async function fetchMenuForms(
   // Sử dụng đúng tên field theo query mẫu bạn cung cấp
   const query = `
     query GetFormsByMenu($menuId: uuid!, $formType: String!) {
-      core_core_dynamic_menu_forms(where: {menu_id: {_eq: $menuId}, form_type: {_eq: $formType}, deleted_at: {_is_null: true}}) {
+      core_core_dynamic_menu_forms(where: {
+        menu_id: {_eq: $menuId}, 
+        form_type: {_eq: $formType},
+        deleted_at: {_is_null: true},
+        core_dynamic_form: {
+          deleted_at: { _is_null: true },
+          core_dynamic_form_fields: {
+            core_dynamic_field: { deleted_at: { _is_null: true } }
+          }
+        }
+      }) {
         id
         form_type
         form_id
@@ -438,7 +448,7 @@ export async function fetchAllMenus(): Promise<GraphQLResponse<MenusResponse>> {
     query GetAllMenus {
       core_core_dynamic_menus(
         where: {
-          deleted_at: {_is_null: true}
+          deleted_at: {_is_null: true},
         }
       ) {
         id
@@ -788,7 +798,17 @@ export async function fetchMenuViewForm(
   const query = `
     query FetchMenuViewForm($menuId: uuid!) {
       core_core_dynamic_menu_forms(
-        where: {menu_id: {_eq: $menuId}, form_type: {_eq: "VIEW"}, deleted_at: {_is_null: true}}
+        where: {
+          menu_id: {_eq: $menuId}, 
+          form_type: {_eq: "VIEW"}, 
+          deleted_at: {_is_null: true},
+          core_dynamic_form: {
+            deleted_at: { _is_null: true },
+            core_dynamic_form_fields: {
+              core_dynamic_field: { deleted_at: { _is_null: true } }
+            }
+          }
+        }
       ) {
         id
         form_type

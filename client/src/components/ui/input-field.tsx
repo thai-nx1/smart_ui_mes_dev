@@ -96,13 +96,9 @@ export function InputField({
   };
 
   // Default options if none provided
-  const fieldOptions = options.length > 0 
+  const fieldOptions = options?.length > 0 
     ? options 
-    : Array(4).fill(0).map((_, i) => ({ 
-        id: `option-${i+1}`, 
-        label: `Lựa chọn ${i+1}`, 
-        value: `${i+1}`
-      }));
+    : []
 
   const renderField = () => {
     switch (fieldType) {
@@ -153,7 +149,7 @@ export function InputField({
           >
             {fieldOptions.map((option) => (
               <div 
-                key={option.id} 
+                key={`${option.label}-${option.value}`} 
                 className={cn(
                   "flex items-center space-x-2",
                   error && "border-red-500 p-2 rounded"
@@ -171,14 +167,14 @@ export function InputField({
           <div className="mt-2 space-y-2">
             {fieldOptions.map((option) => (
               <div 
-                key={option.id} 
+                key={`${option.label}-${option.value}`} 
                 className={cn(
                   "flex items-center space-x-2",
                   error && "border-red-500 p-2 rounded"
                 )}
               >
                 <Checkbox
-                  id={`${id}-${option.id}`}
+                  id={`${id}-${option.label}-${option.value}`}
                   checked={(value || []).includes(option.value)}
                   onCheckedChange={(checked) => {
                     const currentValues = Array.isArray(value) ? value : [];

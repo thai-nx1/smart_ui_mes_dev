@@ -112,6 +112,7 @@ export default function SubmissionCreatePage() {
       
       // Cũng cập nhật formFields nếu form có core_dynamic_form_fields
       const firstForm = formsData.forms[0] as FormExtended;
+      console.log("formFields:", formFields);
       if (firstForm.core_dynamic_form_fields) {
         setFormFields(firstForm.core_dynamic_form_fields);
       }
