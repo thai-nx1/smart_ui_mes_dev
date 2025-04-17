@@ -658,4 +658,24 @@
   .dark div[data-component-name="div"].dark\:bg-slate-950 {
     @apply bg-slate-900;
   }
+  
+  /* CSS cho datepicker để match với input text style */
+  .rdp {
+    @apply text-sm;
+  }
+  
+  .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+    @apply bg-slate-100 dark:bg-slate-800;
+  }
+  
+  .rdp-day_selected {
+    @apply bg-primary text-white;
+  }
+  
+  /* Responsive form container */
+  @media (max-width: 1023px) {
+    .form-container {
+      @apply w-full px-4;
+    }
+  }
 }

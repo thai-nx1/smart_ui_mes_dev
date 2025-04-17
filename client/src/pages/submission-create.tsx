@@ -299,8 +299,8 @@ export default function SubmissionCreatePage() {
   
   return (
     <MainLayout title={t('submission.createTitle', 'Tạo biểu mẫu mới')}>
-      <div className="w-full px-4 py-4">
-        <Card className="w-full border-none shadow-none">
+      <div className="w-full flex justify-center px-4 py-4">
+        <Card className="w-full max-w-xl border-none shadow-none lg:w-full">
           <CardHeader className="flex flex-row items-center justify-between pb-2 px-4">
             <div className="flex flex-row items-center gap-2">
               <Button
@@ -336,7 +336,7 @@ export default function SubmissionCreatePage() {
               </div>
             ) : (
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-4 py-4">
                   {/* Form selector */}
                   {formsData?.forms && formsData.forms.length > 1 && (
                     <div className="grid gap-2">

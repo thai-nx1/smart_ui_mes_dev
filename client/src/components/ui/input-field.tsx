@@ -199,16 +199,19 @@ export function InputField({
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !value && "text-muted-foreground",
-                  error && "border-red-500"
+                  "w-full justify-start text-left font-normal h-10 rounded-md",
+                  "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+                  "border border-slate-300 dark:border-slate-700",
+                  "focus-visible:ring-1 focus-visible:ring-slate-500",
+                  !value && "text-slate-400",
+                  error && "border-red-500 ring-2 ring-red-500"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {value ? format(new Date(value), "PPP", { locale: vi }) : "Chọn một ngày"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0 z-50">
               <Calendar
                 mode="single"
                 selected={value ? new Date(value) : undefined}
