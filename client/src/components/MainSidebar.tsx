@@ -257,6 +257,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                   placeholder={t('menu.search', 'Tìm kiếm menu...')}
                   value={searchQuery}
                   onChange={handleSearch}
+                  data-sidebar="input"
                   className={cn(
                     "pl-9 pr-8 py-1.5 h-9 text-sm",
                     "bg-slate-800 border-slate-700 text-gray-300",
@@ -630,6 +631,8 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
 
   // Cải thiện kiểm tra route active với regex patterns
   const isExactPathActive = (path: string): boolean => {
+    if (!path) return false;
+    // Kiểm tra chính xác đường dẫn
     return location === path;
   };
   
@@ -637,19 +640,40 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
     // Kiểm tra nếu đường dẫn hiện tại bắt đầu với path
     if (!path) return false;
     const currentPath = location.toLowerCase();
-    return currentPath.startsWith(path.toLowerCase());
+    
+    // Chuẩn hóa path để đảm bảo có dấu / ở cuối nếu là prefix
+    const normalizedPath = path.toLowerCase().endsWith('/') 
+      ? path.toLowerCase() 
+      : path.toLowerCase() + '/';
+    
+    // Kiểm tra nếu đường dẫn hiện tại là chính xác path hoặc bắt đầu với path/
+    return currentPath === path.toLowerCase() || 
+           currentPath.startsWith(normalizedPath);
+  };
+  
+  // Chuẩn hóa route từ code routes trong menu
+  const getRouteFromCode = (code?: string): string | null => {
+    if (!code) return null;
+    
+    // Ví dụ: nếu menu có code "quan-ly-hang-hoa", convert thành "/quan-ly-hang-hoa"
+    const cleanCode = code.toLowerCase().trim();
+    return cleanCode.startsWith('/') ? cleanCode : `/${cleanCode}`;
   };
 
   // Kiểm tra xem có submenu đang được chọn không - hỗ trợ đệ quy đa cấp
   const checkForActiveChild = (items: MenuType[] = []): boolean => {
     return items.some(item => {
-      // Kiểm tra menu con này có được chọn không - bổ sung kiểm tra partial match
+      // Lấy đường dẫn từ code (nếu có)
+      const codeRoute = getRouteFromCode(item.code);
+      
+      // Kiểm tra menu con này có được chọn không - bổ sung kiểm tra partial match và code
       const isActive = isExactPathActive(`/submission/${item.workflow_id}`) || 
                        isExactPathActive(`/menu/${item.id}`) ||
                        isExactPathActive(`/menu/${menu.id}/submenu/${item.id}`) ||
                        isPathPartialMatch(`/forms/${item.workflow_id}`) ||
                        isPathPartialMatch(`/workflow/${item.id}`) ||
-                       isPathPartialMatch(`/form-builder/${item.id}`);
+                       isPathPartialMatch(`/form-builder/${item.id}`) ||
+                       (codeRoute && (isExactPathActive(codeRoute) || isPathPartialMatch(codeRoute)));
                       
       // Nếu menu con này có menu con khác, kiểm tra đệ quy
       if (item.core_dynamic_child_menus?.length) {
@@ -662,11 +686,16 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   
   const hasActiveChild = checkForActiveChild(menu.core_dynamic_child_menus);
 
+  // Lấy đường dẫn từ code (nếu có)
+  const currentMenuCodeRoute = getRouteFromCode(menu.code);
+
   // Kiểm tra xem chính menu này có được chọn không
   const isCurrentMenuActive = isExactPathActive(`/menu/${menu.id}`) || 
                              isPathPartialMatch(`/forms/${menu.workflow_id}`) ||
                              isPathPartialMatch(`/workflow/${menu.id}`) ||
-                             isPathPartialMatch(`/form-builder/${menu.id}`);
+                             isPathPartialMatch(`/form-builder/${menu.id}`) ||
+                             (currentMenuCodeRoute && (isExactPathActive(currentMenuCodeRoute) || 
+                                                     isPathPartialMatch(currentMenuCodeRoute)));
 
   // Tự động mở menu có menu con đang được chọn, giữ mở nếu đang được chọn
   useEffect(() => {
@@ -764,7 +793,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           className={cn(
             "transition-all whitespace-normal",
             isCurrentMenuActive 
-              ? "bg-orange-900 text-orange-500 font-medium" 
+              ? "bg-slate-800 text-white font-medium" 
               : "text-gray-400 hover:bg-slate-800 hover:text-white"
           )}
         >
@@ -799,13 +828,14 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           setIsOpen(!isOpen)
           handleMobileMenuClick()
         }}
-        data-active={isCurrentMenuActive || hasActiveChild}
+        data-active={isCurrentMenuActive}
+        data-has-active-child={hasActiveChild && !isCurrentMenuActive}
         className={cn(
           "transition-all whitespace-normal relative",
           isCurrentMenuActive 
-            ? "bg-orange-900 text-orange-500 font-medium" 
+            ? "bg-slate-800 text-white font-medium" 
             : hasActiveChild
-              ? "text-orange-500 font-medium"
+              ? "bg-slate-800/50 text-white font-medium"
               : "text-gray-400 hover:bg-slate-800 hover:text-white"
         )}
       >
@@ -837,7 +867,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
       >
         <SidebarMenuSub 
           className={cn(
-            "pl-2 border-l-2 border-slate-700 bg-slate-900"
+            "pl-2 border-l-2 border-slate-700 bg-slate-900/50"
           )}
         >
           {menu.core_dynamic_child_menus && menu.core_dynamic_child_menus.map((subMenu: MenuType) => (

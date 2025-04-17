@@ -579,6 +579,7 @@
     --sidebar-accent: 215 20% 17%; /* bg-slate-800 */
     --sidebar-border: 215 20% 30%; /* border-slate-700 */
     --sidebar-ring: 19 98.2% 55.3%; /* #FD651D - primary color */
+    --ring: 215 20.2% 25.1%; /* dark ring */
     color-scheme: dark;
   }
   
@@ -597,27 +598,55 @@
   }
   
   /* Đảm bảo input field trong sidebar có background màu khác */
-  body:not(.dark) [data-sidebar="sidebar"] input {
-    @apply bg-slate-800 border-slate-700 !important;
+  body:not(.dark) [data-sidebar="sidebar"] input,
+  [data-sidebar="sidebar"] input {
+    @apply bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-400 focus:border-slate-600 !important;
+  }
+  
+  /* Select và các control khác trong sidebar */
+  body:not(.dark) [data-sidebar="sidebar"] select,
+  body:not(.dark) [data-sidebar="sidebar"] textarea,
+  [data-sidebar="sidebar"] select,
+  [data-sidebar="sidebar"] textarea {
+    @apply bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-400 focus:border-slate-600 !important;
+  }
+  
+  /* Checkbox, radio, và các control khác */
+  body:not(.dark) [data-sidebar="sidebar"] [type="checkbox"],
+  body:not(.dark) [data-sidebar="sidebar"] [type="radio"],
+  [data-sidebar="sidebar"] [type="checkbox"],
+  [data-sidebar="sidebar"] [type="radio"] {
+    @apply bg-slate-800 border-slate-700 text-orange-500 !important;
   }
   
   /* Active menu items */
   body:not(.dark) [data-sidebar="menu-button"][data-active="true"],
-  body:not(.dark) [data-sidebar="menu-sub-button"][data-active="true"] {
-    @apply bg-primary/20 text-primary;
+  body:not(.dark) [data-sidebar="menu-sub-button"][data-active="true"],
+  [data-sidebar="menu-button"][data-active="true"],
+  [data-sidebar="menu-sub-button"][data-active="true"] {
+    @apply bg-slate-800 text-white font-medium;
+  }
+  
+  /* Parent menu items with active children */
+  body:not(.dark) [data-sidebar="menu-button"][data-has-active-child="true"],
+  [data-sidebar="menu-button"][data-has-active-child="true"] {
+    @apply bg-slate-800/50 text-white font-medium;
   }
   
   /* Borders and separators */
-  body:not(.dark) [data-sidebar="menu-sub"] {
+  body:not(.dark) [data-sidebar="menu-sub"],
+  [data-sidebar="menu-sub"] {
     @apply border-slate-700;
   }
   
-  body:not(.dark) [data-sidebar="separator"] {
+  body:not(.dark) [data-sidebar="separator"],
+  [data-sidebar="separator"] {
     @apply bg-slate-700;
   }
   
   /* Search box và các control khác trong sidebar */
-  body:not(.dark) [data-sidebar="input"] {
-    @apply bg-slate-800 text-slate-200 border-slate-700;
+  body:not(.dark) [data-sidebar="input"],
+  [data-sidebar="input"] {
+    @apply bg-slate-800 text-slate-200 border-slate-700 focus:border-slate-600;
   }
 }
