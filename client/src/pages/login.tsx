@@ -79,7 +79,7 @@ export default function LoginPage() {
       };
 
       // Gửi yêu cầu GraphQL đến API
-      const response = await fetch('https://delicate-herring-66.hasura.app/v1/graphql', {
+      const response = await fetch('https://oxii-hasura-api.oxiiuat.com/v1/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

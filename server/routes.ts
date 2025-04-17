@@ -15,7 +15,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Proxy route for GraphQL API
   app.post('/api/graphql', async (req, res) => {
     try {
-      const response = await fetch('https://delicate-herring-66.hasura.app/v1/graphql', {
+      const response = await fetch('https://oxii-hasura-api.oxiiuat.com/v1/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
