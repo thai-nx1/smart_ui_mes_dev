@@ -333,7 +333,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                       "transition-all whitespace-normal",
                       location === '/' 
                         ? "bg-orange-900 text-orange-500 font-medium" 
-                        : "text-gray-400 hover:bg-slate-800 hover:text-orange-500"
+                        : "text-gray-400 hover:bg-slate-800 hover:text-white"
                     )}
                   >
                     <Link href="/" className="w-full flex items-center">
@@ -366,7 +366,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
                       </div>
                       <button 
                         onClick={clearSearch}
-                        className="text-gray-400 hover:text-orange-500"
+                        className="text-gray-400 hover:text-white"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -409,7 +409,7 @@ export function MainSidebar({ children }: { children: React.ReactNode }) {
               onClick={() => setShowThemeDialog(true)}
               className={cn(
                 "w-full justify-start",
-                "text-gray-400 hover:text-orange-500 hover:bg-slate-800"
+                "text-gray-400 hover:text-white hover:bg-slate-800"
               )}
             >
               <Sun className="h-4 w-4 mr-2" />
@@ -718,7 +718,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
             "transition-all whitespace-normal",
             isActive 
               ? "bg-orange-900 text-orange-500 font-medium" 
-              : "text-gray-400 hover:bg-slate-800 hover:text-orange-500"
+              : "text-gray-400 hover:bg-slate-800 hover:text-white"
           )}
         >
           <Link href={`/menu/${menu.id}`} className="w-full flex items-center">
@@ -750,7 +750,7 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
           "transition-all whitespace-normal relative",
           isParentActive 
             ? "bg-orange-900 text-orange-500 font-medium" 
-            : "text-gray-400 hover:bg-slate-800 hover:text-orange-500"
+            : "text-gray-400 hover:bg-slate-800 hover:text-white"
         )}
       >
         {menuIcon}
