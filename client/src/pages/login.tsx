@@ -153,7 +153,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="light-mode-login flex items-center justify-center min-h-screen bg-slate-50">
       <div className="w-full max-w-md px-6 py-8 space-y-8 bg-white shadow-sm rounded-xl">
         <div className="text-center">
           <div className="flex justify-center">
@@ -161,10 +161,10 @@ export default function LoginPage() {
               <span className="text-xl font-bold text-white">D</span>
             </div>
           </div>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
             {t('Đăng nhập vào tài khoản của bạn')}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-slate-500">
             {t('Nhập thông tin đăng nhập để truy cập hệ thống')}
           </p>
         </div>
@@ -176,7 +176,7 @@ export default function LoginPage() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('Số điện thoại')}</FormLabel>
+                  <FormLabel className="text-slate-900">{t('Số điện thoại')}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder={t('Nhập số điện thoại')}
@@ -194,7 +194,7 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('Mật khẩu')}</FormLabel>
+                  <FormLabel className="text-slate-900">{t('Mật khẩu')}</FormLabel>
                   <div className="relative">
                     <FormControl>
                       <Input
@@ -208,7 +208,7 @@ export default function LoginPage() {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground"
+                      className="absolute right-0 top-0 h-full px-3 py-2 text-slate-500"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
