@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Loader2, LogIn } from 'lucide-react';
+import { log } from 'node:console';
 
 // Định nghĩa schema cho form đăng nhập
 const loginSchema = z.object({
@@ -20,16 +21,68 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-interface LoginResponse {
+
+interface LoginResponseGetToken {
   data: {
     mes: {
       identityLogin: {
         accessToken: string;
         refreshToken: string;
         organizationId: string;
-      }
+        user: {
+          id: string;
+          fullname: string;
+          email: string;
+          avatar: {
+            id: string;
+            location: string;
+          };
+        };
+        avaiableBusinessRoles: {
+          id: string;
+          code: string;
+          name: string;
+        }[];
+      };
     }
   }
+}
+
+interface LoginResponseWithBusinessRole {
+  data: {
+    mes: {
+      identityLoginWithBusinessRole: {
+        accessToken: string;
+        refreshToken: string;
+      };
+    }
+  }
+}
+
+interface LoginResponse {
+  identityLogin: {
+    accessToken: string;
+        refreshToken: string;
+        organizationId: string;
+        user: {
+          id: string;
+          fullname: string;
+          email: string;
+          avatar: {
+            id: string;
+            location: string;
+          };
+        };
+        avaiableBusinessRoles: {
+          id: string;
+          code: string;
+      name: string;
+    }[];
+  };
+  identityLoginWithBusinessRole: {
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 export default function LoginPage() {
@@ -66,7 +119,7 @@ export default function LoginPage() {
   // Mutation cho API đăng nhập
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      const graphqlQuery = {
+      const graphqlQuery_preGetToken = {
         query: `
           mutation mesLogin {
             mes {
@@ -74,6 +127,20 @@ export default function LoginPage() {
                 accessToken
                 refreshToken
                 organizationId
+                avaiableBusinessRoles {
+                  id
+                  code
+                  name
+                }
+                user {
+                  id
+                  fullname
+                  email
+                  avatar {
+                    id
+                    location
+                  }
+                }
               }
             }
           }
@@ -87,53 +154,91 @@ export default function LoginPage() {
           'Content-Type': 'application/json',
           'x-hasura-admin-secret': 'Oxiitek@13579'
         },
-        body: JSON.stringify(graphqlQuery),
+        body: JSON.stringify(graphqlQuery_preGetToken),
       });
 
-      // Kiểm tra phản hồi
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Đăng nhập thất bại');
       }
 
-      return await response.json() as LoginResponse;
+      const tokenResponse = await response.json() as LoginResponseGetToken;
+      
+      // Second mutation to login with business role
+      const graphqlQueryWithBusinessRole = {
+        query: `
+          mutation mesLoginBusinessRole {
+            mes {
+              identityLoginWithBusinessRole(
+                businessRoleId: "${tokenResponse.data.mes.identityLogin.avaiableBusinessRoles[0].id}"
+              ) {
+                accessToken
+                refreshToken
+              }
+            }
+          }
+        `,
+      };
+
+      const businessRoleResponse = await fetch('https://oxii-hasura-api.oxiiuat.com/v1/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-hasura-admin-secret': 'Oxiitek@13579',
+          'Authorization': `Bearer ${tokenResponse.data.mes.identityLogin.accessToken}`
+        },
+        body: JSON.stringify(graphqlQueryWithBusinessRole),
+      });
+
+      if (!businessRoleResponse.ok) {
+        const errorData = await businessRoleResponse.json();
+        throw new Error(errorData.message || 'Đăng nhập với business role thất bại');
+      }
+
+      const responseWithBusinessRole = await businessRoleResponse.json() as LoginResponseWithBusinessRole;
+
+      return {
+        identityLoginWithBusinessRole:{
+          ...responseWithBusinessRole.data.mes.identityLoginWithBusinessRole,
+        },
+        identityLogin:{
+          ...tokenResponse.data.mes.identityLogin
+        }
+      }
     },
     onSuccess: (data) => {
-      // Lưu token vào localStorage nếu accessToken không null hoặc rỗng
-      if (data.data?.mes?.identityLogin && data.data.mes.identityLogin.accessToken) {
-        const { accessToken, refreshToken, organizationId } = data.data.mes.identityLogin;
+      if (data?.identityLoginWithBusinessRole) {
+        const { accessToken, refreshToken} = data?.identityLoginWithBusinessRole;
+        const {  organizationId, user } = data?.identityLogin;
         
-        // Chỉ lưu accessToken nếu nó không null và không rỗng
         if (accessToken && accessToken.trim() !== '') {
           localStorage.setItem('accessToken', accessToken);
 
-          // Lưu các thông tin khác nếu có
           if (refreshToken) {
             localStorage.setItem('refreshToken', refreshToken);
           }
 
-          // Lưu các thông tin khác nếu có
           if (organizationId) {
             localStorage.setItem('organizationId', organizationId);
           }
+          
+          if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+          }
 
-          // Lưu thời gian đăng nhập
           localStorage.setItem('loggedInTime', new Date().toISOString());
 
-          // Hiển thị thông báo thành công
           toast({
             title: t('Đăng nhập thành công'),
             description: t('Chào mừng bạn quay trở lại!'),
             variant: 'default',
           });
 
-          // Chuyển hướng đến trang chủ
           setLocation('/');
           return;
         }
       }
 
-      // Xử lý trường hợp phản hồi không có token hợp lệ
       throw new Error('Không nhận được token đăng nhập hợp lệ');
     },
     onError: (error: Error) => {
@@ -157,9 +262,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md px-6 py-8 space-y-8 bg-white shadow-sm rounded-xl">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="h-12 w-12 rounded-full bg-orange-500 flex items-center justify-center">
-              <span className="text-xl font-bold text-white">D</span>
-            </div>
+            <img src="/icons/app-icon.svg" alt="logo" className="h-16 w-16" />
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
             {t('Đăng nhập vào tài khoản của bạn')}
