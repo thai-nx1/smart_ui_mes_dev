@@ -954,8 +954,8 @@ export function SubmissionDataTable({
 
   return (
     <>
-      <div className="bg-card w-full h-full flex flex-col border shadow-sm overflow-hidden overflow-x-hidden">
-        <div className="py-3 px-4 bg-muted/30 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 flex-shrink-0">
+      <div className="bg-card w-full h-full flex flex-col border-none shadow-sm overflow-hidden overflow-x-hidden">
+        <div className="py-3 px-4 bg-muted/30 border-none flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 flex-shrink-0">
           <h3 className="text-lg font-semibold text-primary">
             {t('submission.title', 'Dữ liệu đã nộp')}
           </h3>
