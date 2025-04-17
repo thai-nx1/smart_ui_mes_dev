@@ -605,7 +605,28 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   const hasChildren = menu.core_dynamic_child_menus && menu.core_dynamic_child_menus.length > 0;
   const screenSize = useScreenSize(); 
   const isDesktopOrTablet = screenSize === 'desktop' || screenSize === 'tablet';
-  const {toggleSidebar} = useSidebar()
+  const {toggleSidebar} = useSidebar();
+  
+  // Lắng nghe custom event để đóng menu khi menu khác được mở
+  useEffect(() => {
+    // Chỉ áp dụng cho menu cấp 1 (level 0)
+    if (level === 0) {
+      const handleSidebarMenuToggle = (event: CustomEvent) => {
+        // Nếu event từ một menu khác, đóng menu này nếu đang mở
+        if (event.detail && event.detail.menuId !== menu.id && isOpen) {
+          setIsOpen(false);
+        }
+      };
+      
+      // Thêm event listener
+      window.addEventListener('sidebar-menu-toggle', handleSidebarMenuToggle as EventListener);
+      
+      // Cleanup
+      return () => {
+        window.removeEventListener('sidebar-menu-toggle', handleSidebarMenuToggle as EventListener);
+      };
+    }
+  }, [menu.id, isOpen, level]);
 
   // Kiểm tra xem có submenu đang được chọn không - hỗ trợ đệ quy đa cấp
   const checkForActiveChild = (items: MenuType[] = []): boolean => {
@@ -626,12 +647,17 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
   
   const hasActiveChild = checkForActiveChild(menu.core_dynamic_child_menus);
 
-  // Tự động mở menu có menu con đang được chọn
+  // Tự động mở menu có menu con đang được chọn, đóng menu khác
   useEffect(() => {
+    // Nếu có con active, mở menu này
     if (hasActiveChild && !isOpen) {
       setIsOpen(true);
     }
-  }, [location, hasActiveChild]);
+    // Nếu không có con active và không phải menu đích, đóng menu
+    else if (!hasActiveChild && isOpen && location !== `/menu/${menu.id}`) {
+      setIsOpen(false);
+    }
+  }, [location, hasActiveChild, menu.id]);
   
   // Xử lý đóng sidebar khi click vào menu trên thiết bị di động
   const handleMobileMenuClick = () => {
@@ -738,11 +764,22 @@ function DynamicMenuItem({ menu, level = 0 }: { menu: MenuType, level?: number }
 
   // Kiểm tra xem chính menu cha này có được chọn không
   const isParentActive = location === `/menu/${menu.id}`;
-
+  
+  // Menu cha chỉ được active nếu chính nó được chọn
+  // Nếu chỉ có con active, menu cha sẽ mở nhưng không active
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         onClick={() => {
+          // Đóng các menu khác khi mở menu này (chỉ áp dụng khi level 0 - menu cấp 1)
+          if (level === 0 && !isOpen) {
+            // Gửi một custom event để thông báo cho các menu khác đóng lại
+            const event = new CustomEvent('sidebar-menu-toggle', {
+              detail: { menuId: menu.id }
+            });
+            window.dispatchEvent(event);
+          }
+          
           setIsOpen(!isOpen)
           handleMobileMenuClick()
         }}
