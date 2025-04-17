@@ -962,7 +962,7 @@ export function SubmissionDataTable({
         </div>
 
         {/* Thanh tìm kiếm - flex-shrink-0 để không bị co khi content dài */}
-        <div className="px-4 py-3 border-b border-border/80 bg-background/70 flex-shrink-0">
+        <div className="px-4 py-3 bg-background/70 flex-shrink-0">
           <div className="flex flex-col gap-3 items-start">
             <div className={`relative w-full transition-all duration-200`}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -1001,7 +1001,7 @@ export function SubmissionDataTable({
         {/* Hiển thị các action buttons */}
         {renderActionButtons()}
         
-        <div className="p-4 flex-1 overflow-auto overflow-x-hidden">
+        <div className="p-4 flex-1 overflow-auto overflow-x-hidden border-none">
           {isLoading ? (
           <div className="py-20 px-4 text-center h-full flex items-center justify-center">
             <div className="mx-auto max-w-md flex flex-col items-center">
