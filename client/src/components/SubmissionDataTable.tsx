@@ -955,14 +955,8 @@ export function SubmissionDataTable({
   return (
     <>
       <div className="bg-card w-full h-full flex flex-col border-none shadow-sm overflow-hidden overflow-x-hidden">
-        <div className="py-3 px-4 bg-muted/30 border-none flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 flex-shrink-0">
-          <h3 className="text-lg font-semibold text-primary">
-            {t('submission.title', 'Dữ liệu đã nộp')}
-          </h3>
-        </div>
-
         {/* Thanh tìm kiếm - flex-shrink-0 để không bị co khi content dài */}
-        <div className="px-4 py-3 bg-background/70 flex-shrink-0">
+        <div className="px-4 py-0 bg-background/70 flex-shrink-0">
           <div className="flex flex-col gap-3 items-start">
             <div className={`relative w-full transition-all duration-200`}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
