@@ -201,7 +201,7 @@ export default function LoginPage() {
                         type={showPassword ? 'text' : 'password'}
                         placeholder={t('Nhập mật khẩu')}
                         {...field}
-                        className="bg-white !border-slate-400 !focus:border-slate-500 !focus:ring-0 dark:!bg-white dark:!text-slate-900 dark:!border-slate-400 pr-10"
+                        className="bg-white !border-slate-300 !focus:border-slate-500 !focus:ring-0 dark:!bg-white dark:!text-slate-900 dark:!border-slate-300 pr-10"
                       />
                     </FormControl>
                     <Button
