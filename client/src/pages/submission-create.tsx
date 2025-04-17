@@ -320,7 +320,7 @@ export default function SubmissionCreatePage() {
             <div></div>
           </CardHeader>
           
-          <CardContent className="px-6 py-5">
+          <CardContent className="px-4 py-4">
             {isLoadingForms ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
