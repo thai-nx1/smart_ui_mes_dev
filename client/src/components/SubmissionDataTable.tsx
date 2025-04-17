@@ -619,7 +619,7 @@ export function SubmissionDataTable({
     // Nếu không có transitions, chỉ hiển thị trạng thái hiện tại và thông báo
     if ((transitionsData?.data?.core_core_dynamic_workflow_transitions || []).length === 0) {
       return (
-        <div className="flex flex-col gap-2 py-4 px-2 border-b border-border bg-muted/20">
+        <div className="flex flex-col gap-2 py-4 px-2 border-none bg-muted/20">
           {statusSection}
           <div className="w-full text-sm text-muted-foreground italic">
             {t('workflow.noActions', 'Không có hành động nào khả dụng cho trạng thái hiện tại.')}
@@ -629,7 +629,7 @@ export function SubmissionDataTable({
     }
     
     return (
-      <div className="flex flex-col gap-2 py-4 px-2 border-b border-border bg-muted/20">
+      <div className="flex flex-col gap-2 py-4 px-2 border-none bg-muted/20">
         {statusSection}
         <div className="w-full mb-2 text-sm font-medium text-primary">
           {t('workflow.availableActions', 'Hành động có sẵn:')}
@@ -1121,7 +1121,7 @@ export function SubmissionDataTable({
           {!isEditing && workflowId && (
             <>
               {transitionsData?.data?.core_core_dynamic_workflow_transitions?.length > 0 ? (
-                <div className="flex flex-wrap gap-2 py-3 px-4 border-b border-border bg-muted/20">
+                <div className="flex flex-wrap gap-2 py-3 px-4 border-none bg-muted/20">
                   <div className="w-full mb-1 text-sm font-medium text-primary">
                     {t('workflow.availableActions', 'Hành động có sẵn:')}
                   </div>
@@ -1151,7 +1151,7 @@ export function SubmissionDataTable({
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-wrap gap-2 py-3 px-4 border-b border-border bg-muted/20">
+                <div className="flex flex-wrap gap-2 py-3 px-4 border-none bg-muted/20">
                   <div className="w-full text-sm text-muted-foreground italic">
                     {t('workflow.loading', 'Đang tải các hành động cho trạng thái...')}
                   </div>
