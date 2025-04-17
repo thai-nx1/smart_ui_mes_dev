@@ -33,7 +33,7 @@ interface FeatureCardProps {
 function FeatureCard({ title, description, icon }: FeatureCardProps) {
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="p-4">
         <div className="flex flex-col items-center text-center">
           <div className="mb-4 rounded-full bg-primary/10 p-3">
             {icon}

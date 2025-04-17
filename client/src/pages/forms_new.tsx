@@ -364,7 +364,7 @@ export default function FormsPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent>
                 {isLoadingForms ? (
                   <div className="p-4 space-y-3">
                     {[1, 2, 3].map((i) => (
@@ -476,7 +476,7 @@ export default function FormsPage() {
                   </p>
                 )}
               </CardHeader>
-              <CardContent className="p-4 sm:p-6">
+              <CardContent className="p-4">
                 {isLoadingFields ? (
                   <div className="space-y-6">
                     {[1, 2, 3, 4].map((i) => (

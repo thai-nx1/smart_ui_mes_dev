@@ -146,7 +146,7 @@ export default function WorkflowPage() {
           )}
         </CardHeader>
         
-        <CardContent className="px-6 py-4">
+        <CardContent className="px-4 py-4">
           {/* <div className="mb-4">
             <h3 className="text-lg font-medium mb-2">Dữ liệu đã nộp</h3>
             <div className="relative w-full max-w-md">

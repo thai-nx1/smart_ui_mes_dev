@@ -270,7 +270,7 @@ export default function SubmissionPage() {
             workflowId={workflowId}
           />
         </CardHeader>
-        <CardContent className="p-0 flex-1 overflow-auto">
+        <CardContent className="flex-1 overflow-auto">
           {data.length === 0 ? (
             <div className="p-4 sm:p-8 text-center">
               <p className="text-muted-foreground">{t('submission.noData', 'Chưa có dữ liệu nào được gửi qua workflow này')}</p>
