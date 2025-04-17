@@ -181,7 +181,7 @@ export default function LoginPage() {
                     <Input
                       placeholder={t('Nhập số điện thoại')}
                       {...field}
-                      className="bg-white border-slate-400 focus:border-slate-500 focus:ring-0"
+                      className="bg-white !border-slate-400 !focus:border-slate-500 !focus:ring-0 dark:!bg-white dark:!text-slate-900 dark:!border-slate-400"
                     />
                   </FormControl>
                   <FormMessage />
@@ -201,7 +201,7 @@ export default function LoginPage() {
                         type={showPassword ? 'text' : 'password'}
                         placeholder={t('Nhập mật khẩu')}
                         {...field}
-                        className="bg-white border-slate-400 focus:border-slate-500 focus:ring-0 pr-10"
+                        className="bg-white !border-slate-400 !focus:border-slate-500 !focus:ring-0 dark:!bg-white dark:!text-slate-900 dark:!border-slate-400 pr-10"
                       />
                     </FormControl>
                     <Button

@@ -431,6 +431,19 @@
     --ring: 215 20.2% 65.1%;
     color-scheme: light;
   }
+  
+  /* Đảm bảo input, select, textarea trong login page luôn ở light mode */
+  .light-mode-login input,
+  .light-mode-login select,
+  .light-mode-login textarea {
+    @apply bg-white border-slate-400 text-slate-900 placeholder-slate-400 !important;
+  }
+  
+  .dark .light-mode-login input,
+  .dark .light-mode-login select,
+  .dark .light-mode-login textarea {
+    @apply bg-white border-slate-400 text-slate-900 placeholder-slate-400 !important;
+  }
 
   /* Fix for horizontal scrolling issues */
   .overflow-x-hidden {
