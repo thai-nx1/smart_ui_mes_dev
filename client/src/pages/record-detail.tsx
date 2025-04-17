@@ -299,7 +299,7 @@ export default function RecordDetailPage() {
           </div>
         )}
 
-        <CardContent className="pt-4 flex-1 overflow-hidden">
+        <CardContent className="flex-1 overflow-hidden">
           <div className="h-full flex flex-col">
             {/* Desktop view - table format */}
             <div className="hidden md:flex flex-1 overflow-hidden">
