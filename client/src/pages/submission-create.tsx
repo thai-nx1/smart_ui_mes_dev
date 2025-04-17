@@ -89,9 +89,12 @@ export default function SubmissionCreatePage() {
   const getQueryParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
     const queryParams: Record<string, string> = {};
-    for (const [key, value] of searchParams.entries()) {
+    
+    // Sử dụng cách tiếp cận khác để tránh lỗi với typescript
+    searchParams.forEach((value, key) => {
       queryParams[key] = value;
-    }
+    });
+    
     return queryParams;
   };
 
@@ -297,7 +300,7 @@ export default function SubmissionCreatePage() {
     <MainLayout title={t('submission.createTitle', 'Tạo biểu mẫu mới')}>
       <div className="w-full px-5 py-6">
         <Card className="w-full border-none shadow-none">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 px-6">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4">
             <div className="flex flex-row items-center gap-2">
               <Button
                 variant="ghost"
@@ -395,7 +398,7 @@ export default function SubmissionCreatePage() {
             )}
           </CardContent>
           
-          <CardFooter className="border-none bg-transparent px-6 py-4">
+          <CardFooter className="border-none bg-transparent px-4 py-4">
             <div className="flex justify-end w-full">
               <Button
                 onClick={form.handleSubmit(onSubmit)}
