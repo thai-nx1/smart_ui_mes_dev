@@ -258,7 +258,7 @@ export default function SubmissionPage() {
   return (
     <div className="h-full">
       <Card className="overflow-hidden w-full border-0 rounded-none h-full flex flex-col">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-2 px-6">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-2 px-4">
           <div>
             <CardTitle className="text-xl sm:text-2xl">{title}</CardTitle>
             <CardDescription>

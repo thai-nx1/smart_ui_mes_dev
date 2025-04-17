@@ -364,7 +364,7 @@ export default function FormsPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 {isLoadingForms ? (
                   <div className="p-4 space-y-3">
                     {[1, 2, 3].map((i) => (
@@ -414,7 +414,7 @@ export default function FormsPage() {
         {(!isMobile || (isMobile && !showFormList)) && (
           <div className={isMobile ? "col-span-1" : "md:col-span-8 lg:col-span-9"}>
             <Card>
-              <CardHeader className="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200">
+              <CardHeader className="px-4 py-4 bg-gray-50 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   {isMobile && (
                     <Button 
@@ -476,7 +476,7 @@ export default function FormsPage() {
                   </p>
                 )}
               </CardHeader>
-              <CardContent className="p-4">
+              <CardContent className="p-0">
                 {isLoadingFields ? (
                   <div className="space-y-6">
                     {[1, 2, 3, 4].map((i) => (
