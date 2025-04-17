@@ -125,9 +125,9 @@ export default function WorkflowPage() {
 
   return (
     <MainLayout title={t('submission.createTitle', currentSubmenu?.name || "Phê duyệt tài chính")}>
-      <div className="w-full px-5 py-6">
+      <div className="w-full px-4 py-4">
       <Card className="w-full border-none shadow-none">
-        <CardHeader className="flex flex-row items-center justify-between pb-2 px-6">
+        <CardHeader className="flex flex-row items-center justify-between pb-2 px-4">
           <div>
             <CardTitle className="text-xl">{currentSubmenu?.name || "Phê duyệt tài chính"}</CardTitle>
             <CardDescription>
@@ -146,7 +146,7 @@ export default function WorkflowPage() {
           )}
         </CardHeader>
         
-        <CardContent className="px-4 py-4">
+        <CardContent className="p-0">
           {/* <div className="mb-4">
             <h3 className="text-lg font-medium mb-2">Dữ liệu đã nộp</h3>
             <div className="relative w-full max-w-md">

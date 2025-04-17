@@ -298,7 +298,7 @@ export default function SubmissionCreatePage() {
   
   return (
     <MainLayout title={t('submission.createTitle', 'Tạo biểu mẫu mới')}>
-      <div className="w-full px-5 py-6">
+      <div className="w-full px-4 py-4">
         <Card className="w-full border-none shadow-none">
           <CardHeader className="flex flex-row items-center justify-between pb-2 px-4">
             <div className="flex flex-row items-center gap-2">
@@ -323,7 +323,7 @@ export default function SubmissionCreatePage() {
             <div></div>
           </CardHeader>
           
-          <CardContent className="px-4 py-4">
+          <CardContent className="p-0">
             {isLoadingForms ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
