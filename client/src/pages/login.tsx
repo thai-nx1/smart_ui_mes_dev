@@ -154,11 +154,11 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
-      <div className="w-full max-w-md p-8 space-y-8 bg-card rounded-lg shadow-lg border border-primary/10">
+      <div className="w-full max-w-md px-6 py-8 space-y-8 bg-white shadow-sm rounded-xl">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-xl font-bold text-primary-foreground">D</span>
+            <div className="h-12 w-12 rounded-full bg-orange-500 flex items-center justify-center">
+              <span className="text-xl font-bold text-white">D</span>
             </div>
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">
@@ -181,7 +181,7 @@ export default function LoginPage() {
                     <Input
                       placeholder={t('Nhập số điện thoại')}
                       {...field}
-                      className="bg-slate-50"
+                      className="bg-white border-slate-400 focus:border-slate-500 focus:ring-0"
                     />
                   </FormControl>
                   <FormMessage />
@@ -201,7 +201,7 @@ export default function LoginPage() {
                         type={showPassword ? 'text' : 'password'}
                         placeholder={t('Nhập mật khẩu')}
                         {...field}
-                        className="bg-slate-50 pr-10"
+                        className="bg-white border-slate-400 focus:border-slate-500 focus:ring-0 pr-10"
                       />
                     </FormControl>
                     <Button
@@ -223,14 +223,14 @@ export default function LoginPage() {
               <div className="flex items-center">
                 {/* Có thể thêm checkbox "Ghi nhớ đăng nhập" ở đây */}
               </div>
-              <a href="#" className="text-sm text-primary hover:underline">
+              <a href="#" className="text-sm text-slate-900 italic hover:underline">
                 {t('Quên mật khẩu?')}
               </a>
             </div>
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
               disabled={loginMutation.isPending}
             >
               {loginMutation.isPending ? (
@@ -249,22 +249,9 @@ export default function LoginPage() {
         </Form>
 
         <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                {t('Hoặc')}
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <Button variant="outline" className="w-full">
-              {t('Liên hệ hỗ trợ')}
-            </Button>
-          </div>
+          <p className="text-center text-sm text-slate-900 hover:underline cursor-pointer">
+            {t('Liên hệ hỗ trợ')}
+          </p>
         </div>
       </div>
     </div>
