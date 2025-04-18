@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Camera } from '@/components/camera/camera';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import jsQR from 'jsqr';
@@ -25,7 +26,8 @@ import {
   DatabaseIcon,
   ChevronDownIcon,
   UploadIcon,
-  SaveIcon
+  SaveIcon,
+  
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -1455,6 +1457,8 @@ export function InputField({
           }
         };
 
+        const [cardImage, setCardImage] = useState();
+        
         return (
           <>
             <CameraPermission />
@@ -1464,8 +1468,12 @@ export function InputField({
             type="button"
             onClick={() => openModal("Chụp ảnh", (
               <div className="flex flex-col items-center gap-5 py-4">
-                <div className="w-full max-w-sm border-2 border-blue-200 rounded-md overflow-hidden bg-black relative">
-                  {photoCapture.previewUrl ? (
+                <Camera
+            onCapture={(blob: any) => setCardImage(blob)}
+            onClear={() => setCardImage(undefined)}
+          />
+                {/* <div className="w-full max-w-sm border-2 border-blue-200 rounded-md overflow-hidden bg-black relative"> */}
+                  {/* {photoCapture.previewUrl ? (
                     <img 
                       src={photoCapture.previewUrl} 
                       alt="Preview" 
@@ -1479,20 +1487,20 @@ export function InputField({
                       muted 
                       className="w-full h-auto"
                     />
-                  )}
+                  )} */}
                   
                   {/* Camera overlay elements */}
-                  {!photoCapture.previewUrl && (
+                  {/* {!photoCapture.previewUrl && (
                     <div className="absolute inset-0 pointer-events-none">
                       <div className="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-50"></div>
                       <div className="absolute top-0 right-0 h-full w-0.5 bg-blue-500 opacity-50"></div>
                       <div className="absolute bottom-0 right-0 w-full h-0.5 bg-blue-500 opacity-50"></div>
                       <div className="absolute top-0 left-0 h-full w-0.5 bg-blue-500 opacity-50"></div>
                     </div>
-                  )}
-                </div>
+                  )} */}
+                {/* </div> */}
                 
-                <div className="flex gap-2 w-full">
+                {/* <div className="flex gap-2 w-full">
                   {photoCapture.previewUrl ? (
                     <>
                       <Button
@@ -1537,7 +1545,13 @@ export function InputField({
                       Chụp ảnh
                     </Button>
                   )}
-                </div>
+                </div> */}
+                <Button
+                  onClick={capturePhoto}
+                  className="w-full"
+                >
+                  Chụp ảnh
+                </Button>
               </div>
             ))}
           >
