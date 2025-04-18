@@ -343,24 +343,29 @@ export async function submitFormData(
 ): Promise<GraphQLResponse<any>> {
   // Áp dụng logic cho tất cả submenu, giống như cách xử lý cho submenu khiếu nại (ID: "ss")
   const query = `
-    mutation InsertMenuRecord($menuId: String!, $userId: String!, $organizationId: String!, $title: String!, $submissionData: JSON) {
-insert_menu_record(args: {
-menu_id: $menuId,
-user_id: $userId,
-organization_id: $organizationId,
-title: $title,
-submission_data: $submissionData
-}) {
-id
-code
-menu_id
-organization_id
-user_id
-workflow_id
-data
-}
-}
-  `;
+    mutation InsertMenuRecord(
+      $menuId: String!,
+      $title: String!,
+      $submissionData: JSON
+    ) {
+      mes {
+        factoryInsertMenuRecord(
+            args: {
+                menuId: $menuId,
+                title: $title,
+                submissionData: $submissionData
+            }
+        ) {
+            id
+            code
+            menuId
+            organizationId
+            workflowId
+            data
+        }
+      }
+    }
+  `
 
   // Biến đổi dữ liệu cho phù hợp với định dạng mutation mới
   const submissionFields = Object.entries(submission.data).map(
@@ -407,8 +412,8 @@ data
   // Sử dụng các ID mặc định từ types.ts
   const variables = {
     menuId: menuId,
-    userId: DEFAULT_USER_ID, // Sử dụng hằng số từ types.ts
-    organizationId: localStorage.getItem('organizationId') || DEFAULT_ORGANIZATION_ID, // Sử dụng hằng số từ types.ts
+    // userId: DEFAULT_USER_ID, // Sử dụng hằng số từ types.ts
+    // organizationId: localStorage.getItem('organizationId') || DEFAULT_ORGANIZATION_ID, // Sử dụng hằng số từ types.ts
     title: title,
     submissionData: submissionFields,
   };
@@ -636,6 +641,49 @@ export async function fetchMenuRecords(
     limit,
     offset,
     ...(recordId && { recordId }),
+  };
+
+  return executeGraphQLQuery(query, variables);
+}
+
+/**
+ * Fetch menu records by menu ID
+ */
+export async function fetchMenuRecordLists(
+  menuId: string,
+  page: number | null = null,
+  size: number | null = null,
+  keyword?: string,
+): Promise<GraphQLResponse<any>> {
+  // Tạo câu truy vấn GraphQL với hoặc không có điều kiện recordId
+  const query = `
+    query getMenuRecordList($menuId: String!, $page: Float, $size: Float, $keyword: String) {
+      mes {
+        factoryMenuRecordList(
+            menuId: $menuId
+            filter: { page: $page, size: $size, keyword: $keyword }
+        ) {
+            total
+            count
+            data {
+                id
+                code
+                title
+                menuId
+                menu
+                statusId
+                status
+                data
+            }
+        }
+    }
+  }
+`;
+  const variables = {
+    menuId,
+    page,
+    size,
+    keyword,
   };
 
   return executeGraphQLQuery(query, variables);

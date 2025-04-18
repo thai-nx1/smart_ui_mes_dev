@@ -1,34 +1,24 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { TransitionFormDialog } from '@/components/TransitionFormDialog';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from '@/components/ui/dialog';
-import { FieldValue } from '@/lib/types';
-import { Edit, X, Save, Eye, Calendar, Table, LayoutGrid, Search, Check, RotateCcw, ChevronRight } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile, useScreenSize } from '@/hooks/use-mobile';
-import { toast } from '@/hooks/use-toast';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem
-} from '@/components/ui/dropdown-menu';
 import { fetchMenuViewForm, fetchWorkflowTransitionsByStatus } from '@/lib/api';
+import { FieldValue } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
-import { TransitionFormDialog } from '@/components/TransitionFormDialog';
+import { Calendar, ChevronRight, Edit, Eye, RotateCcw, Save, Search, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'wouter';
 
 interface FieldData {
   id: string;
@@ -65,6 +55,7 @@ export function SubmissionDataTable({
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(data.length === 0);
+  const [localData, navigate] = useLocation();
   // Phát hiện thiết bị di động và sử dụng chế độ card cho mobile, table cho desktop
   const { isMobile, screenWidth } = useIsMobile();
   const screenSize = useScreenSize();
@@ -192,7 +183,7 @@ export function SubmissionDataTable({
     }
     
     // Chuyển hướng đến trang chi tiết
-    window.location.href = redirectUrl;
+    navigate(redirectUrl);
   };
   
   // Xử lý khi nhấn vào một trường cụ thể để chỉnh sửa
@@ -723,8 +714,8 @@ export function SubmissionDataTable({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
-              {filteredData.map((submission, rowIndex) => {
+            <tbody className="divide-y divide-border bg-card">
+              {data.map((submission, rowIndex) => {
                 if (!Array.isArray(submission.data)) return null;
                 
                 return (
@@ -748,9 +739,9 @@ export function SubmissionDataTable({
                     <td className="p-3 border-r border-border text-sm whitespace-nowrap w-[140px]">
                       <div className="relative truncate">
                         <div>
-                          {submission.core_dynamic_status ? (
-                            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium truncate" title={submission.core_dynamic_status.name || '-'}>
-                              {submission.core_dynamic_status.name || '-'}
+                          {submission.status ? (
+                            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                              {submission.status.name || '-'}
                             </span>
                           ) : '-'}
                         </div>
@@ -871,8 +862,8 @@ export function SubmissionDataTable({
   // - Có nút xem chi tiết ở cuối card
   const renderCardView = () => {
     return (
-      <div className="space-y-4 w-full">
-        {filteredData.map((submission) => (
+      <div className="space-y-4 w-full overflow-auto">
+        {data.map((submission) => (
           <div 
             key={submission.id} 
             className="group mb-4 p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
@@ -884,9 +875,9 @@ export function SubmissionDataTable({
                   <span className="font-mono font-medium text-sm text-slate-900 dark:text-white">
                     {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
                   </span>
-                  {submission.core_dynamic_status ? (
+                  {submission.status ? (
                     <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                      {submission.core_dynamic_status.name || '-'}
+                      {submission.status.name || '-'}
                     </span>
                   ) : '-'}
                 </div>
