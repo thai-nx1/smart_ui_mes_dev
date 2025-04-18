@@ -15,7 +15,7 @@ import { useIsMobile, useScreenSize } from '@/hooks/use-mobile';
 import { fetchMenuViewForm, fetchWorkflowTransitionsByStatus } from '@/lib/api';
 import { FieldValue } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, ChevronRight, Edit, Eye, RotateCcw, Save, Search, X } from 'lucide-react';
+import { Calendar, ChevronRight, Edit, Eye, LayoutGrid, RotateCcw, Save, Search, Table, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'wouter';
