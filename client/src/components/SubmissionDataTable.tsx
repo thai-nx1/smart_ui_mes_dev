@@ -730,11 +730,14 @@ export function SubmissionDataTable({
                 return (
                   <tr 
                     key={submission.id} 
-                    className="group transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    className={`group transition-colors duration-150 
+                      odd:bg-white even:bg-slate-50 
+                      dark:odd:bg-slate-800 dark:even:bg-slate-950
+                      hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
                   >
                     {/* Cột code - cố định bên trái */}
                     <td className="sticky left-0 p-3 border-r border-border text-sm whitespace-nowrap z-10 w-[120px]">
-                      <div className="relative px-2 py-1">
+                      <div className={`relative px-2 py-1 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-800 dark:even:bg-slate-950`}>
                         <div className="font-mono truncate" title={submission.code || submission.id?.substring(0, 8)}>
                           {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
                         </div>
@@ -825,7 +828,7 @@ export function SubmissionDataTable({
                     
                     {/* Cột thao tác - cố định bên phải */}
                     <td className="sticky right-0 p-2 text-center z-10 w-[100px]">
-                      <div className="flex justify-center gap-1 px-2 py-1">
+                      <div className={`flex justify-center gap-1 px-2 py-1 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-800 dark:even:bg-slate-950`}>
                         <Button 
                           variant="ghost" 
                           size="icon"
