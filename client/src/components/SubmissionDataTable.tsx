@@ -871,17 +871,17 @@ export function SubmissionDataTable({
   // - Có nút xem chi tiết ở cuối card
   const renderCardView = () => {
     return (
-      <div className="space-y-4 w-full overflow-auto">
+      <div className="space-y-4 w-full">
         {filteredData.map((submission) => (
           <div 
             key={submission.id} 
-            className="group mb-4 p-4 border dark:border-gray-700 bg-card dark:bg-card rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+            className="group mb-4 p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
           >
             {Array.isArray(submission.data) ? (
               <div className="space-y-2">
                 {/* Header với code và status */}
                 <div className="flex justify-between items-center mb-3">
-                  <span className="font-mono font-medium text-sm">
+                  <span className="font-mono font-medium text-sm text-slate-900 dark:text-white">
                     {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
                   </span>
                   {submission.core_dynamic_status ? (
@@ -895,26 +895,23 @@ export function SubmissionDataTable({
                 {submission.data.map((field: FieldData) => (
                   <div 
                     key={field.id} 
-                    className="border-b border-gray-100 py-2 last:border-b-0"
+                    className="border-b border-slate-100 dark:border-slate-700 py-2 last:border-b-0"
                     onClick={() => !readOnly && handleEditField(submission, field.id)}
                     title={readOnly ? undefined : t('submission.clickToEdit', 'Nhấp để chỉnh sửa trường này')}
                   >
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold text-sm text-primary mb-2 inline-flex items-center">
+                      <span className="font-medium text-sm text-slate-700 dark:text-slate-300 mb-1">
                         {field.name}
-                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          {field.field_type}
-                        </span>
                       </span>
                       {!readOnly && (
-                        <Edit className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200" />
+                        <Edit className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200" />
                       )}
                     </div>
                     <div className="mt-1">
                       {typeof field.value === 'string' 
                         ? (
-                          <div className="break-all text-sm text-muted-foreground whitespace-pre-wrap">
-                            {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                          <div className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
+                            {field.value || <span className="italic text-xs text-slate-400 dark:text-slate-500">Chưa có dữ liệu</span>}
                           </div>
                         )
                         : Array.isArray(field.value) 
@@ -924,50 +921,53 @@ export function SubmissionDataTable({
                                 {field.value.map((v: string, i: number) => (
                                   <span 
                                     key={i} 
-                                    className="inline-flex items-center px-2 py-1 bg-primary/10 text-sm rounded break-all"
+                                    className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary text-xs rounded"
+                                    title={v}
                                   >
                                     {v}
                                   </span>
                                 ))}
                               </div>
                             )
-                            : <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
+                            : <span className="italic text-xs text-slate-400 dark:text-slate-500">Chưa có dữ liệu</span>
                           : (
-                            <div className="break-all text-sm text-muted-foreground whitespace-pre-wrap">
-                              {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
+                            <div className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
+                              {String(field.value) || <span className="italic text-xs text-slate-400 dark:text-slate-500">Chưa có dữ liệu</span>}
                             </div>
                           )}
                     </div>
                   </div>
                 ))}
+                
+                {/* Footer với các action - chỉ dùng icon */}
+                <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-700">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => handleView(submission)}
+                    className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                    title={t('actions.view', 'Xem chi tiết')}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  {!readOnly && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleEdit(submission)}
+                      className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                      title={t('actions.edit', 'Chỉnh sửa')}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : (
-              <pre className="text-xs overflow-auto max-h-40 p-3 bg-muted rounded-md font-mono">
-                {JSON.stringify(submission.data, null, 2)}
-              </pre>
+              <div className="p-4 text-center">
+                <p className="text-slate-500 dark:text-slate-400">{t('submission.noFields', 'Không có trường dữ liệu nào')}</p>
+              </div>
             )}
-            <div className="flex justify-end gap-2 mt-6 pt-3 border-t">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => handleView(submission)}
-                className="flex items-center hover:bg-primary/10 hover:text-primary transition-colors"
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                {t('actions.view', 'Xem')}
-              </Button>
-              {!readOnly && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => handleEdit(submission)}
-                  className="flex items-center border-primary/20 hover:border-primary hover:bg-primary/10 transition-colors"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  {t('actions.edit', 'Sửa')}
-                </Button>
-              )}
-            </div>
           </div>
         ))}
       </div>
@@ -977,14 +977,15 @@ export function SubmissionDataTable({
   return (
     <>
       <div className="bg-card w-full h-full flex flex-col border-none shadow-sm overflow-hidden overflow-x-hidden">
-        {/* Thanh tìm kiếm - flex-shrink-0 để không bị co khi content dài */}
-        <div className="px-4 py-0 bg-background/70 flex-shrink-0">
-          <div className="flex flex-col gap-3 items-start">
-            <div className={`relative w-full transition-all duration-200`}>
+        {/* Thanh tìm kiếm và bộ lọc */}
+        <div className="px-4 py-3 bg-background/70 flex-shrink-0 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+            {/* Tìm kiếm */}
+            <div className="relative w-full md:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder={t('search.placeholder', 'Tìm kiếm trong dữ liệu...')}
+                placeholder={t('search.placeholder', 'Tìm kiếm...')}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
@@ -1000,7 +1001,28 @@ export function SubmissionDataTable({
                 </button>
               )}
             </div>
-
+            
+            {/* Chuyển đổi chế độ xem (chỉ hiển thị trên desktop) */}
+            <div className="hidden md:flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentViewMode('table')}
+                className={`h-8 rounded-md px-2 ${currentViewMode === 'table' ? 'bg-muted text-foreground' : 'text-muted-foreground'}`}
+              >
+                <Table className="h-4 w-4 mr-1" />
+                {t('view.table', 'Bảng')}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentViewMode('card')}
+                className={`h-8 rounded-md px-2 ${currentViewMode === 'card' ? 'bg-muted text-foreground' : 'text-muted-foreground'}`}
+              >
+                <LayoutGrid className="h-4 w-4 mr-1" />
+                {t('view.card', 'Thẻ')}
+              </Button>
+            </div>
           </div>
           
           {/* Hiển thị kết quả tìm kiếm */}
@@ -1014,24 +1036,24 @@ export function SubmissionDataTable({
           )}
         </div>
         
-        {/* Hiển thị các action buttons */}
+        {/* Hiển thị các action buttons nếu có */}
         {renderActionButtons()}
         
         <div className="p-4 flex-1 overflow-auto overflow-x-hidden border-none">
           {isLoading ? (
-          <div className="py-20 px-4 text-center h-full flex items-center justify-center">
-            <div className="mx-auto max-w-md flex flex-col items-center">
-              <div className="relative w-16 h-16 mb-4">
-                <svg className="animate-spin h-16 w-16 text-primary/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+            <div className="py-20 px-4 text-center h-full flex items-center justify-center">
+              <div className="mx-auto max-w-md flex flex-col items-center">
+                <div className="relative w-16 h-16 mb-4">
+                  <svg className="animate-spin h-16 w-16 text-primary/30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+                <p className="text-lg font-medium text-foreground">{t('loading.title', 'Đang tải dữ liệu...')}</p>
+                <p className="text-sm text-muted-foreground mt-1">{t('loading.description', 'Vui lòng đợi trong giây lát')}</p>
               </div>
-              <p className="text-lg font-medium text-foreground">{t('loading.title', 'Đang tải dữ liệu...')}</p>
-              <p className="text-sm text-muted-foreground mt-1">{t('loading.description', 'Vui lòng đợi trong giây lát')}</p>
             </div>
-          </div>
-        ) : data.length === 0 ? (
+          ) : data.length === 0 ? (
             <div className="py-20 px-4 text-center bg-background/50 rounded-lg border border-dashed">
               <div className="mx-auto max-w-md">
                 <svg 
@@ -1094,7 +1116,61 @@ export function SubmissionDataTable({
               </div>
             </div>
           ) : (
-            currentViewMode === 'table' ? renderTableView() : renderCardView()
+            /* Responsive data view - Table cho desktop, Card cho mobile */
+            <>
+              {/* Desktop view - Table */}
+              <div className="hidden md:block">
+                {currentViewMode === 'table' ? renderTableView() : renderCardView()}
+              </div>
+              
+              {/* Mobile view - Card */}
+              <div className="block md:hidden">
+                {renderCardView()}
+              </div>
+            </>
+          )}
+          
+          {/* Phân trang ở dưới cùng bên phải */}
+          {filteredData.length > 0 && (
+            <div className="mt-6 flex justify-end items-center gap-2 sticky bottom-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-3 px-4">
+              <div className="text-sm text-slate-500 dark:text-slate-400 mr-4">
+                {t('pagination.showing', 'Hiển thị {range} / {total} dòng', {
+                  range: `1-${filteredData.length > 20 ? 20 : filteredData.length}`,
+                  total: filteredData.length
+                })}
+              </div>
+              
+              <select 
+                className="h-8 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 text-sm"
+                value="20"
+                onChange={() => {}}
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">{t('pagination.all', 'Tất cả')}</option>
+              </select>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={true}
+                className="h-8 w-8 p-0"
+              >
+                <span className="sr-only">{t('pagination.previous', 'Trang trước')}</span>
+                <ChevronRight className="h-4 w-4 rotate-180" />
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={true}
+                className="h-8 w-8 p-0"
+              >
+                <span className="sr-only">{t('pagination.next', 'Trang sau')}</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           )}
         </div>
       </div>
