@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { fetchFormsByWorkflow, fetchAllMenus, submitFormData } from '@/lib/api';
 import { useParams, useLocation, Link } from 'wouter';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Eye, Loader2, PlusCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/hooks/use-toast';
 import { Form, FormField, FormMessage } from '@/components/ui/form';
@@ -15,6 +15,7 @@ import * as z from 'zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FormField as FormFieldComponent } from '@/components/ui/FormFieldComponent';
 import { FormSubmission, Field } from '@/lib/types';
+import { log } from 'node:console';
 
 // Define extended types for our API responses
 interface FormFieldExtended {
@@ -36,7 +37,7 @@ interface FormExtended {
 
 export default function SubmissionCreatePage() {
   const params = useParams<{ workflowId: string}>();
-  const [location, setLocation] = useLocation();
+  const [location, navigate] = useLocation();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const workflowId = params.workflowId;
@@ -205,6 +206,7 @@ export default function SubmissionCreatePage() {
     setIsSubmitting(true);
     
     try {
+      console.log('data_form:', data);
       // Kiểm tra các trường bắt buộc
       const requiredFields = formFields.filter(field => field.is_required);
       const missingFields = [];
@@ -268,8 +270,8 @@ export default function SubmissionCreatePage() {
       console.log('Submitting form data:', submission);
       
       // Gửi dữ liệu lên server
-      await submitFormData(submission);
-      
+      const response = await submitFormData(submission);
+      console.log('Response:', response);
       // Hiển thị thông báo thành công
       toast({
         title: t('Thành công'),
@@ -277,11 +279,20 @@ export default function SubmissionCreatePage() {
         variant: 'default',
       });
       
+      let redirectUrl = `/record/${menuId}/${response.data.mes.factoryInsertMenuRecord.id}`;
+    
+      // Nếu có workflowId, thêm vào URL
+      if (workflowId) {
+        redirectUrl += `/workflow/${workflowId}`;
+      }
+
+      navigate(redirectUrl);
+
       // Quay lại trang workflow
-      setLocation(`/workflow/${menuId}/${menuId}`);
+      // setLocation(`/workflow/${menuId}/${menuId}`);
       
       // Invalidate queries để reload dữ liệu
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-records', menuId] });
+      // queryClient.invalidateQueries({ queryKey: ['/api/menu-records', menuId] });
       
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -301,17 +312,8 @@ export default function SubmissionCreatePage() {
     <MainLayout title={t('submission.createTitle', 'Tạo biểu mẫu mới')}>
       <div className="w-full px-4 py-4">
         <Card className="w-full border-none shadow-none">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 px-4">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-0">
             <div className="flex flex-row items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="mr-2 flex justify-start items-center hover:bg-transparent"
-              >
-                <Link href={`/menu/${menuId}`}>
-                  <ArrowLeft className="h-4 w-4" />
-                </Link>
-              </Button>
               <div>
                 <CardTitle className="text-xl">
                   {t('submission.createNew', 'Tạo biểu mẫu mới')}
@@ -321,7 +323,16 @@ export default function SubmissionCreatePage() {
                 </CardDescription>
               </div>
             </div>
-            <div></div>
+            <div>
+              <Button
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90 transition-colors"
+              >
+                <Link href={`/menu/${menuId}?viewMode=list`} className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-white" />
+                  <span className="text-white">{t('submission.viewList', 'Xem danh sách')}</span>
+                </Link>
+              </Button>
+            </div>
           </CardHeader>
           
           <CardContent className="p-0">

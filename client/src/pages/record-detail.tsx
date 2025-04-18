@@ -27,7 +27,7 @@ interface FieldData {
 export default function RecordDetailPage() {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
+  const [location, navigate] = useLocation();
   const params = useParams<{ recordId: string, menuId: string, workflowId: string }>();
   const { recordId, menuId, workflowId } = params;
   
