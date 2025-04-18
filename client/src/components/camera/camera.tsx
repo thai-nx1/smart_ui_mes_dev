@@ -3,6 +3,7 @@ import Measure from "react-measure";
 import { useUserMedia } from "../../hooks/useUserMedia";
 import { useCardRatio } from "../../hooks/useCardRatio";
 import { useOffsets } from "../../hooks/useOffsets";
+import { Button } from '@/components/ui/button';
 import {
   Video,
   Canvas,
@@ -10,7 +11,6 @@ import {
   Container,
   Flash,
   Overlay,
-  Button
 } from "./style";
 
 const CAPTURE_OPTIONS = {
@@ -106,10 +106,6 @@ export function Camera({ onCapture, onClear }) {
               autoPlay
               playsInline
               muted
-              style={{
-                top: `-${offsets.y}px`,
-                left: `-${offsets.x}px`
-              }}
             />
 
             <Overlay hidden={!isVideoPlaying} />
@@ -120,17 +116,19 @@ export function Camera({ onCapture, onClear }) {
               height={container.height}
             />
 
-            <Flash
+            {/* <Flash
               flash={isFlashing}
               onAnimationEnd={() => setIsFlashing(false)}
-            />
+            /> */}
           </Container>
 
-          {/* {isVideoPlaying && (
-            <Button onClick={isCanvasEmpty ? handleCapture : handleClear}>
-              {isCanvasEmpty ? "Take a picture" : "Take another picture"}
+          {isVideoPlaying && (
+            <Button onClick={isCanvasEmpty ? handleCapture : handleClear}
+              className="w-full mt-4"
+            >
+              {isCanvasEmpty ? "Chụp ảnh" : "Chụp lại"}
             </Button>
-          )} */}
+          )}
         </Wrapper>
       )}
     </Measure>

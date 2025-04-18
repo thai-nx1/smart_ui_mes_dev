@@ -1464,14 +1464,14 @@ export function InputField({
             <CameraPermission />
             <Button 
               variant="outline"
-            className="w-full py-6"
-            type="button"
-            onClick={() => openModal("Chụp ảnh", (
+              className="w-full py-6"
+              type="button"
+              onClick={() => openModal("Chụp ảnh", (
               <div className="flex flex-col items-center gap-5 py-4">
                 <Camera
-            onCapture={(blob: any) => setCardImage(blob)}
-            onClear={() => setCardImage(undefined)}
-          />
+                  onCapture={(blob: any) => setCardImage(blob)}
+                  onClear={() => setCardImage(undefined)}
+                />
                 {/* <div className="w-full max-w-sm border-2 border-blue-200 rounded-md overflow-hidden bg-black relative"> */}
                   {/* {photoCapture.previewUrl ? (
                     <img 
@@ -1546,24 +1546,16 @@ export function InputField({
                     </Button>
                   )}
                 </div> */}
-                <Button
-                  onClick={capturePhoto}
-                  className="w-full"
-                >
-                  Chụp ảnh
-                </Button>
               </div>
             ))}
           >
             <CameraIcon className="h-6 w-6 mr-2 text-blue-600" />
-            {value ? (
+            {cardImage ? (
               <div className="flex items-center">
                 <span className="mr-2">Ảnh đã chụp</span>
-                {typeof value === 'object' && value?.url && (
                   <div className="h-6 w-6 rounded-full overflow-hidden">
-                    <img src={value.url} alt="Thumbnail" className="h-full w-full object-cover" />
+                    <img src={URL.createObjectURL(cardImage)} alt="Thumbnail" className="h-full w-full object-cover" />
                   </div>
-                )}
               </div>
             ) : (
               "Nhấn để chụp ảnh"
