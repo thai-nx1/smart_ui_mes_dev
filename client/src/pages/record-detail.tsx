@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+// import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, Calendar, Check, ChevronRight, Activity } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
@@ -140,17 +140,17 @@ export default function RecordDetailPage() {
               </Button>
             </div>
             <CardTitle>
-              <Skeleton className="h-7 w-[300px]" />
+              {/* <Skeleton className="h-7 w-[300px]" /> */}
             </CardTitle>
             <CardDescription>
-              <Skeleton className="h-5 w-[200px]" />
+              {/* <Skeleton className="h-5 w-[200px]" /> */}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
+              {/* <Skeleton className="h-12 w-full" /> */}
+              {/* <Skeleton className="h-12 w-full" /> */}
+              {/* <Skeleton className="h-12 w-full" /> */}
             </div>
           </CardContent>
         </Card>
@@ -158,41 +158,42 @@ export default function RecordDetailPage() {
     );
   }
 
-  if (error || !recordData) {
-    return (
-      <div className="container py-6">
-        <Card className="border-destructive">
-          <CardHeader>
-            <div className="flex items-center mb-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="mr-2"
-                onClick={() => window.history.back()}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                {t('actions.back', 'Quay lại')}
-              </Button>
-            </div>
-            <CardTitle className="text-destructive">
-              {t('error.title', 'Đã xảy ra lỗi')}
-            </CardTitle>
-            <CardDescription>
-              {t('error.failedToLoad', 'Không thể tải dữ liệu biểu mẫu')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // if (error || !recordData) {
+  //   return (
+  //     <div className="container py-6">
+  //       <Card className="border-destructive">
+  //         <CardHeader>
+  //           <div className="flex items-center mb-2">
+  //             <Button 
+  //               variant="ghost" 
+  //               size="sm" 
+  //               className="mr-2"
+  //               onClick={() => window.history.back()}
+  //             >
+  //               <ChevronLeft className="h-4 w-4 mr-1" />
+  //               {t('actions.back', 'Quay lại')}
+  //             </Button>
+  //           </div>
+  //           <CardTitle className="text-destructive">
+  //             {t('error.title', 'Đã xảy ra lỗi')}
+  //           </CardTitle>
+  //           <CardDescription>
+  //             {t('error.failedToLoad', 'Không thể tải dữ liệu biểu mẫu')}
+  //           </CardDescription>
+  //         </CardHeader>
+  //         <CardContent>
+  //           <p className="text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
+  //         </CardContent>
+  //       </Card>
+  //     </div>
+  //   );
+  // }
 
   const titleField = getTitleField();
 
   return (
-    <div className="container max-w-full h-[calc(100vh-4rem)] flex flex-col">
+    <MainLayout title={recordData?.code || 'Biểu mẫu không có tiêu đề'}>
+      <div className="container max-w-full h-[calc(100vh-4rem)] flex flex-col">
       <Card className="border shadow-sm flex-1 flex flex-col overflow-hidden">
         <CardHeader className="pb-4 flex-shrink-0">
           <div className="flex items-center mb-2">
@@ -210,7 +211,7 @@ export default function RecordDetailPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div>
               <CardTitle className="text-xl font-bold text-primary flex flex-wrap items-center">
-                {recordData.code && (
+                {recordData?.code && (
                   <span className="mr-2 text-sm bg-primary/10 text-primary px-2 py-0.5 rounded">
                     {recordData.code}
                   </span>
@@ -220,9 +221,9 @@ export default function RecordDetailPage() {
               
               <CardDescription className="mt-1 flex items-center flex-wrap gap-2">
                 <span className="text-xs text-muted-foreground">
-                  {t('recordDetail.createdAt', 'Ngày tạo')}: {formatDate(new Date(recordData.created_at).getTime())}
+                  {t('recordDetail.createdAt', 'Ngày tạo')}: {formatDate(new Date(recordData?.created_at).getTime())}
                 </span>
-                {recordData.core_user && (
+                {recordData?.core_user && (
                   <span className="text-xs text-muted-foreground">
                     {t('recordDetail.createdBy', 'Người tạo')}: {recordData.core_user.username}
                   </span>
@@ -231,10 +232,10 @@ export default function RecordDetailPage() {
             </div>
             
             {/* Hiển thị trạng thái */}
-            {recordData.core_dynamic_status && (
+            {recordData?.core_dynamic_status && (
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="bg-primary/10 text-primary font-semibold px-3 py-1 text-sm self-start md:self-center">
-                  {recordData.core_dynamic_status.name || t('recordDetail.noStatus', 'Chưa có trạng thái')}
+                  {recordData?.core_dynamic_status.name || t('recordDetail.noStatus', 'Chưa có trạng thái')}
                 </Badge>
                 
                 {/* Nút hiển thị biểu đồ workflow nếu có workflowId */}
@@ -277,7 +278,7 @@ export default function RecordDetailPage() {
                 <TransitionFormDialog
                   key={transition.id}
                   transitionId={transition.id}
-                  recordId={recordData.id}
+                  recordId={recordData?.id}
                   transitionName={transition.name}
                   onSubmit={() => {
                     // Refresh lại trang sau khi thực hiện transition
@@ -316,7 +317,7 @@ export default function RecordDetailPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {recordData.data && recordData.data.map((field: FieldData, index: number) => (
+                    {recordData?.data && recordData?.data.map((field: FieldData, index: number) => (
                       <tr 
                         key={`desktop-${field.id}`}
                         className={`transition-colors duration-150 ${
@@ -379,7 +380,7 @@ export default function RecordDetailPage() {
             {/* Mobile view - card format */}
             <div className="md:hidden flex-1 overflow-auto">
               <div className="space-y-4 pb-4">
-                {recordData.data && recordData.data.map((field: FieldData, index: number) => (
+                {recordData?.data && recordData?.data.map((field: FieldData, index: number) => (
                   <div 
                     key={`mobile-${field.id}`}
                     className="border border-border rounded-md overflow-hidden bg-card"
@@ -435,7 +436,7 @@ export default function RecordDetailPage() {
               </div>
             </div>
 
-            {(!recordData.data || recordData.data.length === 0) && (
+            {(!recordData?.data || recordData?.data?.length === 0) && (
               <div className="text-center py-8 text-muted-foreground">
                 {t('recordDetail.noData', 'Không có dữ liệu field nào')}
               </div>
@@ -453,6 +454,7 @@ export default function RecordDetailPage() {
           </Button>
         </CardFooter>
       </Card>
-    </div>
+      </div>
+    </MainLayout>
   );
 }
