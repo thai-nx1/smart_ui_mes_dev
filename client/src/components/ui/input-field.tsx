@@ -38,6 +38,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { fieldTypeColors, FieldType, FieldOption } from '@/lib/types';
+import { CameraPermission } from '../CameraPermission';
 interface InputFieldProps {
   id: string;
   name: string;
@@ -1459,8 +1460,10 @@ export function InputField({
         };
 
         return (
-          <Button 
-            variant="outline"
+          <>
+            <CameraPermission />
+            <Button 
+              variant="outline"
             className="w-full py-6"
             type="button"
             onClick={() => openModal("Chụp ảnh", (
@@ -1555,7 +1558,8 @@ export function InputField({
             ) : (
               "Nhấn để chụp ảnh"
             )}
-          </Button>
+            </Button>
+          </>
         );
       
       default:
