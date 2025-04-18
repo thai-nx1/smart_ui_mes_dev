@@ -681,67 +681,75 @@ export function SubmissionDataTable({
     // Sử dụng trường từ API nếu có, nếu không sử dụng các trường từ dữ liệu
     const fieldNames = viewFormFields.length > 0 ? viewFormFields : getUniqueFieldTypes();
     
+    // Xác định số lượng cột để áp dụng chiến lược hiển thị phù hợp
+    const hasManyCols = fieldNames.length >= 10;
+    
     // Responsive table với hai phiên bản: desktop và mobile
     return (
       <div className="w-full rounded-md border border-border">
-        {/* Phiên bản desktop - hiển thị bảng đầy đủ với scroll cả ngang và dọc */}
-        <div className="w-full overflow-auto rounded-md">
+        {/* Phiên bản desktop - hiển thị bảng đầy đủ với scroll ngang khi cần */}
+        <div className={`w-full ${hasManyCols ? 'overflow-x-auto' : ''} rounded-md`}>
           <table className="w-full border-collapse min-w-[650px]">
             <thead>
               <tr className="bg-muted/70 text-primary-foreground">
-                {/* Cố định cột code */}
-                <th className="sticky left-0 bg-muted/70 p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap z-10">
+                {/* Cột code - cố định kích thước */}
+                <th className="sticky left-0 bg-muted/70 p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap z-10 w-[120px]">
                   <div className="flex items-center">
                     <span className="inline-block normal-case">Code</span>
                   </div>
                 </th>
-                <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
+                {/* Cột trạng thái - cố định kích thước */}
+                <th className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap w-[140px]">
                   <div className="flex items-center">
                     <span className="inline-block normal-case">Trạng thái</span>
                   </div>
                 </th>
+                {/* Các cột dữ liệu - cân bằng kích thước */}
                 {fieldNames.map((fieldName: string) => (
-                  <th key={fieldName} className="p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap">
+                  <th 
+                    key={fieldName} 
+                    className={`p-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-r border-border whitespace-nowrap ${hasManyCols ? 'max-w-[300px]' : 'flex-grow'}`}
+                  >
                     <div className="flex items-center">
-                      <span className="inline-block normal-case">{fieldName}</span>
+                      <span className="inline-block normal-case truncate" title={fieldName}>{fieldName}</span>
                     </div>
                   </th>
                 ))}
-                {/* Cố định cột thao tác bên phải */}
-                <th className="sticky right-0 bg-muted/70 p-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border whitespace-nowrap z-10">
+                {/* Cột thao tác - cố định bên phải và kích thước */}
+                <th className="sticky right-0 bg-muted/70 p-3 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border whitespace-nowrap z-10 w-[100px]">
                   <div className="flex items-center justify-center">
                     <span className="inline-block normal-case">{t('actions.actions', 'Thao tác')}</span>
                   </div>
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-card">
+            <tbody className="divide-y divide-border">
               {filteredData.map((submission, rowIndex) => {
                 if (!Array.isArray(submission.data)) return null;
-                
-                // Row background classes alternate
-                const rowBgClass = rowIndex % 2 === 0 ? 'bg-background/40' : 'bg-background/80';
                 
                 return (
                   <tr 
                     key={submission.id} 
-                    className={`group transition-colors duration-150 ${rowBgClass} hover:bg-primary/5`}
+                    className={`group transition-colors duration-150 
+                      odd:bg-white even:bg-slate-50 
+                      dark:odd:bg-slate-800 dark:even:bg-slate-950
+                      hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
                   >
                     {/* Cột code - cố định bên trái */}
-                    <td className="sticky left-0 p-3 border-r border-border text-sm relative whitespace-nowrap z-10">
-                      <div className={`relative px-2 py-1 ${rowBgClass}`}>
-                        <div className="font-mono">
+                    <td className="sticky left-0 p-3 border-r border-border text-sm whitespace-nowrap z-10 w-[120px]">
+                      <div className={`relative px-2 py-1 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-800 dark:even:bg-slate-950`}>
+                        <div className="font-mono truncate" title={submission.code || submission.id?.substring(0, 8)}>
                           {submission.code || (submission.id ? submission.id.substring(0, 8) : '-')}
                         </div>
                       </div>
                     </td>
                     
                     {/* Cột trạng thái */}
-                    <td className="p-3 border-r border-border text-sm relative whitespace-nowrap">
-                      <div className="relative">
+                    <td className="p-3 border-r border-border text-sm whitespace-nowrap w-[140px]">
+                      <div className="relative truncate">
                         <div>
                           {submission.core_dynamic_status ? (
-                            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                            <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium truncate" title={submission.core_dynamic_status.name || '-'}>
                               {submission.core_dynamic_status.name || '-'}
                             </span>
                           ) : '-'}
@@ -755,20 +763,28 @@ export function SubmissionDataTable({
                         (f: FieldData) => f.name === fieldName
                       );
                       
+                      const cellContent = field ? (
+                        typeof field.value === 'string' 
+                          ? field.value
+                          : Array.isArray(field.value) 
+                            ? field.value.join(', ')
+                            : String(field.value)
+                      ) : '-';
+                      
                       return (
                         <td 
                           key={`${submission.id}-${fieldName}`} 
-                          className={`p-3 border-r border-border text-sm ${
+                          className={`p-3 border-r border-border text-sm ${hasManyCols ? 'max-w-[300px]' : 'w-full'} ${
                             field && !readOnly ? 'cursor-pointer hover:bg-primary/10' : ''
                           }`}
                           onClick={() => field && !readOnly && handleEditField(submission, field.id)}
                         >
                           {field ? (
-                            <div className="relative w-full min-w-[200px]">
-                              <div className="break-all whitespace-pre-wrap pr-8">
+                            <div className="relative w-full">
+                              <div className="truncate pr-8" title={cellContent}>
                                 {typeof field.value === 'string' 
                                   ? (
-                                    <div className="text-sm text-muted-foreground">
+                                    <div className="text-sm text-muted-foreground truncate">
                                       {field.value || <span className="italic text-xs">Chưa có dữ liệu</span>}
                                     </div>
                                   )
@@ -776,19 +792,23 @@ export function SubmissionDataTable({
                                     ? field.value.length > 0 
                                       ? (
                                         <div className="flex flex-wrap gap-1">
-                                          {field.value.map((v: string, i: number) => (
+                                          {field.value.slice(0, 3).map((v: string, i: number) => (
                                             <span 
                                               key={i} 
-                                              className="inline-flex items-center px-2 py-1 bg-primary/10 text-sm rounded break-all"
+                                              className="inline-flex items-center px-2 py-1 bg-primary/10 text-sm rounded truncate"
+                                              title={v}
                                             >
                                               {v}
                                             </span>
                                           ))}
+                                          {field.value.length > 3 && (
+                                            <span className="text-xs text-muted-foreground">+{field.value.length - 3}</span>
+                                          )}
                                         </div>
                                       )
                                       : <span className="text-muted-foreground italic text-xs">Chưa có dữ liệu</span>
                                     : (
-                                      <div className="text-sm text-muted-foreground">
+                                      <div className="text-sm text-muted-foreground truncate">
                                         {String(field.value) || <span className="italic text-xs">Chưa có dữ liệu</span>}
                                       </div>
                                     )}
@@ -800,29 +820,31 @@ export function SubmissionDataTable({
                               )}
                             </div>
                           ) : (
-                            <span className="text-muted-foreground break-words">-</span>
+                            <span className="text-muted-foreground truncate">-</span>
                           )}
                         </td>
                       );
                     })}
                     
                     {/* Cột thao tác - cố định bên phải */}
-                    <td className="sticky right-0 p-2 text-center z-10">
-                      <div className={`flex justify-center gap-1 px-2 py-1 ${rowBgClass}`}>
+                    <td className="sticky right-0 p-2 text-center z-10 w-[100px]">
+                      <div className={`flex justify-center gap-1 px-2 py-1 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-800 dark:even:bg-slate-950`}>
                         <Button 
                           variant="ghost" 
-                          size="sm" 
+                          size="icon"
                           onClick={() => handleView(submission)}
-                          className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                          className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                          title={t('actions.view', 'Xem chi tiết')}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         {!readOnly && (
                           <Button 
                             variant="ghost" 
-                            size="sm" 
+                            size="icon"
                             onClick={() => handleEdit(submission)}
-                            className="h-8 w-8 p-0 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                            className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
+                            title={t('actions.edit', 'Chỉnh sửa')}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>

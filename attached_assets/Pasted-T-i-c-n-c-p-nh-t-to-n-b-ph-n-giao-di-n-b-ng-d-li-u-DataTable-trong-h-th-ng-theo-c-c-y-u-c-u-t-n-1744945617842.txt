@@ -1,0 +1,83 @@
+Tôi cần cập nhật toàn bộ phần giao diện bảng dữ liệu (DataTable) trong hệ thống theo các yêu cầu tổng hợp sau:
+
+---
+
+### 🎯 1. Layout & cấu trúc bảng
+
+- Tăng padding nội dung bảng:
+  - Padding trái/phải: `px-6`
+  - Padding trên/dưới: `py-4`
+- Bỏ border của wrapper bên ngoài bảng
+- Thêm `border-radius` mềm cho bảng: `rounded-xl`
+- Áp dụng `shadow-sm` nhẹ nếu cần tách nền bảng khỏi nền chính
+
+---
+
+### 🎨 2. Màu nền xen kẽ từng hàng
+
+- **Light mode:**
+  - Hàng lẻ: `bg-white`
+  - Hàng chẵn: `bg-slate-50`
+- **Dark mode:**
+  - Hàng lẻ: `bg-slate-800`
+  - Hàng chẵn: `bg-slate-950`
+- Nên dùng `odd:` và `even:` để xử lý Tailwind
+
+---
+
+### 🧱 3. Độ rộng cột & responsive
+
+- Với bảng có **< 10 cột**:
+  - Cột động nên chia đều không gian còn lại (`flex-grow` hoặc `w-full`)
+  - Các cột cố định giữ nguyên width
+- Với bảng **≥ 10 cột**:
+  - Cột có `max-w-[300px]` + `truncate` + `overflow-x-auto`
+  - Scroll ngang nếu cần
+
+---
+
+### 🧠 4. Tooltip & truncate nội dung
+
+- Mỗi cell nên dùng `truncate` để không bị vỡ layout
+- Tooltip hiển thị toàn nội dung khi hover
+
+---
+
+### 🛠 5. Cột cố định & độ rộng cụ thể
+
+- Cột `Code`: `w-[120px]`
+- Cột `Trạng thái`: `w-[140px]`
+- Cột `Thao tác`: `w-[100px]`
+- Các cột còn lại chia đều không gian (nếu ít), tự co giãn nếu nhiều
+
+---
+
+### 📑 6. Pagination & số dòng hiển thị
+
+- Đặt pagination **ở dưới cùng bên phải bảng**
+- Sticky pagination nếu nội dung dài (cuộn nội dung, không cuộn phân trang)
+- Cho phép chọn số dòng hiển thị: `[10] [20] [50] [Tất cả]`
+- Hiển thị tổng số dòng, trang hiện tại, tổng số trang
+
+---
+
+### ⚙️ 7. Cột "Thao tác"
+
+- Chỉ hiển thị các button dạng **icon**
+- Mỗi icon có tooltip mô tả chức năng khi hover
+- Không dùng chữ để giảm nhiễu giao diện
+
+---
+
+### 🧭 8. Margin & padding tổng thể
+
+- Padding nội dung bảng: `px-6 py-4`
+- Margin layout chứa bảng: `mt-0 mb-0`
+- Không thêm border hoặc background thừa quanh bảng
+
+---
+
+🎯 Kết quả mong muốn:
+- Bảng hiển thị gọn gàng, chuyên nghiệp, dễ đọc trên mọi chế độ hiển thị
+- Giao diện nhất quán toàn hệ thống
+- Đáp ứng cả desktop và mobile/tablet
