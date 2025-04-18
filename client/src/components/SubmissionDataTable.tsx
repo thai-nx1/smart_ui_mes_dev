@@ -722,8 +722,8 @@ export function SubmissionDataTable({
                   <tr 
                     key={submission.id} 
                     className={`group transition-colors duration-150 
-                      odd:bg-white even:bg-slate-50 
-                      dark:odd:bg-slate-800 dark:even:bg-slate-950
+                      odd:bg-slate-50 even:bg-white 
+                      dark:odd:bg-slate-950 dark:even:bg-slate-800
                       hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
                   >
                     {/* Cột code - cố định bên trái */}
